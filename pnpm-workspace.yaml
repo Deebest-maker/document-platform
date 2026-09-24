@@ -1,0 +1,9 @@
+packages:
+  - apps/*
+  - packages/*
+
+# These are the only dependency install scripts required by this foundation.
+allowBuilds:
+  esbuild: true
+  sharp: true
+  unrs-resolver: true

@@ -1,0 +1,11 @@
+{
+  "name": "@document-platform/ui",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./tokens.css": "./tokens.css"
+  },
+  "sideEffects": [
+    "*.css"
+  ]
+}

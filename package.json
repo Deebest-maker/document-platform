@@ -1,0 +1,25 @@
+{
+  "name": "document-platform",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.23.0",
+  "engines": {
+    "node": ">=24.16.0 <25",
+    "pnpm": "11.23.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @document-platform/web dev",
+    "build": "pnpm --filter @document-platform/web build",
+    "start": "pnpm --filter @document-platform/web start",
+    "lint": "pnpm --filter @document-platform/web lint",
+    "typecheck": "pnpm --filter @document-platform/web typecheck",
+    "test": "pnpm --filter @document-platform/web test",
+    "test:e2e": "pnpm --filter @document-platform/web test:e2e",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e"
+  },
+  "devDependencies": {
+    "prettier": "3.9.9"
+  }
+}
