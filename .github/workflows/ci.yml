@@ -86,7 +86,7 @@ jobs:
             --security-opt no-new-privileges --memory 256m --cpus 1 \
             --pids-limit 64 --publish 127.0.0.1:8000:8000 document-platform-processor:m0
           trap 'docker logs processor-m0; docker rm --force processor-m0' EXIT
-          curl --fail --silent --show-error --retry 15 --retry-connrefused \
+          curl --fail --silent --show-error --retry 15 --retry-all-errors \
             --retry-delay 1 --retry-max-time 30 http://127.0.0.1:8000/health/live \
             | python -c 'import json, sys; assert json.load(sys.stdin) == {"status": "ok"}'
           test "$(docker exec processor-m0 id -u)" = "10001"
