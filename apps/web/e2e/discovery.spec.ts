@@ -27,6 +27,12 @@ test("homepage search leads to the honest Merge preview", async ({ page }) => {
   await expect(
     page.locator("main input, main button, main progress, main [download]"),
   ).toHaveCount(0);
+  const privacyLink = page.getByRole("link", {
+    name: "Read about the planned privacy model",
+  });
+  const privacyTarget = await privacyLink.boundingBox();
+  expect(privacyTarget).not.toBeNull();
+  expect(privacyTarget!.height).toBeGreaterThanOrEqual(44);
   await page.getByRole("link", { name: "Split PDF", exact: true }).click();
   await expect(page).toHaveURL("/tools#split-pdf");
   await expect(page.locator("#split-pdf")).toBeInViewport();

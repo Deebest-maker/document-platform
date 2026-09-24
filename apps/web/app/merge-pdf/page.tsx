@@ -33,7 +33,9 @@ export default function MergePreviewPage() {
             Explore the planned tools <span aria-hidden="true">→</span>
           </Link>
           <p className="small-copy">
-            <Link href="/privacy">Read about the planned privacy model</Link>
+            <Link className="text-link" href="/privacy">
+              Read about the planned privacy model
+            </Link>
           </p>
         </>
       }
