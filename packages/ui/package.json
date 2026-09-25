@@ -2,8 +2,20 @@
   "name": "@document-platform/ui",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "exports": {
+    ".": "./src/index.ts",
+    "./components.css": "./components.css",
     "./tokens.css": "./tokens.css"
+  },
+  "dependencies": {
+    "@document-platform/tool-registry": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0"
   },
   "sideEffects": [
     "*.css"

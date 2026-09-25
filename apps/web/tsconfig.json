@@ -16,6 +16,9 @@
     "plugins": [{ "name": "next" }]
   },
   "include": [
+    "../../packages/tool-registry/src/**/*.ts",
+    "../../packages/ui/src/**/*.tsx",
+    "../../packages/ui/src/**/*.ts",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",

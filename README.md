@@ -1,10 +1,21 @@
 # Document & File Platform
 
-Privacy-first document utilities, built milestone by milestone. The current implementation is **M0: Repository/Foundation**: a Next.js application shell and a separate FastAPI liveness service. Document processing is not implemented.
+Privacy-first document utilities, built milestone by milestone. The current implementation is **M1: Product Shell**, built on the verified M0 foundation: tool discovery, a shared registry, planned privacy indicators, a nonfunctional tool preview, and a separate FastAPI liveness service. Document processing is not implemented.
 
 ## Source of truth
 
 Read [AGENTS.md](AGENTS.md) and the approved Word documents in [docs](docs/) before changing behavior or scope. The PRD/SRS own requirements; the architecture and security documents define processing boundaries. [ADR-010](docs/adr/010-m0-workspace-foundation.md) records the foundation tooling decisions.
+
+[ADR-011](docs/adr/011-m1-product-shell.md) records M1's reviewed boundaries and neutral server-processing wording. Processing modes describe the current approved MVP plan; future changes require review.
+
+## Product preview
+
+- `/`: task search, featured planned tools, categories, and processing explanations.
+- `/tools`: all 13 documented MVP records, with in-memory search and category filtering.
+- `/merge-pdf`: the only tool-page preview. It cannot select, upload, merge or download files.
+- `/about`, `/privacy`, `/terms`, `/contact`: lightweight trust information; unfinished policy/contact copy is labeled clearly.
+
+All routes remain `noindex`. Other tools link to catalog entries instead of nonexistent tool pages. Search queries are not persisted, placed in URLs, or sent to a service. No third-party scripts, remote fonts, analytics, advertising, or document engines are introduced.
 
 ## Prerequisites
 
@@ -39,7 +50,7 @@ uv run --locked --project services/processor uvicorn app.main:app --app-dir serv
 
 `GET http://127.0.0.1:8000/health/live` returns `{"status":"ok"}`. It reports process liveness only. The web shell does not call this service. Stop either development process with Ctrl+C.
 
-## Verify M0
+## Verify the foundation and product shell
 
 ```sh
 pnpm check
@@ -54,7 +65,9 @@ uv run --locked mypy
 uv run --locked pytest
 ```
 
-`pnpm check` runs formatting, ESLint, TypeScript, Vitest, the production web build, and Playwright smoke checks on desktop and mobile Chromium. The browser suite starts its own production server on port 3100; that port must be free. It checks shell rendering, the keyboard skip link, mobile overflow, JavaScript errors, and unexpected external requests. These are foundation checks, not document-processing acceptance tests.
+`pnpm check` runs formatting, ESLint across web/shared sources, strict TypeScript, Vitest registry/rendering tests, the production web build, and Playwright on desktop and mobile Chromium. The browser suite starts its own production server on port 3100; that port must be free. It checks discovery, registry-derived privacy labels, preview restrictions, keyboard focus/disclosures, noindex, 404s, 320px reflow with enlarged text, reduced motion, axe accessibility scans, JavaScript errors, and unexpected requests. These checks do not claim document-processing correctness or full WCAG conformance.
+
+Browser screenshots are written under `apps/web/test-results/`, and the HTML report is under `apps/web/playwright-report/`; both are ignored by Git. Inspect home/catalog/preview screenshots at desktop and mobile widths after UI changes. Retain manual visual and keyboard review alongside automated accessibility checks.
 
 For formatting changes, run `pnpm format` and `uv run --locked --project services/processor ruff format services/processor` before checking again.
 
@@ -80,13 +93,14 @@ The image runs as UID/GID 10001 and contains no conversion engines or developmen
 ## Layout and CI
 
 ```text
-apps/web/                 App Router shell, app styles, component/browser checks
-packages/ui/              Shared CSS tokens only; no component library
+apps/web/                 Routes, shell, interactive discovery, tests
+packages/tool-registry/    Typed catalog, modes, privacy copy and pure selectors
+packages/ui/              Tokens, ToolShell, PrivacyIndicator and shared CSS
 services/processor/       FastAPI health service, Python checks, Dockerfile
 docs/adr/                 Approved implementation decisions
 .github/workflows/ci.yml  M0 verification on pull requests and pushes
 ```
 
-CI installs from lockfiles, runs the checks above, builds the processor image, and verifies it under the same restrictions. Browser failure artifacts use only the foundation page. Use short-lived feature branches and pull requests for material changes; required checks and branch protection must be enabled on GitHub when the initial repository is published.
+CI installs from lockfiles, runs the checks above, builds the processor image, and verifies it under the same restrictions. Browser failure artifacts contain only public preview pages and synthetic search inputs. Use short-lived feature branches and pull requests for material changes; main requires the `web`, `processor`, and `processor-container` checks under the existing branch protection.
 
-M1 adds the product shell and tool registry after explicit approval. Browser PDF engines and document processing arrive in later milestones. The M0 placeholder remains `noindex`; public indexing and deployment are future launch work.
+M2 introduces the first actual local PDF workflow only after explicit approval. FilePicker, browser PDF engines, workers, and document processing are outside M1. Learn/content, production SEO, final branding, and public deployment remain later work.

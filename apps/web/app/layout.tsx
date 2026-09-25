@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { SiteHeader } from "../components/site-header";
+import { SiteFooter } from "../components/site-footer";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Document & File Platform",
-  description: "Document & File Platform is under development.",
+  title: {
+    default: "Document & File Platform — Preview",
+    template: "%s | Document & File Platform",
+  },
+  description:
+    "Explore the planned document toolkit. Document processing is not available in this preview.",
   robots: { index: false, follow: false },
 };
 
@@ -15,11 +21,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <a className="skip-link" href="#main-content">
           Skip to content
         </a>
-        <header className="site-header">
-          <div className="page-width site-name">
-            Document &amp; File Platform
+        <SiteHeader />
+        <div className="preview-strip">
+          <div className="page-width">
+            <strong>Product preview</strong>
+            <span>Document processing is not available yet.</span>
           </div>
-        </header>
+        </div>
         <main
           id="main-content"
           tabIndex={-1}
@@ -27,9 +35,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         >
           {children}
         </main>
-        <footer className="site-footer">
-          <div className="page-width">Document &amp; File Platform</div>
-        </footer>
+        <SiteFooter />
       </body>
     </html>
   );

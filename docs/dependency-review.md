@@ -1,4 +1,16 @@
-# M0 dependency review
+# Dependency review
+
+## M1 product shell
+
+Reviewed on 24 September 2026. The sole new third-party package is the development-only `@axe-core/playwright@4.13.0` adapter, published and installed under MPL-2.0. Its `axe-core@4.13.0` dependency was already locked in M0, and it reuses Playwright Core 1.63.0. No existing external dependency versions changed. Retain the bundled license notices; the adapter is not part of the production application bundle.
+
+The registry is a private, dependency-free workspace package. UI adds a registry workspace reference, React peer declaration, and the already-used React types version; web references the registry. These are local package wiring changes, not new application frameworks.
+
+The installed Windows inventory now contains 403 JavaScript package records. The license categories are unchanged from M0; no AGPL or unknown categories appeared. `pnpm audit --audit-level=high` found no known vulnerabilities. The unchanged locked Python environment passed `uv audit --locked` with no known vulnerabilities or adverse statuses in 28 packages.
+
+Verify with `pnpm view @axe-core/playwright@4.13.0 version license dependencies --json`, the installed package manifest, `pnpm licenses list --json`, and the locked dependency audits. The adapter supplies automated accessibility rules beyond Playwright interaction assertions. Keyboard, reflow and manual visual review remain required; axe does not establish full WCAG conformance.
+
+## M0 foundation
 
 Reviewed on 24 September 2026 against `pnpm-lock.yaml`, `services/processor/uv.lock`, installed package metadata, and the architecture's licensing rules. This records the M0 dependency selection; future dependency changes require another review.
 
