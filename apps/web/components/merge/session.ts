@@ -225,8 +225,20 @@ export class MergeSession {
         candidate?.code && Object.hasOwn(errorCopy, candidate.code)
           ? (candidate.code as WorkflowError)
           : "MERGE_FAILED";
+      // Aggregate/operation failures must not poison an otherwise valid file:
+      // removing another input can bring the selection back under its limits.
+      const inputError = [
+        "EMPTY_INPUT",
+        "UNSUPPORTED_TYPE",
+        "INPUT_LIMIT",
+        "UNREADABLE_FILE",
+        "ENCRYPTED_PDF",
+        "INVALID_PDF",
+      ].includes(code);
       const marked = rows.map((row) =>
-        row.id === candidate?.inputId ? { ...row, error: code } : row,
+        inputError && row.id === candidate?.inputId
+          ? { ...row, error: code }
+          : row,
       );
       this.selection(marked, "", code);
     }

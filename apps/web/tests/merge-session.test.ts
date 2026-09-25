@@ -205,6 +205,24 @@ describe("route-local Merge session", () => {
     await unknown.session.merge();
     expect(unknown.session.getSnapshot().error).toBe("MERGE_FAILED");
   });
+  it("recovers from an aggregate page limit by replacing a different input", async () => {
+    const { session, merge, createUrl } = setup();
+    session.add([file("many-pages.pdf"), file("retained.pdf")]);
+    const [first, retained] = session.getSnapshot().rows;
+    merge.mockRejectedValueOnce({ code: "PAGE_LIMIT", inputId: retained.id });
+    await session.merge();
+    expect(session.getSnapshot().error).toBe("PAGE_LIMIT");
+    expect(createUrl).not.toHaveBeenCalled();
+
+    session.remove(first.id);
+    session.add([file("fewer-pages.pdf")]);
+    expect(session.getSnapshot().rows[0].id).toBe(retained.id);
+    expect(session.canMerge()).toBe(true);
+    await session.merge();
+    expect(merge).toHaveBeenCalledTimes(2);
+    expect(session.getSnapshot().state).toBe("result");
+    expect(createUrl).toHaveBeenCalledTimes(1);
+  });
   it("renders only a bounded basename without control or bidi characters", () => {
     expect(displayName("folder\\secret\u202e.pdf")).toBe("secret.pdf");
     expect(displayName("\u0000")).toBe("PDF");
