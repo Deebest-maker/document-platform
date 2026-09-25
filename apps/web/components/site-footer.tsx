@@ -7,7 +7,7 @@ export function SiteFooter() {
         <div>
           <p className="footer-name">Document &amp; File Platform</p>
           <p className="small-copy">
-            Product preview. Document processing is not available.
+            Merge PDF works on your device. Other tools are planned.
           </p>
         </div>
         <nav aria-label="Trust and legal">

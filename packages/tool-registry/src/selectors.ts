@@ -14,12 +14,14 @@ export function getToolPath(tool: ToolDefinition): string {
 }
 
 export function getToolHref(tool: ToolDefinition): string {
-  return tool.availability === "preview"
+  return tool.availability !== "planned"
     ? getToolPath(tool)
     : `/tools#${tool.slug}`;
 }
 
 export function getToolMetadata(tool: ToolDefinition) {
+  if (tool.availability === "available")
+    return { title: tool.title, description: tool.description };
   return {
     title: `${tool.title} — ${tool.availability === "preview" ? "Preview" : "Planned tool"}`,
     description: `${tool.description} This tool is planned and cannot process documents yet.`,

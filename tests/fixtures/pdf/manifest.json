@@ -1,0 +1,71 @@
+{
+  "provenance": "Original project-authored synthetic fixtures; no external documents or personal data.",
+  "license": "Project-owned test data; no third-party document license.",
+  "authoringTools": {
+    "reportlab": "4.4.9",
+    "pypdf": "6.10.0",
+    "cryptography": "50.0.1"
+  },
+  "pages": {
+    "a.pdf": [
+      {
+        "marker": "A1",
+        "width": 400,
+        "height": 600,
+        "rotation": 0
+      },
+      {
+        "marker": "A2",
+        "width": 600,
+        "height": 400,
+        "rotation": 0
+      }
+    ],
+    "b.pdf": [
+      {
+        "marker": "B1",
+        "width": 420,
+        "height": 610,
+        "rotation": 90
+      },
+      {
+        "marker": "B2",
+        "width": 430,
+        "height": 620,
+        "rotation": 180
+      }
+    ],
+    "c.pdf": [
+      {
+        "marker": "C1",
+        "width": 440,
+        "height": 630,
+        "rotation": 0
+      }
+    ],
+    "d.pdf": [
+      {
+        "marker": "D1",
+        "width": 450,
+        "height": 640,
+        "rotation": 270
+      }
+    ]
+  },
+  "expectedOrders": {
+    "a+b": ["A1", "A2", "B1", "B2"],
+    "b+a": ["B1", "B2", "A1", "A2"],
+    "c+b+a": ["C1", "B1", "B2", "A1", "A2"]
+  },
+  "sha256": {
+    "a.pdf": "97bf82894b2b06af054bf61cb372324b13bf8262786c39d5605408b7f5b6badc",
+    "b.pdf": "c3f33ac0489eb29775397a0e204a35eba56b7c15207766c0c56f83e13760e665",
+    "c.pdf": "00c0cb82aa46976cbdc76736309ff96c1785cf68cc57be9a885a6309bcf24fad",
+    "corrupt.pdf": "93a8dc43cf50df3784156ecfc9cb362f67d725229fe3b0df14ad3a35984ee6e2",
+    "d.pdf": "84d1e8f72067607d1e7102a3a70ae0d66ed6901f433140ca74e6520776b68a95",
+    "encrypted.pdf": "5e4c864d62326a1bf09cd35216ed28f7ad47116196cb312b5174d6bc13a1dc9b",
+    "form.pdf": "fcdf323d1530ff77d82cf33621ea9ed2165ca342b2c39ad1722918b0dcf1fb5f",
+    "signed.pdf": "648e0bf17474d1d2bd412d227f81361e40fa86aee48d795e00ce225a6130c53c",
+    "truncated.pdf": "17404680f0749879fc5f1908093643b7e0e7ba8e4f0875981f617c2c5d471296"
+  }
+}

@@ -27,10 +27,17 @@ export function ToolShell({
   return (
     <article className="tool-shell">
       <header className="tool-heading">
-        <p className="eyebrow">Tool preview · not available</p>
+        <p className="eyebrow">
+          {tool.availability === "available"
+            ? "Document workspace"
+            : "Tool preview · not available"}
+        </p>
         <h1>{tool.title}</h1>
         <p className="intro">{tool.description}</p>
-        <PrivacyIndicator processingMode={tool.processingMode} />
+        <PrivacyIndicator
+          processingMode={tool.processingMode}
+          availability={tool.availability}
+        />
       </header>
       <section className="tool-workspace" aria-label="Tool workspace">
         {(state === "idle" || state === "selected") && workspace}

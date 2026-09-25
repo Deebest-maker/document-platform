@@ -1,44 +1,23 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import {
   getRelatedTools,
   getTool,
   getToolMetadata,
 } from "@document-platform/tool-registry";
-import { ToolShell } from "@document-platform/ui";
 import { ToolList } from "../../components/tool-list";
+import { MergeWorkspace } from "../../components/merge/merge-workspace";
 
 const tool = getTool("merge-pdf");
-if (!tool) throw new Error("The Merge preview requires its registry record.");
-
+if (!tool?.limits)
+  throw new Error("Merge requires its registry configuration.");
 export const metadata: Metadata = {
   ...getToolMetadata(tool),
   robots: { index: false, follow: false },
 };
-
-export default function MergePreviewPage() {
+export default function MergePage() {
   return (
-    <ToolShell
+    <MergeWorkspace
       tool={tool!}
-      state="idle"
-      workspace={
-        <>
-          <p className="eyebrow">Preview only</p>
-          <h2>This tool is not available yet</h2>
-          <p>
-            This page previews the layout and planned processing mode. You
-            cannot choose, upload, merge or download documents here.
-          </p>
-          <Link className="text-link" href="/tools">
-            Explore the planned tools <span aria-hidden="true">→</span>
-          </Link>
-          <p className="small-copy">
-            <Link className="text-link" href="/privacy">
-              Read about the planned privacy model
-            </Link>
-          </p>
-        </>
-      }
       related={
         <>
           <h2>Related planned tools</h2>

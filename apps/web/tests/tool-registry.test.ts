@@ -30,7 +30,7 @@ describe("DEV-004: authoritative tool registry", () => {
     for (const tool of tools) {
       expect(categoryIds).toContain(tool.category);
       expect(processingModes).toContain(tool.processingMode);
-      expect(["planned", "preview"]).toContain(tool.availability);
+      expect(["planned", "preview", "available"]).toContain(tool.availability);
       expect(tool.acceptedTypes.length).toBeGreaterThan(0);
       for (const type of tool.acceptedTypes) {
         expect(type.mime).toContain("/");
@@ -69,10 +69,10 @@ describe("DEV-004: authoritative tool registry", () => {
     ).toEqual(expected);
   });
 
-  it("only links the Merge preview to a tool page; other tools target catalog entries", () => {
+  it("only makes Merge available; other tools target catalog entries", () => {
     expect(
       tools
-        .filter((tool) => tool.availability === "preview")
+        .filter((tool) => tool.availability === "available")
         .map((tool) => tool.slug),
     ).toEqual(["merge-pdf"]);
     for (const tool of tools) {
@@ -84,24 +84,43 @@ describe("DEV-004: authoritative tool registry", () => {
     expect(getTool("not-a-tool")).toBeUndefined();
   });
 
-  it("derives metadata from the supplied record without suggesting a working tool", () => {
+  it("derives available metadata and retains planned qualifiers for unavailable tools", () => {
     const tool = getTool("merge-pdf")!;
     expect(getToolMetadata(tool)).toEqual({
-      title: "Merge PDF — Preview",
-      description:
-        "Combine PDFs in the order you choose. This tool is planned and cannot process documents yet.",
+      title: "Merge PDF",
+      description: "Combine PDFs in the order you choose.",
     });
     expect(
       getToolMetadata({
         ...tool,
+        availability: "planned",
         title: "Different task",
         description: "Different description.",
       }),
     ).toEqual({
-      title: "Different task — Preview",
+      title: "Different task — Planned tool",
       description:
         "Different description. This tool is planned and cannot process documents yet.",
     });
+  });
+
+  it("uses live LOCAL wording and measured limits only for the available Merge tool", () => {
+    const merge = getTool("merge-pdf")!;
+    expect(
+      getPrivacyPresentation(merge.processingMode, merge.availability).label,
+    ).toBe("Processed on your device");
+    expect(merge.limits).toEqual({
+      maxFiles: 20,
+      maxFileBytes: 10485760,
+      maxTotalBytes: 33554432,
+      maxPages: 200,
+      maxOutputBytes: 33554432,
+    });
+    expect(
+      tools
+        .filter((tool) => tool.slug !== "merge-pdf")
+        .every((tool) => tool.availability === "planned" && !tool.limits),
+    ).toBe(true);
   });
 
   it.each([
