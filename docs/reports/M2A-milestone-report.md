@@ -2,7 +2,7 @@
 
 Date: 2026-09-25
 
-Status: Implementation complete; final verification, hosted CI and independent-viewer confirmation are being closed out. This report covers M2A only. M2B has not started and all of M2 is not complete.
+Status: Implementation delivered in draft PR #3; independent PDF-viewer confirmation remains an acceptance gate. A local Docker startup limitation is recorded below. This report covers M2A only. M2B has not started and all of M2 is not complete.
 
 ## Implemented and architecture
 
@@ -17,7 +17,7 @@ The server route sends only serializable registry configuration and presentation
 - `packages/ui`: one generic FilePicker plus availability-aware ToolShell/PrivacyIndicator; no PDF dependency or processing state.
 - `packages/tool-registry`: Merge availability, LOCAL disclosure and measured engineering limits. Other tools stay planned.
 - Web shell/metadata/trust copy and responsive CSS, registry/rendering regressions, new workflow/privacy/lifecycle/keyboard/accessibility/download tests.
-- `tests/fixtures`, benchmark harness/raw evidence, ADR-012, dependency review and README. Package manifests/lockfile and existing lint/type/test commands include the new workspace. Processor source/configuration and `.github/workflows/ci.yml` are unchanged.
+- `tests/fixtures`, benchmark harness/raw evidence, ADR-012, dependency review and README. Package manifests/lockfile and existing lint/type/test commands include the new workspace. `.gitattributes` treats PDFs as binary so checkout line-ending conversion cannot corrupt fixture offsets/signatures. Processor source/configuration and `.github/workflows/ci.yml` are unchanged.
 
 ## Dependencies and fixtures
 
@@ -38,19 +38,20 @@ The explored corpus covered 10/50/100/240 pages, 40 files and about 50.4 MiB of 
 - Independently authored manifest oracles prove A+B → A1,A2,B1,B2; B+A → B1,B2,A1,A2; C+B+A → C1,B1,B2,A1,A2. Tests check exact count, page identity, dimensions, rotation and unchanged source hashes. Errors return no partial output. Downloaded desktop/mobile output is reopened and checked; independent pypdf inspection confirms all five identities and geometry.
 - Browser-context request observation covers the complete workflow and workers, allowlisting public routes/static assets and rejecting mutations, processor/third-party requests, WebSockets and synthetic document canary/filename leakage. Console-event counts are zero. A warmed offline re-merge succeeds with no processor running; browser persistent stores remain empty.
 - Tests cover native keyboard selection, add/remove, earlier/later focus retention, duplicate identity, error recovery, cancellation, real phase announcements, desktop/mobile use, 320px reflow, 200% text, reduced motion and axe rules in idle/selected/processing/error/result states. Automated checks do not establish full WCAG conformance.
-- Unit tests cover double submission, load/parser failure mapping, stale success/failure/phase rejection after reset/cancel/unmount, and reference release. Worker tests prove termination on success/abort/crash/message failure. Browser instrumentation proves URL creation only for a result, repeat downloads, revocation on edit/replacement/reset/client navigation and an empty session on return. Fixed download name: `merged.pdf`. No secure-erasure claim is made.
+- Unit tests cover double submission, load/parser failure mapping, aggregate page-limit recovery by changing a different input, stale success/failure/phase rejection after reset/cancel/unmount, and reference release. Worker tests prove termination on success/abort/crash/message failure. Browser instrumentation proves URL creation only for a result, repeat downloads, revocation on edit/replacement/reset/client navigation and an empty session on return. Fixed download name: `merged.pdf`. No secure-erasure claim is made.
 
 ## Verification status
 
-- Local format/lint/type checks, 17 engine/worker tests, 33 web unit/render/session tests and production build: passed before the final closeout rerun.
-- All 22 new Merge browser cases passed on desktop/mobile Chromium. The full 86-case run exposed an omitted About-page preview qualifier (restored) and one contact accessibility timeout during the usage interruption. The unchanged full suite is being rerun.
-- Processor locked installation, Ruff formatting/lint, mypy, two pytest cases and audit: passed. Container image built; the first local restricted smoke attempt failed to receive HTTP during startup and is under diagnosis. Checks and resource limits have not been relaxed.
-- Hosted required `web`, `processor`, `processor-container`: pending publication.
+- Full local `pnpm check`: passed, including formatting, lint, types, engine/web tests, production build and **86/86** Chromium browser cases (43 desktop, 43 mobile). After the aggregate page-limit recovery correction, `pnpm test`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, and the two affected Merge E2E files passed again: **17 engine/worker + 34 web tests**, and **22/22** desktop/mobile Merge browser cases. Hosted CI also reran the complete suite on that corrected code.
+- The initial full browser run exposed an omitted About-page preview qualifier (restored) and one contact accessibility timeout during the usage interruption. The complete rerun passed without changing timeout/retry settings. All **22** new Merge cases passed in that run.
+- Processor `uv sync --locked`, Ruff formatting/lint, mypy, **2 pytest cases**, and `uv audit --locked`: passed. The unchanged production container image built locally.
+- Local restricted-container smoke: **failed** to return health during the unchanged startup window, including a retry after browser tests ended. A diagnostic run eventually served health without an OOM; the exact local startup cause remains unresolved. A separate Git Bash path-conversion error was corrected by setting `MSYS_NO_PATHCONV=1` for the invocation. No resource limit, timeout, retry or check was relaxed. Task containers were removed; unrelated Docker services were left running. The same restricted-container check passed on GitHub's clean runner, so no processor code change was justified by this local-only observation.
+- Hosted required `web`, `processor`, `processor-container`: **all passed** on GitHub runners for recovery commit `b20af94314ad733caac49bab04d0675da8f8f35b` in [run 36186388815](https://github.com/Deebest-maker/document-platform/actions/runs/36186388815), including the full `pnpm check` and locked processor/container checks. The initial implementation also passed [run 36185001656](https://github.com/Deebest-maker/document-platform/actions/runs/36185001656). The workflow, required job names and main-branch protection were preserved.
 - Desktop/mobile selected/result screenshots and Poppler PDF renders have been inspected. The required independent-viewer opening remains pending owner confirmation: Chrome could not connect, Edge is unavailable, and the available in-app browser displayed a blank PDF surface. The five-page synthetic sample is retained locally in `.tools/m2a-review/merged-order.pdf`; no successful manual-viewer review is claimed yet.
 
 ## Corrections, deviations and remaining decisions
 
-Corrected pdf-lib's ES5 encrypted-error prototype behavior with safe fixed-message mapping, isolated document-derived dependency warnings inside the worker, fixed the enlarged-text download layout, scoped browser alert locators around Next's separate announcer, and restored the About preview qualifier. No check was removed, skipped or disabled, and no timeout/retry policy was weakened.
+Corrected pdf-lib's ES5 encrypted-error prototype behavior with safe fixed-message mapping, isolated document-derived dependency warnings inside the worker, fixed the enlarged-text download layout, scoped browser alert locators around Next's separate announcer, restored the About preview qualifier, and prevented aggregate page-limit errors from permanently marking a valid file as invalid. Verified all nine staged fixture hashes against the manifest after adding binary Git attributes. No check was removed, skipped or disabled, and no timeout/retry policy was weakened.
 
 No unapproved product or architecture deviation. The worker was added only after measured evidence triggered the approved condition. Forms/signatures remain accepted with tested limitations; PDF.js/thumbnails/Split/Organize/page controls are absent. Browser hardening remains the existing Chromium desktop/mobile baseline, as approved.
 
@@ -58,6 +59,6 @@ Remaining launch decisions include physical-mobile/broader-browser sizing, final
 
 ## PR and next milestone
 
-Branch: `feat/m2a-local-merge`. PR and verified commit will be recorded after publication.
+Branch: `feat/m2a-local-merge`. [Draft PR #3](https://github.com/Deebest-maker/document-platform/pull/3). Implementation commit: `b2c162d30e30be2189c2a39d57458572d3f33511`; recovery correction: `b20af94314ad733caac49bab04d0675da8f8f35b`. The PR remains unmerged pending owner review and the independent-viewer confirmation. Final HEAD/check links are included in the PR closeout and delivery response.
 
 Recommended next step after M2A acceptance: **plan M2B**, covering PDF preview/page-operation contracts, PDF.js version/license/security review, worker/render-resource lifecycle, memory/thumbnail limits and fixture/browser evidence. Define the reviewed scope before implementing previews, page controls, Split or Organize. Stop here and wait for explicit approval.
