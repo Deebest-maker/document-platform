@@ -101,6 +101,6 @@ docs/adr/                 Approved implementation decisions
 .github/workflows/ci.yml  M0 verification on pull requests and pushes
 ```
 
-CI installs from lockfiles, runs the checks above, builds the processor image, and verifies it under the same restrictions. Browser failure artifacts use only the foundation page. Use short-lived feature branches and pull requests for material changes; required checks and branch protection must be enabled on GitHub when the initial repository is published.
+CI installs from lockfiles, runs the checks above, builds the processor image, and verifies it under the same restrictions. Browser failure artifacts contain only public preview pages and synthetic search inputs. Use short-lived feature branches and pull requests for material changes; main requires the `web`, `processor`, and `processor-container` checks under the existing branch protection.
 
 M2 introduces the first actual local PDF workflow only after explicit approval. FilePicker, browser PDF engines, workers, and document processing are outside M1. Learn/content, production SEO, final branding, and public deployment remain later work.
