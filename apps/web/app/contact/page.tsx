@@ -18,8 +18,8 @@ export default function ContactPage() {
         There is no contact form or published support address in this preview.
       </p>
       <p>
-        An approved contact channel will be added before public launch. Do not
-        submit documents or personal information through this preview.
+        An approved contact channel will be added before public launch. This
+        page does not accept documents or personal information.
       </p>
     </article>
   );

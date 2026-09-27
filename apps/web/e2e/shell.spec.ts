@@ -11,7 +11,7 @@ const routes = [
 ];
 
 for (const route of routes) {
-  test(`M1 shell: ${route} renders without processing controls or unexpected requests`, async ({
+  test(`shell regression: ${route} renders with correct availability and requests`, async ({
     page,
   }, testInfo) => {
     const response = await page.goto(route);
@@ -23,9 +23,10 @@ for (const route of routes) {
       "content",
       /noindex/,
     );
-    await expect(
-      page.locator('input[type="file"], progress, [download]'),
-    ).toHaveCount(0);
+    await expect(page.locator('input[type="file"]')).toHaveCount(
+      route === "/merge-pdf" ? 1 : 0,
+    );
+    await expect(page.locator("progress, [download]")).toHaveCount(0);
 
     if (["/", "/tools", "/merge-pdf"].includes(route)) {
       await page.screenshot({

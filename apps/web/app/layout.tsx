@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: "%s | Document & File Platform",
   },
   description:
-    "Explore the planned document toolkit. Document processing is not available in this preview.",
+    "Merge PDFs on your device and explore the planned document toolkit.",
   robots: { index: false, follow: false },
 };
 
@@ -25,7 +25,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <div className="preview-strip">
           <div className="page-width">
             <strong>Product preview</strong>
-            <span>Document processing is not available yet.</span>
+            <span>
+              Merge PDF is available on your device. Other tools are planned.
+            </span>
           </div>
         </div>
         <main

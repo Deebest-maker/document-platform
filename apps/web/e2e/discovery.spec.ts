@@ -5,7 +5,7 @@ import {
   tools,
 } from "@document-platform/tool-registry";
 
-test("homepage search leads to the honest Merge preview", async ({ page }) => {
+test("homepage search leads to available LOCAL Merge", async ({ page }) => {
   await page.goto("/");
   const discovery = page.getByRole("search", { name: "Find document tools" });
   await discovery
@@ -15,22 +15,17 @@ test("homepage search leads to the honest Merge preview", async ({ page }) => {
   await expect(results.getByRole("status")).toContainText("1 tool found");
   await results.getByRole("link", { name: "Merge PDF", exact: true }).click();
   await expect(page).toHaveURL("/merge-pdf");
-  await expect(page).toHaveTitle(
-    "Merge PDF — Preview | Document & File Platform",
-  );
+  await expect(page).toHaveTitle("Merge PDF | Document & File Platform");
   await expect(
-    page.getByRole("heading", { name: "This tool is not available yet" }),
+    page.getByRole("heading", { name: "Bring your PDFs together" }),
   ).toBeVisible();
-  await expect(page.locator(".tool-workspace")).not.toContainText(
-    "Choose files",
-  );
+  await expect(page.getByRole("button", { name: "Choose PDFs" })).toBeVisible();
   await expect(
-    page.locator("main input, main button, main progress, main [download]"),
-  ).toHaveCount(0);
-  const privacyLink = page.getByRole("link", {
-    name: "Read about the planned privacy model",
-  });
-  const privacyTarget = await privacyLink.boundingBox();
+    page.getByRole("button", { name: "Merge PDFs", exact: true }),
+  ).toBeDisabled();
+  const privacyTarget = await page
+    .locator(".tool-heading summary")
+    .boundingBox();
   expect(privacyTarget).not.toBeNull();
   expect(privacyTarget!.height).toBeGreaterThanOrEqual(44);
   await page.getByRole("link", { name: "Split PDF", exact: true }).click();
@@ -50,14 +45,18 @@ test("catalog records and disclosures agree with the registry", async ({
   for (const tool of tools) {
     const row = page.locator(`#${tool.slug}`);
     await expect(row.getByRole("heading", { level: 3 })).toHaveText(
-      tool.title + (tool.availability === "preview" ? " ↗" : ""),
+      tool.title + (tool.availability !== "planned" ? " ↗" : ""),
     );
     await expect(row.locator("summary")).toHaveText(
-      getPrivacyPresentation(tool.processingMode).label,
+      getPrivacyPresentation(tool.processingMode, tool.availability).label,
     );
     await expect(row).toContainText(tool.description);
     await expect(row.locator(".availability")).toHaveText(
-      tool.availability === "preview" ? "Page preview" : "Planned",
+      tool.availability === "available"
+        ? "Available"
+        : tool.availability === "preview"
+          ? "Page preview"
+          : "Planned",
     );
   }
 });

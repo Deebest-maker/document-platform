@@ -17,7 +17,8 @@ export default function AboutPage() {
         collection of document utilities.
       </p>
       <p className="notice">
-        Product preview. Document processing is not available.
+        Product preview. Merge PDF is available on your device. All other tools
+        are planned.
       </p>
       <h2>The intended approach</h2>
       <p>
@@ -25,11 +26,11 @@ export default function AboutPage() {
         when a future operation will require server processing.
       </p>
       <p>
-        This preview lets you explore the catalog, processing descriptions and a
-        sample tool page. It does not accept documents.
+        Merge PDF combines pages locally and creates a download in your browser.
+        The catalog also describes tools planned for future releases.
       </p>
       <Link className="text-link" href="/tools">
-        Explore the planned tools
+        Explore the tools
       </Link>
     </article>
   );

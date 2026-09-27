@@ -80,7 +80,7 @@ export function ToolDiscovery({
       </div>
       <p className="search-summary" role="status" aria-atomic="true">
         {showResults
-          ? `${results.length} ${results.length === 1 ? "tool" : "tools"} found. All document processing is planned.`
+          ? `${results.length} ${results.length === 1 ? "tool" : "tools"} found. Check each tool's availability.`
           : "Search by task, format or category."}
       </p>
       {showResults && results.length === 0 && (

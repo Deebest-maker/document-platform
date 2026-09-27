@@ -34,7 +34,7 @@ describe("DEV-006: PrivacyIndicator", () => {
           workspace={<p>Unavailable</p>}
         />,
       );
-    expect(renderMode("LOCAL")).toContain("Planned: processed on your device");
+    expect(renderMode("LOCAL")).toContain("Processed on your device");
     expect(renderMode("SERVER")).toContain("Planned: server processing");
     expect(renderMode("SERVER")).not.toContain(
       "Planned: processed on your device",

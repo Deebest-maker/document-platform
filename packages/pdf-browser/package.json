@@ -1,0 +1,21 @@
+{
+  "name": "@document-platform/pdf-browser",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./validation": "./src/validation.ts",
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "pdf-lib": "1.17.1"
+  },
+  "devDependencies": {
+    "vitest": "5.0.1",
+    "@types/node": "24.13.6"
+  }
+}

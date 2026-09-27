@@ -20,11 +20,11 @@ export default function HomePage() {
             <br className="desktop-break" /> for your document.
           </h1>
           <p className="intro">
-            Explore tools planned for everyday file tasks, with a clear
-            explanation of where each operation will happen.
+            Merge PDFs on your device. Explore the tools planned for other
+            everyday file tasks, with processing locations clearly explained.
           </p>
           <Link className="text-link" href="/tools">
-            Browse all planned tools <span aria-hidden="true">→</span>
+            Browse all tools <span aria-hidden="true">→</span>
           </Link>
         </div>
         <div className="home-search">
@@ -35,7 +35,7 @@ export default function HomePage() {
       <section className="home-section" aria-labelledby="featured-heading">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">The planned toolkit</p>
+            <p className="eyebrow">The toolkit</p>
             <h2 id="featured-heading">Common document tasks</h2>
           </div>
           <Link className="text-link" href="/tools">
@@ -88,12 +88,11 @@ export default function HomePage() {
             <br className="desktop-break" /> document would go.
           </h2>
           <p>
-            Suitable operations are planned to run in your browser. Others will
-            require a server upload. Each tool’s label explains the intended
-            location before processing becomes available.
+            Merge runs in your browser without uploading your PDFs. Other tools
+            are planned; their labels explain the intended processing location.
           </p>
           <Link className="text-link" href="/privacy">
-            Read the planned privacy model <span aria-hidden="true">→</span>
+            Read about privacy <span aria-hidden="true">→</span>
           </Link>
         </div>
         <div className="privacy-explanations">

@@ -13,7 +13,7 @@
     "start": "pnpm --filter @document-platform/web start",
     "lint": "pnpm --filter @document-platform/web lint",
     "typecheck": "pnpm --filter @document-platform/web typecheck",
-    "test": "pnpm --filter @document-platform/web test",
+    "test": "pnpm --filter @document-platform/pdf-browser test && pnpm --filter @document-platform/web test",
     "test:e2e": "pnpm --filter @document-platform/web test:e2e",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

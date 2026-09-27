@@ -30,7 +30,7 @@ describe("M1 registry integration", () => {
       expect(html).toContain(tool.title);
       expect(html).toContain(tool.description);
     }
-    expect(html).toContain("These tools are not functional yet.");
+    expect(html).toContain("Merge PDF is available.");
   });
 
   it("DEV-004 / FR-GEN-004: connects Merge record to metadata, shell and privacy", () => {
@@ -40,10 +40,10 @@ describe("M1 registry integration", () => {
     const html = renderToStaticMarkup(<MergePreviewPage />);
     expect(html).toContain(`<h1>${tool.title}</h1>`);
     expect(html).toContain(tool.description);
-    expect(html).toContain("Planned: processed on your device");
-    expect(html).toContain("This tool is not available yet");
-    expect(html).not.toMatch(
-      /<input|<button|<progress|download=|role="status"/,
-    );
+    expect(html).toContain("Processed on your device");
+    expect(html).toContain("Bring your PDFs together");
+    expect(html).toContain('type="file"');
+    expect(html).toContain("Password-protected PDFs are not supported");
+    expect(html).not.toMatch(/<progress|download=/);
   });
 });

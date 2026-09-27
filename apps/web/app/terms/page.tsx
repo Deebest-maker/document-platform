@@ -14,7 +14,8 @@ export default function TermsPage() {
         Placeholder — final terms have not been approved.
       </p>
       <p className="intro">
-        This is an early product preview. Document tools are not available.
+        This is an early product preview. Merge PDF is available for local
+        processing; other document tools are planned.
       </p>
       <p>
         The approved terms will be provided before public launch. This page does

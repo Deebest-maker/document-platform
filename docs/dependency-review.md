@@ -1,5 +1,17 @@
 # Dependency review
 
+## M2A Merge PDF
+
+Reviewed on 25 September 2026 against the installed graph, lockfile, published package metadata and license inventory. The only new runtime engine is **pdf-lib 1.17.1 (MIT)**, isolated behind `packages/pdf-browser`. Its newly resolved dependencies are `@pdf-lib/standard-fonts@1.0.0` (MIT), `@pdf-lib/upng@1.0.1` (MIT), `pako@1.0.11` (MIT AND Zlib), and `tslib@1.14.1` (0BSD). The existing tslib 2.8.1 remains used elsewhere. Retain all bundled notices. No PDF.js or AGPL dependency is added.
+
+The Windows license inventory has 407 package-name records (some contain multiple resolved versions), versus 403 in M1. The lockfile adds five package resolutions and workspace wiring; existing external versions are unchanged. `pnpm audit --audit-level=high` found no known vulnerabilities. The unchanged Python graph passed `uv audit --locked`, with no known vulnerabilities or adverse statuses in 28 packages. Audits are point-in-time dependency checks, not proof that untrusted PDFs are safe.
+
+Review implementation details against the installed pdf-lib sources. Its ES5 `EncryptedPDFError` loses its prototype in this runtime; safe mapping matches the library's fixed message as well as its class. Its parser can emit document-derived diagnostics; production execution is confined to a dedicated worker whose console methods discard those diagnostics. No raw parser cause is exposed. Encryption bypass is disabled, invalid objects fail strict parsing, and the output is reopened and counted before a Blob is returned.
+
+Optional fixture authoring uses the already available local ReportLab 4.4.9 (BSD), pypdf 6.10.0 (BSD-3-Clause), cryptography 50.0.1 (Apache-2.0 OR BSD-3-Clause), and Pillow 12.3.0 (MIT-CMU) for the ignored benchmark image corpus. These tools are not installed into the application, processor or CI. Synthetic fixture provenance and hashes are in `tests/fixtures/pdf/manifest.json`; the self-signed fixture key is generated in memory and never retained. Poppler and external PDF readers are verification tools only.
+
+Reproduce with `pnpm view pdf-lib@1.17.1 version license dependencies --json`, `pnpm licenses list --json`, the five installed manifests, and both locked audits. Required CI names and existing security checks remain unchanged.
+
 ## M1 product shell
 
 Reviewed on 24 September 2026. The sole new third-party package is the development-only `@axe-core/playwright@4.13.0` adapter, published and installed under MPL-2.0. Its `axe-core@4.13.0` dependency was already locked in M0, and it reuses Playwright Core 1.63.0. No existing external dependency versions changed. Retain the bundled license notices; the adapter is not part of the production application bundle.

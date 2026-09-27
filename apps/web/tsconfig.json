@@ -16,6 +16,7 @@
     "plugins": [{ "name": "next" }]
   },
   "include": [
+    "../../packages/pdf-browser/**/*.ts",
     "../../packages/tool-registry/src/**/*.ts",
     "../../packages/ui/src/**/*.tsx",
     "../../packages/ui/src/**/*.ts",

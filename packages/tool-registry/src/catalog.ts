@@ -23,7 +23,7 @@ export const categories = [
 
 export type CategoryId = (typeof categories)[number]["id"];
 export type ProcessingMode = "LOCAL" | "SERVER" | "HYBRID";
-export type PageAvailability = "planned" | "preview";
+export type PageAvailability = "planned" | "preview" | "available";
 
 export interface AcceptedType {
   readonly mime: string;
@@ -40,6 +40,13 @@ export interface ToolDefinition {
   readonly relatedSlugs: readonly string[];
   readonly featured: boolean;
   readonly availability: PageAvailability;
+  readonly limits?: {
+    readonly maxFiles: number;
+    readonly maxFileBytes: number;
+    readonly maxTotalBytes: number;
+    readonly maxPages: number;
+    readonly maxOutputBytes: number;
+  };
 }
 
 const pdf = [{ mime: "application/pdf", extensions: [".pdf"] }] as const;
@@ -56,7 +63,15 @@ export const tools: readonly ToolDefinition[] = [
     processingMode: "LOCAL",
     relatedSlugs: ["split-pdf", "organize-pdf"],
     featured: true,
-    availability: "preview",
+    availability: "available",
+    // Conservative M2A engineering caps; evidence and launch caveats: ADR-012.
+    limits: {
+      maxFiles: 20,
+      maxFileBytes: 10 * 1024 * 1024,
+      maxTotalBytes: 32 * 1024 * 1024,
+      maxPages: 200,
+      maxOutputBytes: 32 * 1024 * 1024,
+    },
   },
   {
     slug: "compress-pdf",

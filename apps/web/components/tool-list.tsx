@@ -29,11 +29,15 @@ export function ToolList({
               }
             </span>
             <span className="availability">
-              {tool.availability === "preview" ? "Page preview" : "Planned"}
+              {tool.availability === "available"
+                ? "Available"
+                : tool.availability === "preview"
+                  ? "Page preview"
+                  : "Planned"}
             </span>
           </div>
           <h3>
-            {tool.availability === "preview" || !anchorIds ? (
+            {tool.availability !== "planned" || !anchorIds ? (
               <Link href={getToolHref(tool)}>
                 {tool.title}
                 <span aria-hidden="true"> ↗</span>
@@ -43,7 +47,10 @@ export function ToolList({
             )}
           </h3>
           <p className="tool-description">{tool.description}</p>
-          <PrivacyIndicator processingMode={tool.processingMode} />
+          <PrivacyIndicator
+            processingMode={tool.processingMode}
+            availability={tool.availability}
+          />
         </li>
       ))}
     </ul>
