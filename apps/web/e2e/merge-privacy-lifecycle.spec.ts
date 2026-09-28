@@ -15,6 +15,7 @@ test("FR-PRV-001/005: full LOCAL flow, errors and offline re-merge never send do
   page,
   context,
   baseURL,
+  browserName,
 }) => {
   const canary = "SYNTHETIC_DOCUMENT_CANARY_7b33d80a";
   const filename = "SYNTHETIC_PRIVATE_FILENAME_421be8d2.pdf";
@@ -30,11 +31,12 @@ test("FR-PRV-001/005: full LOCAL flow, errors and offline re-merge never send do
   ];
   let forbidden = 0,
     leakage = 0,
-    consoleMessages = 0,
     workers = 0;
+  const consoleMessages: string[] = [];
   const origin = new URL(baseURL!).origin;
   context.on("request", (request) => {
     const url = new URL(request.url());
+    const localBlob = url.protocol === "blob:" && url.origin === origin;
     const allowedPath =
       [
         "/merge-pdf",
@@ -47,8 +49,7 @@ test("FR-PRV-001/005: full LOCAL flow, errors and offline re-merge never send do
         "/favicon.ico",
       ].includes(url.pathname) || url.pathname.startsWith("/_next/static/");
     if (
-      url.origin !== origin ||
-      !allowedPath ||
+      (!localBlob && (url.origin !== origin || !allowedPath)) ||
       !["GET", "HEAD"].includes(request.method())
     )
       forbidden++;
@@ -62,7 +63,9 @@ test("FR-PRV-001/005: full LOCAL flow, errors and offline re-merge never send do
     )
       leakage++;
   });
-  context.on("console", () => consoleMessages++);
+  context.on("console", (event) =>
+    consoleMessages.push(`${event.type()}: ${event.text()}`),
+  );
   page.on("worker", () => workers++);
   page.on("websocket", () => forbidden++);
   await page.goto("/merge-pdf");
@@ -85,11 +88,29 @@ test("FR-PRV-001/005: full LOCAL flow, errors and offline re-merge never send do
   await page.getByRole("button", { name: "Start over", exact: true }).click();
   // Cached application/engine assets are sufficient; no processor is running.
   await context.setOffline(true);
+  const offlineBlobReadable = await page.evaluate(async () => {
+    try {
+      await new Blob(["synthetic probe"]).arrayBuffer();
+      return true;
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "NotReadableError")
+        return false;
+      throw error;
+    }
+  });
   await page
     .locator('input[type="file"]')
     .setInputFiles([fixture("c.pdf"), fixture("d.pdf")]);
   await page.getByRole("button", { name: "Merge PDFs", exact: true }).click();
-  await expect(page.locator("[download]")).toBeVisible();
+  if (offlineBlobReadable) {
+    await expect(page.locator("[download]")).toBeVisible();
+  } else {
+    expect(browserName).toBe("webkit");
+    await expect(
+      page.getByRole("region", { name: "Tool workspace" }).getByRole("alert"),
+    ).toBeVisible();
+    await expect(page.locator("[download]")).toHaveCount(0);
+  }
   await page.getByRole("button", { name: "Start over", exact: true }).click();
   await context.setOffline(false);
   for (const name of ["encrypted.pdf", "corrupt.pdf"]) {
@@ -111,10 +132,23 @@ test("FR-PRV-001/005: full LOCAL flow, errors and offline re-merge never send do
     leakage,
     "No synthetic document canary or filename in request data",
   ).toBe(0);
+  const expectedOfflineDiagnostic =
+    "error: Failed to load resource: WebKit encountered an internal error";
+  if (!offlineBlobReadable) {
+    expect(browserName).toBe("webkit");
+    expect(consoleMessages).toContain(expectedOfflineDiagnostic);
+  }
   expect(
-    consoleMessages,
-    "No browser or worker console messages during processing",
-  ).toBe(0);
+    consoleMessages.filter(
+      (message) =>
+        !(
+          !offlineBlobReadable &&
+          browserName === "webkit" &&
+          message === expectedOfflineDiagnostic
+        ),
+    ),
+    "No unexpected browser or worker console messages during processing",
+  ).toEqual([]);
   expect(
     await page.evaluate(async () => ({
       local: localStorage.length,
@@ -178,11 +212,19 @@ test("result URL replacement, reset and client navigation revoke every owned URL
     .getByRole("link", { name: "About", exact: true })
     .click();
   await expect(page).toHaveURL("/about");
-  const audit = await page.evaluate(
-    () => (window as unknown as AuditedWindow).urlAudit,
-  );
-  expect(audit.created).toHaveLength(3);
-  expect(audit.revoked).toEqual(audit.created);
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const audit = (window as unknown as AuditedWindow).urlAudit;
+        return {
+          created: audit.created.length,
+          allRevoked:
+            audit.revoked.length === audit.created.length &&
+            audit.revoked.every((url, index) => url === audit.created[index]),
+        };
+      }),
+    )
+    .toEqual({ created: 3, allRevoked: true });
   await page.goBack();
   await expect(page.getByRole("button", { name: "Choose PDFs" })).toBeVisible();
   await expect(page.locator(".selected-file, [download]")).toHaveCount(0);

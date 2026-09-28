@@ -2,6 +2,10 @@ packages:
   - apps/*
   - packages/*
 
+# PDF.js is browser-only here. Its optional Node canvas is not used.
+overrides:
+  "pdfjs-dist@6.3.289>@napi-rs/canvas": "-"
+
 # These are the only dependency install scripts required by this foundation.
 allowBuilds:
   esbuild: true

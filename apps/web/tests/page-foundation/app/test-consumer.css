@@ -1,0 +1,28 @@
+.foundation-test {
+  max-width: 70rem;
+  padding: 2rem 1rem;
+  margin-inline: auto;
+}
+.foundation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-block: 1rem;
+  padding: 0.75rem;
+}
+.foundation-actions button,
+.foundation-test input {
+  min-height: 2.75rem;
+  max-width: 100%;
+}
+.foundation-pages {
+  list-style: none;
+  margin: 2rem 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1.5rem;
+}
+.foundation-pages > li {
+  min-width: 0;
+}

@@ -15,6 +15,7 @@
     "typecheck": "pnpm --filter @document-platform/web typecheck",
     "test": "pnpm --filter @document-platform/pdf-browser test && pnpm --filter @document-platform/web test",
     "test:e2e": "pnpm --filter @document-platform/web test:e2e",
+    "test:foundation": "node scripts/prepare-pdfjs-assets.mjs && node scripts/build-page-foundation.mjs && pnpm --filter @document-platform/web exec playwright test --config playwright.foundation.config.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e"

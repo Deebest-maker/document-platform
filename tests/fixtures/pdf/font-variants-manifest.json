@@ -1,0 +1,50 @@
+{
+  "provenance": "Project-authored standard PDF font fixture. No font program is embedded.",
+  "pages": [
+    {
+      "sourcePageNumber": 1,
+      "font": "Helvetica",
+      "embedded": false,
+      "width": 500,
+      "height": 650,
+      "rotation": 0,
+      "sampleWidth": 351.22,
+      "sampleFontSize": 20,
+      "expected": "Two separate black lines; first line between red metric guides; blue CLIPPED below."
+    },
+    {
+      "sourcePageNumber": 2,
+      "font": "Helvetica-Bold",
+      "embedded": false,
+      "width": 500,
+      "height": 650,
+      "rotation": 0,
+      "sampleWidth": 363.41999999999996,
+      "sampleFontSize": 20,
+      "expected": "Two separate black lines; first line between red metric guides; blue CLIPPED below."
+    },
+    {
+      "sourcePageNumber": 3,
+      "font": "Helvetica-Oblique",
+      "embedded": false,
+      "width": 500,
+      "height": 650,
+      "rotation": 0,
+      "sampleWidth": 351.22,
+      "sampleFontSize": 20,
+      "expected": "Two separate black lines; first line between red metric guides; blue CLIPPED below."
+    },
+    {
+      "sourcePageNumber": 4,
+      "font": "Helvetica-BoldOblique",
+      "embedded": false,
+      "width": 500,
+      "height": 650,
+      "rotation": 0,
+      "sampleWidth": 363.41999999999996,
+      "sampleFontSize": 20,
+      "expected": "Two separate black lines; first line between red metric guides; blue CLIPPED below."
+    }
+  ],
+  "sha256": "7a930877e1baff49ab69edcf2ff911c61c6743ece40fc2c33cb8a7157f07f20f"
+}

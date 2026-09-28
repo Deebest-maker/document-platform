@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "cross-env NEXT_TELEMETRY_DISABLED=1 next dev --hostname 127.0.0.1",
-    "build": "cross-env NEXT_TELEMETRY_DISABLED=1 next build",
+    "dev": "node ../../scripts/prepare-pdfjs-assets.mjs && cross-env NEXT_TELEMETRY_DISABLED=1 next dev --hostname 127.0.0.1",
+    "build": "node ../../scripts/prepare-pdfjs-assets.mjs && node ../../scripts/check-pdfjs-assets.mjs && cross-env NEXT_TELEMETRY_DISABLED=1 next build",
     "start": "cross-env NEXT_TELEMETRY_DISABLED=1 next start --hostname 127.0.0.1",
     "lint": "cd ../.. && eslint --config apps/web/eslint.config.mjs apps/web packages/ui/src packages/tool-registry/src packages/pdf-browser --max-warnings 0",
     "typecheck": "cross-env NEXT_TELEMETRY_DISABLED=1 next typegen && tsc --noEmit",

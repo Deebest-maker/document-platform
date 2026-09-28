@@ -1,0 +1,51 @@
+{
+  "provenance": "Project-authored synthetic preview and structural-operation fixture.",
+  "font": {
+    "name": "Noto Sans Regular",
+    "license": "OFL-1.1",
+    "source": "https://github.com/notofonts/noto-fonts/blob/ffebf8c1ee449e544955a7e813c54f9b73848eac/hinted/ttf/NotoSans/NotoSans-Regular.ttf",
+    "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+    "notice": "../licenses/OFL-NotoSans.txt",
+    "usage": "Embedded subset in page P1 only; not a PDF.js replacement font."
+  },
+  "pages": [
+    {
+      "marker": "P1",
+      "sourcePageNumber": 1,
+      "width": 500,
+      "height": 650,
+      "crop": [0, 0, 500, 650],
+      "rotation": 0
+    },
+    {
+      "marker": "P2",
+      "sourcePageNumber": 2,
+      "width": 500,
+      "height": 650,
+      "crop": [0, 0, 500, 650],
+      "rotation": 0
+    },
+    {
+      "marker": "P3",
+      "sourcePageNumber": 3,
+      "width": 500,
+      "height": 650,
+      "crop": [0, 0, 500, 650],
+      "rotation": 0
+    },
+    {
+      "marker": "P4",
+      "sourcePageNumber": 4,
+      "width": 500,
+      "height": 650,
+      "crop": [40, 50, 460, 610],
+      "rotation": 90
+    }
+  ],
+  "expectedOrders": {
+    "reorder": ["P4", "P2", "P1", "P3"],
+    "extractAfterReorder": ["P4", "P1"],
+    "deleteAfterReorder": ["P2", "P3"]
+  },
+  "sha256": "0778e5ad2be541cbd64868a6b90842f9bdafd9d886968590122ebbc1b2c5a23a"
+}

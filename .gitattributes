@@ -2,3 +2,5 @@
 *.docx binary
 *.png binary
 *.pdf binary
+*.ttf binary
+packages/pdf-browser/assets/liberation-sans/2.1.5/LICENSE -whitespace
