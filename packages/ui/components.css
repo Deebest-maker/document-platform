@@ -28,3 +28,61 @@
 .related-tools {
   margin-top: var(--space-12);
 }
+.page-thumbnail {
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  min-width: 0;
+}
+.page-thumbnail[data-selected="true"] {
+  outline: 2px solid var(--color-accent, #174c45);
+  outline-offset: 2px;
+}
+.page-thumbnail__surface {
+  height: 20rem;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--color-background, #faf9f6);
+}
+.page-thumbnail__surface canvas {
+  grid-area: 1 / 1;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.page-thumbnail__surface span {
+  grid-area: 1 / 1;
+  padding: var(--space-3);
+  text-align: center;
+  font-size: 0.875rem;
+}
+.page-thumbnail figcaption {
+  display: grid;
+  gap: var(--space-2);
+  padding-block: var(--space-3);
+}
+.page-thumbnail label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+}
+.page-thumbnail input {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.page-thumbnail__rotation {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+.page-reorder {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.page-reorder button {
+  min-height: 2.75rem;
+  flex: 1;
+}

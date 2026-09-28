@@ -1,0 +1,828 @@
+{
+  "pdfjs": "6.3.289",
+  "alternative": "Liberation Sans 2.1.5 OFL-1.1, useSystemFonts:false, disableFontFace:true",
+  "results": [
+    {
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "platform": "win32",
+      "fixture": "preview-features.pdf",
+      "useSystemFonts": false,
+      "disableFontFace": true,
+      "pages": [
+        {
+          "sourcePageNumber": 1,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 900
+        },
+        {
+          "sourcePageNumber": 2,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 900
+        },
+        {
+          "sourcePageNumber": 3,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 900
+        },
+        {
+          "sourcePageNumber": 4,
+          "width": 560,
+          "height": 420,
+          "rotation": 90,
+          "bluePixels": 900
+        }
+      ],
+      "clippingCorrect": null,
+      "requests": [
+        {
+          "path": "/",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.worker.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Regular.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Bold.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/FoxitSerif.pfb",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/FoxitFixed.pfb",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/FoxitSymbol.pfb",
+          "method": "GET",
+          "local": true
+        }
+      ],
+      "failedAssets": [],
+      "consoleEvents": []
+    },
+    {
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "platform": "win32",
+      "fixture": "form.pdf",
+      "useSystemFonts": false,
+      "disableFontFace": true,
+      "pages": [
+        {
+          "sourcePageNumber": 1,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 0
+        }
+      ],
+      "clippingCorrect": null,
+      "requests": [
+        {
+          "path": "/",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.worker.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Regular.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Bold.ttf",
+          "method": "GET",
+          "local": true
+        }
+      ],
+      "failedAssets": [],
+      "consoleEvents": []
+    },
+    {
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "platform": "win32",
+      "fixture": "font-clipping.pdf",
+      "useSystemFonts": false,
+      "disableFontFace": true,
+      "pages": [
+        {
+          "sourcePageNumber": 1,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 3659
+        },
+        {
+          "sourcePageNumber": 2,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 2271
+        },
+        {
+          "sourcePageNumber": 3,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 2307
+        }
+      ],
+      "clippingCorrect": true,
+      "requests": [
+        {
+          "path": "/",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.worker.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Regular.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Bold.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/FoxitSerif.pfb",
+          "method": "GET",
+          "local": true
+        }
+      ],
+      "failedAssets": [],
+      "consoleEvents": []
+    },
+    {
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "platform": "win32",
+      "fixture": "font-variants.pdf",
+      "useSystemFonts": false,
+      "disableFontFace": true,
+      "pages": [
+        {
+          "sourcePageNumber": 1,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 2384
+        },
+        {
+          "sourcePageNumber": 2,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 3659
+        },
+        {
+          "sourcePageNumber": 3,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 2452
+        },
+        {
+          "sourcePageNumber": 4,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 3694
+        }
+      ],
+      "clippingCorrect": true,
+      "requests": [
+        {
+          "path": "/",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.worker.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Regular.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Bold.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Italic.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-BoldItalic.ttf",
+          "method": "GET",
+          "local": true
+        }
+      ],
+      "failedAssets": [],
+      "consoleEvents": []
+    },
+    {
+      "browser": "firefox",
+      "browserVersion": "155.0",
+      "platform": "win32",
+      "fixture": "preview-features.pdf",
+      "useSystemFonts": false,
+      "disableFontFace": true,
+      "pages": [
+        {
+          "sourcePageNumber": 1,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 900
+        },
+        {
+          "sourcePageNumber": 2,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 900
+        },
+        {
+          "sourcePageNumber": 3,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 900
+        },
+        {
+          "sourcePageNumber": 4,
+          "width": 560,
+          "height": 420,
+          "rotation": 90,
+          "bluePixels": 900
+        }
+      ],
+      "clippingCorrect": null,
+      "requests": [
+        {
+          "path": "/",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.worker.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Regular.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Bold.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/FoxitSerif.pfb",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/FoxitFixed.pfb",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/FoxitSymbol.pfb",
+          "method": "GET",
+          "local": true
+        }
+      ],
+      "failedAssets": [],
+      "consoleEvents": []
+    },
+    {
+      "browser": "firefox",
+      "browserVersion": "155.0",
+      "platform": "win32",
+      "fixture": "form.pdf",
+      "useSystemFonts": false,
+      "disableFontFace": true,
+      "pages": [
+        {
+          "sourcePageNumber": 1,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 0
+        }
+      ],
+      "clippingCorrect": null,
+      "requests": [
+        {
+          "path": "/",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.worker.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Regular.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Bold.ttf",
+          "method": "GET",
+          "local": true
+        }
+      ],
+      "failedAssets": [],
+      "consoleEvents": []
+    },
+    {
+      "browser": "firefox",
+      "browserVersion": "155.0",
+      "platform": "win32",
+      "fixture": "font-clipping.pdf",
+      "useSystemFonts": false,
+      "disableFontFace": true,
+      "pages": [
+        {
+          "sourcePageNumber": 1,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 3659
+        },
+        {
+          "sourcePageNumber": 2,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 2279
+        },
+        {
+          "sourcePageNumber": 3,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 2307
+        }
+      ],
+      "clippingCorrect": true,
+      "requests": [
+        {
+          "path": "/",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.worker.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Regular.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Bold.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/FoxitSerif.pfb",
+          "method": "GET",
+          "local": true
+        }
+      ],
+      "failedAssets": [],
+      "consoleEvents": []
+    },
+    {
+      "browser": "firefox",
+      "browserVersion": "155.0",
+      "platform": "win32",
+      "fixture": "font-variants.pdf",
+      "useSystemFonts": false,
+      "disableFontFace": true,
+      "pages": [
+        {
+          "sourcePageNumber": 1,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 2384
+        },
+        {
+          "sourcePageNumber": 2,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 3659
+        },
+        {
+          "sourcePageNumber": 3,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 2449
+        },
+        {
+          "sourcePageNumber": 4,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 3694
+        }
+      ],
+      "clippingCorrect": true,
+      "requests": [
+        {
+          "path": "/",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.worker.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Regular.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Bold.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Italic.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-BoldItalic.ttf",
+          "method": "GET",
+          "local": true
+        }
+      ],
+      "failedAssets": [],
+      "consoleEvents": []
+    },
+    {
+      "browser": "webkit",
+      "browserVersion": "26.6",
+      "platform": "win32",
+      "fixture": "preview-features.pdf",
+      "useSystemFonts": false,
+      "disableFontFace": true,
+      "pages": [
+        {
+          "sourcePageNumber": 1,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 900
+        },
+        {
+          "sourcePageNumber": 2,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 900
+        },
+        {
+          "sourcePageNumber": 3,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 900
+        },
+        {
+          "sourcePageNumber": 4,
+          "width": 560,
+          "height": 420,
+          "rotation": 90,
+          "bluePixels": 900
+        }
+      ],
+      "clippingCorrect": null,
+      "requests": [
+        {
+          "path": "/",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.worker.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Regular.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Bold.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/FoxitSerif.pfb",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/FoxitFixed.pfb",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/FoxitSymbol.pfb",
+          "method": "GET",
+          "local": true
+        }
+      ],
+      "failedAssets": [],
+      "consoleEvents": []
+    },
+    {
+      "browser": "webkit",
+      "browserVersion": "26.6",
+      "platform": "win32",
+      "fixture": "form.pdf",
+      "useSystemFonts": false,
+      "disableFontFace": true,
+      "pages": [
+        {
+          "sourcePageNumber": 1,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 0
+        }
+      ],
+      "clippingCorrect": null,
+      "requests": [
+        {
+          "path": "/",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.worker.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Regular.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Bold.ttf",
+          "method": "GET",
+          "local": true
+        }
+      ],
+      "failedAssets": [],
+      "consoleEvents": []
+    },
+    {
+      "browser": "webkit",
+      "browserVersion": "26.6",
+      "platform": "win32",
+      "fixture": "font-clipping.pdf",
+      "useSystemFonts": false,
+      "disableFontFace": true,
+      "pages": [
+        {
+          "sourcePageNumber": 1,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 3659
+        },
+        {
+          "sourcePageNumber": 2,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 2271
+        },
+        {
+          "sourcePageNumber": 3,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 2307
+        }
+      ],
+      "clippingCorrect": true,
+      "requests": [
+        {
+          "path": "/",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.worker.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Regular.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Bold.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/FoxitSerif.pfb",
+          "method": "GET",
+          "local": true
+        }
+      ],
+      "failedAssets": [],
+      "consoleEvents": []
+    },
+    {
+      "browser": "webkit",
+      "browserVersion": "26.6",
+      "platform": "win32",
+      "fixture": "font-variants.pdf",
+      "useSystemFonts": false,
+      "disableFontFace": true,
+      "pages": [
+        {
+          "sourcePageNumber": 1,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 2384
+        },
+        {
+          "sourcePageNumber": 2,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 3659
+        },
+        {
+          "sourcePageNumber": 3,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 2452
+        },
+        {
+          "sourcePageNumber": 4,
+          "width": 500,
+          "height": 650,
+          "rotation": 0,
+          "bluePixels": 3694
+        }
+      ],
+      "clippingCorrect": true,
+      "requests": [
+        {
+          "path": "/",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/pdf.worker.mjs",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Regular.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Bold.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-Italic.ttf",
+          "method": "GET",
+          "local": true
+        },
+        {
+          "path": "/assets/standard_fonts/LiberationSans-BoldItalic.ttf",
+          "method": "GET",
+          "local": true
+        }
+      ],
+      "failedAssets": [],
+      "consoleEvents": []
+    }
+  ]
+}

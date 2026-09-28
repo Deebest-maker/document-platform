@@ -8,6 +8,8 @@ test-results/
 *.tsbuildinfo
 .venv/
 .tools/
+apps/web/public/vendor/pdfjs/
+apps/web/tests/page-foundation/public/
 .uv-cache/
 .pnpm-store/
 __pycache__/

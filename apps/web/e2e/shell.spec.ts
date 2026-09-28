@@ -13,6 +13,7 @@ const routes = [
 for (const route of routes) {
   test(`shell regression: ${route} renders with correct availability and requests`, async ({
     page,
+    browserName,
   }, testInfo) => {
     const response = await page.goto(route);
     expect(response?.status()).toBe(200);
@@ -37,10 +38,12 @@ for (const route of routes) {
       });
     }
 
-    await page.keyboard.press("Tab");
-    await expect(
-      page.getByRole("link", { name: "Skip to content" }),
-    ).toBeFocused();
+    const skip = page.getByRole("link", { name: "Skip to content" });
+    if (browserName === "webkit") {
+      // Safari/macOS may omit links from plain-Tab traversal by user preference.
+      await skip.focus();
+    } else await page.keyboard.press("Tab");
+    await expect(skip).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(page.getByRole("main")).toBeFocused();
     expect(
@@ -52,11 +55,11 @@ for (const route of routes) {
 }
 
 test("unpublished tools return 404 rather than bulk placeholders", async ({
-  page,
+  request,
 }) => {
   for (const route of ["/compress-pdf", "/word-to-pdf", "/not-a-tool"]) {
-    const response = await page.goto(route);
-    expect(response?.status()).toBe(404);
+    const response = await request.get(route);
+    expect(response.status()).toBe(404);
   }
 });
 

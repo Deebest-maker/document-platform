@@ -1,5 +1,15 @@
 # Dependency review
 
+## M2B PDF.js and the approved OFL font alternative
+
+Reviewed on 27 September 2026. `pdfjs-dist@6.3.289` is pinned; its runtime is Apache-2.0 and is imported lazily by the preview entry point. The package-specific override `pdfjs-dist@6.3.289>@napi-rs/canvas: "-"` excludes only its unused optional Node canvas dependency. Existing versions and the workspace install-script allowlist are unchanged.
+
+Package metadata alone does not describe all bundled asset licenses. The explicit experiment subset includes Adobe CMaps, PDFium/Foxit standard fonts, JBIG2/OpenJPEG/qcms codecs and an ICC profile, with their notices. The four bundled LiberationSans TTFs and `LICENSE_LIBERATION` remain excluded from served assets: their GPLv2 terms with font exceptions require an owner decision. QuickJS, viewer/sandbox, legacy bundles and all other non-allowlisted files are also excluded. The installed package still contains its original vendor files; exclusion concerns served/distributed application assets, not rewriting the installed package.
+
+The [initial inventory](benchmarks/M2B-font-assets.json) and [initial gate report](reports/M2B-font-license-gate.md) retain the failed Helvetica clipping evidence. Following explicit owner authorization, **unmodified Liberation Sans 2.1.5 from the official release** passed the [alternative compatibility gate](benchmarks/M2B-ofl-fonts.md). Only Regular, Bold, Italic and BoldItalic plus the original SIL OFL 1.1 notice are supplied separately. Exact upstream/archive/file hashes, metadata and copyright notices are retained in `packages/pdf-browser/assets/liberation-sans/2.1.5/`. This does not authorize redistribution of the bundled GPL version. [ADR-013](adr/013-m2b-page-foundation.md) records the deliberate substitution and supported glyph-path rendering configuration.
+
+The build prepares 198 reviewed asset files plus the PDF.js root license and generated manifest. `scripts/check-pdfjs-assets.mjs` verifies every hash, exact output inventory, four OFL font hashes and notices, and byte inequality with the bundled GPL fonts. No CDN or system font dependency is used. Generated public assets are ignored; installation/build reproduces them from locked dependencies and the four reviewed vendored files. Font/CMap/codec assets load only when needed by a local preview. The synthetic fixtures embed a pinned OFL-1.1 Noto Sans subset with its notice; this remains a fixture control. Poppler, ReportLab and pypdf are verification/fixture-authoring tools, not product dependencies.
+
 ## M2A Merge PDF
 
 Reviewed on 25 September 2026 against the installed graph, lockfile, published package metadata and license inventory. The only new runtime engine is **pdf-lib 1.17.1 (MIT)**, isolated behind `packages/pdf-browser`. Its newly resolved dependencies are `@pdf-lib/standard-fonts@1.0.0` (MIT), `@pdf-lib/upng@1.0.1` (MIT), `pako@1.0.11` (MIT AND Zlib), and `tslib@1.14.1` (0BSD). The existing tslib 2.8.1 remains used elsewhere. Retain all bundled notices. No PDF.js or AGPL dependency is added.

@@ -1,0 +1,35 @@
+{
+  "provenance": "Project-authored synthetic PDF text-rendering-mode 7 comparison.",
+  "fontNotice": "../licenses/OFL-NotoSans.txt",
+  "embeddedFontSource": "preview-manifest.json#/font",
+  "pages": [
+    {
+      "sourcePageNumber": 1,
+      "font": "Helvetica-Bold",
+      "embedded": false,
+      "width": 500,
+      "height": 650,
+      "rotation": 0,
+      "expected": "Filled black CLIPPED above; clipped blue CLIPPED below."
+    },
+    {
+      "sourcePageNumber": 2,
+      "font": "Times-Roman",
+      "embedded": false,
+      "width": 500,
+      "height": 650,
+      "rotation": 0,
+      "expected": "Filled black CLIPPED above; clipped blue CLIPPED below."
+    },
+    {
+      "sourcePageNumber": 3,
+      "font": "EmbeddedNoto",
+      "embedded": true,
+      "width": 500,
+      "height": 650,
+      "rotation": 0,
+      "expected": "Filled black CLIPPED above; clipped blue CLIPPED below."
+    }
+  ],
+  "sha256": "0b444240c15efcf3deae781beab695f35bb46045b932e8258fc6f23002bdeb47"
+}

@@ -32,7 +32,9 @@ export async function inspectPages(bytes: Uint8Array | ArrayBuffer) {
         new TextDecoder().decode(decodePDFRawStream(stream).decode()),
       )
       .join("\n");
-    const marker = /\((A[12]|B[12]|C1|D1|FORM1|SIG1)\)\s*Tj/.exec(text)?.[1];
+    const marker = /\((A[12]|B[12]|C1|D1|FORM1|SIG1|P[1-4])\)\s*Tj/.exec(
+      text,
+    )?.[1];
     return {
       marker,
       width: page.getWidth(),

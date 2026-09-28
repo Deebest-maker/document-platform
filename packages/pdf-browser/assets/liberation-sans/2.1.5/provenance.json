@@ -1,0 +1,77 @@
+{
+  "name": "Liberation Sans",
+  "version": "2.1.5",
+  "license": "OFL-1.1",
+  "release": "https://github.com/liberationfonts/liberation-fonts/releases/tag/2.1.5",
+  "archive": "https://github.com/liberationfonts/liberation-fonts/files/7261482/liberation-fonts-ttf-2.1.5.tar.gz",
+  "archiveSha256": "7191c669bf38899f73a2094ed00f7b800553364f90e2637010a69c0e268f25d0",
+  "verified": "2026-09-27",
+  "modified": false,
+  "files": [
+    {
+      "file": "LiberationSans-Regular.ttf",
+      "bytes": 410712,
+      "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+      "metadata": {
+        "0": "Digitized data copyright (c) 2010 Google Corporation. \nCopyright (c) 2012 Red Hat, Inc.",
+        "1": "Liberation Sans",
+        "2": "Regular",
+        "4": "Liberation Sans",
+        "5": "Version 2.1.5",
+        "6": "LiberationSans",
+        "13": "Licensed under the SIL Open Font License, Version 1.1",
+        "14": "http://scripts.sil.org/OFL"
+      }
+    },
+    {
+      "file": "LiberationSans-Bold.ttf",
+      "bytes": 414456,
+      "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+      "metadata": {
+        "0": "Digitized data copyright (c) 2010 Google Corporation.\nCopyright (c) 2012 Red Hat, Inc.",
+        "1": "Liberation Sans",
+        "2": "Bold",
+        "4": "Liberation Sans Bold",
+        "5": "Version 2.1.5",
+        "6": "LiberationSans-Bold",
+        "13": "Licensed under the SIL Open Font License, Version 1.1",
+        "14": "http://scripts.sil.org/OFL"
+      }
+    },
+    {
+      "file": "LiberationSans-Italic.ttf",
+      "bytes": 415816,
+      "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+      "metadata": {
+        "0": "Digitized data copyright (c) 2010 Google Corporation.\nCopyright (c) 2012 Red Hat, Inc.",
+        "1": "Liberation Sans",
+        "2": "Italic",
+        "4": "Liberation Sans Italic",
+        "5": "Version 2.1.5",
+        "6": "LiberationSans-Italic",
+        "13": "Licensed under the SIL Open Font License, Version 1.1",
+        "14": "http://scripts.sil.org/OFL"
+      }
+    },
+    {
+      "file": "LiberationSans-BoldItalic.ttf",
+      "bytes": 408996,
+      "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+      "metadata": {
+        "0": "Digitized data copyright (c) 2010 Google Corporation.\nCopyright (c) 2012 Red Hat, Inc.",
+        "1": "Liberation Sans",
+        "2": "Bold Italic",
+        "4": "Liberation Sans Bold Italic",
+        "5": "Version 2.1.5",
+        "6": "LiberationSans-BoldItalic",
+        "13": "Licensed under the SIL Open Font License, Version 1.1",
+        "14": "http://scripts.sil.org/OFL"
+      }
+    },
+    {
+      "file": "LICENSE",
+      "bytes": 4414,
+      "sha256": "93fed46019c38bbe566b479d22148e2e8a1e85ada614accb0211c37b2c61c19b"
+    }
+  ]
+}

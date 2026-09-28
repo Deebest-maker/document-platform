@@ -58,7 +58,9 @@ for (const route of ["/", "/tools", "/merge-pdf"]) {
       path: testInfo.outputPath(
         `reflow-${route === "/" ? "home" : route.slice(1)}.png`,
       ),
-      fullPage: true,
+      // A viewport capture remains portable when 200% text makes the full page
+      // exceed WebKit's 32,767-pixel limit. Assertions cover document reflow.
+      fullPage: false,
     });
     if (route === "/tools") {
       await page.getByRole("searchbox", { name: "Find a tool" }).fill("merge");

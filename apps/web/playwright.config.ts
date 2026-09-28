@@ -15,6 +15,13 @@ export default defineConfig({
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
     { name: "mobile-chromium", use: { ...devices["Pixel 7"] } },
+    ...(process.env.PDF_BROWSER_MATRIX === "full"
+      ? [
+          { name: "firefox", use: { ...devices["Desktop Firefox"] } },
+          { name: "webkit", use: { ...devices["Desktop Safari"] } },
+          { name: "mobile-webkit", use: { ...devices["iPhone 13"] } },
+        ]
+      : []),
   ],
   webServer: {
     command: "pnpm start --port 3100",

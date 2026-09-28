@@ -1,6 +1,6 @@
 # Document & File Platform
 
-Privacy-first document utilities, built milestone by milestone. The current implementation is **M2A: Merge PDF Vertical Slice**, built on the approved M0/M1 foundation. Merge PDFs locally in the browser, arrange file order, download, and start over. The other 12 tools remain planned. M2B and the rest of M2 are not implemented.
+Privacy-first document utilities, built milestone by milestone. The product delivers **M2A: Merge PDF Vertical Slice**, with the **M2B PDF preview and page-operation foundation** available to future tools. Merge PDFs locally in the browser, arrange file order, download, and start over. The other 12 tools remain planned; M2B adds no product tool routes.
 
 ## Source of truth
 
@@ -74,6 +74,21 @@ uv run --locked pytest
 Browser screenshots and synthetic downloads are written under `apps/web/test-results/`, and the HTML report is under `apps/web/playwright-report/`; both are ignored by Git. Inspect desktop/mobile selected/result screenshots and representative PDFs in an independent viewer after engine/UI changes. Only the committed synthetic fixtures may be used in tests or CI artifacts; never run these artifact-producing checks with real user documents.
 
 For formatting changes, run `pnpm format` and `uv run --locked --project services/processor ruff format services/processor` before checking again.
+
+## Verify M2B preview and page operations
+
+[ADR-013](docs/adr/013-m2b-page-foundation.md) records engine boundaries, approved font assets and lifecycle decisions. `pnpm build` prepares and verifies the first-party PDF.js asset allowlist from the lockfile and four unmodified OFL Sans fonts. No external font download is needed during setup. The bundled GPL Liberation fonts are never copied to public assets.
+
+```sh
+pnpm test:foundation
+pnpm --filter @document-platform/web exec playwright install firefox webkit
+```
+
+For the expanded suite, set `PDF_BROWSER_MATRIX=full` in the terminal environment and run `pnpm test:e2e` and `pnpm test:foundation`. In PowerShell use `$env:PDF_BROWSER_MATRIX='full'`; on POSIX shells use `export PDF_BROWSER_MATRIX=full`. Main/tag/manual CI runs exercise Chromium, Firefox, WebKit, Pixel 7 and iPhone 13 emulation within the existing web job. Ordinary PRs exercise desktop/mobile Chromium. Physical-mobile performance is not inferred from emulation.
+
+The separate Next.js test consumer lives under `apps/web/tests/page-foundation`, outside the product app route tree. The foundation command builds it and starts test/default configurations on ports 3101/3102. Without `PDF_FOUNDATION_TEST=1` it returns 404, and it remains noindex without navigation/sitemap/canonical discovery when enabled. Do not deploy this test application.
+
+`node apps/web/benchmarks/run-preview.mjs` generates ignored synthetic 10/50/100/200/201-page and image-heavy inputs, compares concurrency 1/2/4, and records resource measurements under `docs/benchmarks`. Run after asset preparation and with other test/build workloads stopped. No real documents belong in these artifact-producing checks. Foundation limits are 10 MiB input, 200 pages and 32 MiB output; encrypted files are rejected. Page copying does not preserve document-level forms, bookmarks or digital signatures. Keep originals.
 
 ## Verify the processor container
 

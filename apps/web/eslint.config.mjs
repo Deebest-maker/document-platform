@@ -11,5 +11,7 @@ export default defineConfig([
     "**/next-env.d.ts",
     "**/playwright-report/**",
     "**/test-results/**",
+    "apps/web/public/vendor/**",
+    "apps/web/tests/page-foundation/public/**",
   ]),
 ]);

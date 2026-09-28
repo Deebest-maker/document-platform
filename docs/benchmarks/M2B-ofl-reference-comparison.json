@@ -1,0 +1,254 @@
+[
+  {
+    "browser": "chromium",
+    "page": 1,
+    "sizeMatches": true,
+    "lines": {
+      "referenceBounds": [10, 16, 362, 69],
+      "actualBounds": [10, 16, 362, 69],
+      "actualPixels": 2393,
+      "referencePixels": 2553,
+      "outsideReferenceTolerance": 3,
+      "missingReferenceTolerance": 0
+    },
+    "clipping": {
+      "referenceBounds": [13, 51, 238, 90],
+      "actualBounds": [13, 52, 238, 90],
+      "actualPixels": 2384,
+      "referencePixels": 2677,
+      "outsideReferenceTolerance": 0,
+      "missingReferenceTolerance": 0
+    }
+  },
+  {
+    "browser": "chromium",
+    "page": 2,
+    "sizeMatches": true,
+    "lines": {
+      "referenceBounds": [10, 16, 388, 69],
+      "actualBounds": [11, 16, 388, 69],
+      "actualPixels": 3714,
+      "referencePixels": 3870,
+      "outsideReferenceTolerance": 4,
+      "missingReferenceTolerance": 0
+    },
+    "clipping": {
+      "referenceBounds": [13, 51, 241, 90],
+      "actualBounds": [12, 52, 242, 90],
+      "actualPixels": 3659,
+      "referencePixels": 3840,
+      "outsideReferenceTolerance": 0,
+      "missingReferenceTolerance": 0
+    }
+  },
+  {
+    "browser": "chromium",
+    "page": 3,
+    "sizeMatches": true,
+    "lines": {
+      "referenceBounds": [10, 16, 364, 69],
+      "actualBounds": [9, 16, 364, 69],
+      "actualPixels": 2434,
+      "referencePixels": 2512,
+      "outsideReferenceTolerance": 2,
+      "missingReferenceTolerance": 0
+    },
+    "clipping": {
+      "referenceBounds": [15, 51, 240, 90],
+      "actualBounds": [13, 52, 239, 90],
+      "actualPixels": 2452,
+      "referencePixels": 2634,
+      "outsideReferenceTolerance": 0,
+      "missingReferenceTolerance": 7
+    }
+  },
+  {
+    "browser": "chromium",
+    "page": 4,
+    "sizeMatches": true,
+    "lines": {
+      "referenceBounds": [10, 16, 390, 69],
+      "actualBounds": [10, 16, 389, 69],
+      "actualPixels": 3680,
+      "referencePixels": 3859,
+      "outsideReferenceTolerance": 3,
+      "missingReferenceTolerance": 0
+    },
+    "clipping": {
+      "referenceBounds": [15, 51, 244, 90],
+      "actualBounds": [13, 52, 242, 90],
+      "actualPixels": 3694,
+      "referencePixels": 3876,
+      "outsideReferenceTolerance": 1,
+      "missingReferenceTolerance": 9
+    }
+  },
+  {
+    "browser": "firefox",
+    "page": 1,
+    "sizeMatches": true,
+    "lines": {
+      "referenceBounds": [10, 16, 362, 69],
+      "actualBounds": [10, 16, 362, 69],
+      "actualPixels": 2389,
+      "referencePixels": 2553,
+      "outsideReferenceTolerance": 3,
+      "missingReferenceTolerance": 0
+    },
+    "clipping": {
+      "referenceBounds": [13, 51, 238, 90],
+      "actualBounds": [13, 52, 238, 90],
+      "actualPixels": 2384,
+      "referencePixels": 2677,
+      "outsideReferenceTolerance": 0,
+      "missingReferenceTolerance": 0
+    }
+  },
+  {
+    "browser": "firefox",
+    "page": 2,
+    "sizeMatches": true,
+    "lines": {
+      "referenceBounds": [10, 16, 388, 69],
+      "actualBounds": [11, 16, 388, 69],
+      "actualPixels": 3719,
+      "referencePixels": 3870,
+      "outsideReferenceTolerance": 4,
+      "missingReferenceTolerance": 0
+    },
+    "clipping": {
+      "referenceBounds": [13, 51, 241, 90],
+      "actualBounds": [12, 52, 242, 90],
+      "actualPixels": 3659,
+      "referencePixels": 3840,
+      "outsideReferenceTolerance": 0,
+      "missingReferenceTolerance": 0
+    }
+  },
+  {
+    "browser": "firefox",
+    "page": 3,
+    "sizeMatches": true,
+    "lines": {
+      "referenceBounds": [10, 16, 364, 69],
+      "actualBounds": [9, 16, 364, 69],
+      "actualPixels": 2438,
+      "referencePixels": 2512,
+      "outsideReferenceTolerance": 2,
+      "missingReferenceTolerance": 0
+    },
+    "clipping": {
+      "referenceBounds": [15, 51, 240, 90],
+      "actualBounds": [13, 52, 239, 90],
+      "actualPixels": 2449,
+      "referencePixels": 2634,
+      "outsideReferenceTolerance": 0,
+      "missingReferenceTolerance": 7
+    }
+  },
+  {
+    "browser": "firefox",
+    "page": 4,
+    "sizeMatches": true,
+    "lines": {
+      "referenceBounds": [10, 16, 390, 69],
+      "actualBounds": [10, 16, 389, 69],
+      "actualPixels": 3688,
+      "referencePixels": 3859,
+      "outsideReferenceTolerance": 3,
+      "missingReferenceTolerance": 0
+    },
+    "clipping": {
+      "referenceBounds": [15, 51, 244, 90],
+      "actualBounds": [13, 52, 242, 90],
+      "actualPixels": 3694,
+      "referencePixels": 3876,
+      "outsideReferenceTolerance": 1,
+      "missingReferenceTolerance": 9
+    }
+  },
+  {
+    "browser": "webkit",
+    "page": 1,
+    "sizeMatches": true,
+    "lines": {
+      "referenceBounds": [10, 16, 362, 69],
+      "actualBounds": [10, 16, 362, 69],
+      "actualPixels": 2393,
+      "referencePixels": 2553,
+      "outsideReferenceTolerance": 3,
+      "missingReferenceTolerance": 0
+    },
+    "clipping": {
+      "referenceBounds": [13, 51, 238, 90],
+      "actualBounds": [13, 52, 238, 90],
+      "actualPixels": 2384,
+      "referencePixels": 2677,
+      "outsideReferenceTolerance": 0,
+      "missingReferenceTolerance": 0
+    }
+  },
+  {
+    "browser": "webkit",
+    "page": 2,
+    "sizeMatches": true,
+    "lines": {
+      "referenceBounds": [10, 16, 388, 69],
+      "actualBounds": [11, 16, 388, 69],
+      "actualPixels": 3714,
+      "referencePixels": 3870,
+      "outsideReferenceTolerance": 4,
+      "missingReferenceTolerance": 0
+    },
+    "clipping": {
+      "referenceBounds": [13, 51, 241, 90],
+      "actualBounds": [12, 52, 242, 90],
+      "actualPixels": 3659,
+      "referencePixels": 3840,
+      "outsideReferenceTolerance": 0,
+      "missingReferenceTolerance": 0
+    }
+  },
+  {
+    "browser": "webkit",
+    "page": 3,
+    "sizeMatches": true,
+    "lines": {
+      "referenceBounds": [10, 16, 364, 69],
+      "actualBounds": [9, 16, 364, 69],
+      "actualPixels": 2434,
+      "referencePixels": 2512,
+      "outsideReferenceTolerance": 2,
+      "missingReferenceTolerance": 0
+    },
+    "clipping": {
+      "referenceBounds": [15, 51, 240, 90],
+      "actualBounds": [13, 52, 239, 90],
+      "actualPixels": 2452,
+      "referencePixels": 2634,
+      "outsideReferenceTolerance": 0,
+      "missingReferenceTolerance": 7
+    }
+  },
+  {
+    "browser": "webkit",
+    "page": 4,
+    "sizeMatches": true,
+    "lines": {
+      "referenceBounds": [10, 16, 390, 69],
+      "actualBounds": [10, 16, 389, 69],
+      "actualPixels": 3680,
+      "referencePixels": 3859,
+      "outsideReferenceTolerance": 3,
+      "missingReferenceTolerance": 0
+    },
+    "clipping": {
+      "referenceBounds": [15, 51, 244, 90],
+      "actualBounds": [13, 52, 242, 90],
+      "actualPixels": 3694,
+      "referencePixels": 3876,
+      "outsideReferenceTolerance": 1,
+      "missingReferenceTolerance": 9
+    }
+  }
+]

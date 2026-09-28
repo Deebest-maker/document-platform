@@ -86,12 +86,25 @@ test("search, category filtering, empty results and reset are usable", async ({
 
 test("NFR-A11Y-001/002: discovery and disclosure work with keyboard alone", async ({
   page,
+  browserName,
 }) => {
   await page.goto("/tools");
-  await page.keyboard.press("Tab");
-  await page.keyboard.press("Enter");
-  await page.keyboard.press("Tab");
   const search = page.getByRole("searchbox", { name: "Find a tool" });
+  if (browserName === "webkit") {
+    // WebKit follows its host's link-tab preference. Traverse the real tab
+    // order until the form control instead of assuming one platform's count.
+    for (let tab = 0; tab < 12; tab++) {
+      if (
+        await search.evaluate((element) => element === document.activeElement)
+      )
+        break;
+      await page.keyboard.press("Tab");
+    }
+  } else {
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Tab");
+  }
   await expect(search).toBeFocused();
   expect(
     await search.evaluate((element) => getComputedStyle(element).outlineStyle),
@@ -109,10 +122,23 @@ test("NFR-A11Y-001/002: discovery and disclosure work with keyboard alone", asyn
   await expect(page.locator(".tool-row")).toHaveCount(13);
 
   await page.goto("/merge-pdf");
-  await page.keyboard.press("Tab");
-  await page.keyboard.press("Enter");
-  await page.keyboard.press("Tab");
   const disclosure = page.locator(".tool-heading summary");
+  if (browserName === "webkit") {
+    // Keep the journey keyboard-only while allowing host-specific link stops.
+    for (let tab = 0; tab < 12; tab++) {
+      if (
+        await disclosure.evaluate(
+          (element) => element === document.activeElement,
+        )
+      )
+        break;
+      await page.keyboard.press("Tab");
+    }
+  } else {
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Tab");
+  }
   await expect(disclosure).toBeFocused();
   const box = await disclosure.boundingBox();
   expect(box).not.toBeNull();

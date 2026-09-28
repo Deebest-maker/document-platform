@@ -6,16 +6,20 @@
   "exports": {
     ".": "./src/index.ts",
     "./validation": "./src/validation.ts",
-    "./types": "./src/types.ts"
+    "./types": "./src/types.ts",
+    "./page-model": "./src/page-model.ts",
+    "./pages": "./src/page-operation-client.ts",
+    "./preview": "./src/preview/index.ts"
   },
   "scripts": {
     "test": "vitest run"
   },
   "dependencies": {
-    "pdf-lib": "1.17.1"
+    "pdf-lib": "1.17.1",
+    "pdfjs-dist": "6.3.289"
   },
   "devDependencies": {
-    "vitest": "5.0.1",
-    "@types/node": "24.13.6"
+    "@types/node": "24.13.6",
+    "vitest": "5.0.1"
   }
 }
