@@ -91,9 +91,15 @@ test("NFR-A11Y-001/002: discovery and disclosure work with keyboard alone", asyn
   await page.goto("/tools");
   const search = page.getByRole("searchbox", { name: "Find a tool" });
   if (browserName === "webkit") {
-    // Safari follows the macOS preference that plain Tab can skip links.
-    // The first form control remains reachable with Tab.
-    await page.keyboard.press("Tab");
+    // WebKit follows its host's link-tab preference. Traverse the real tab
+    // order until the form control instead of assuming one platform's count.
+    for (let tab = 0; tab < 12; tab++) {
+      if (
+        await search.evaluate((element) => element === document.activeElement)
+      )
+        break;
+      await page.keyboard.press("Tab");
+    }
   } else {
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
@@ -118,9 +124,16 @@ test("NFR-A11Y-001/002: discovery and disclosure work with keyboard alone", asyn
   await page.goto("/merge-pdf");
   const disclosure = page.locator(".tool-heading summary");
   if (browserName === "webkit") {
-    // Verify the native disclosure's focus and keyboard activation directly;
-    // link traversal is controlled by the host Safari/macOS preference.
-    await disclosure.focus();
+    // Keep the journey keyboard-only while allowing host-specific link stops.
+    for (let tab = 0; tab < 12; tab++) {
+      if (
+        await disclosure.evaluate(
+          (element) => element === document.activeElement,
+        )
+      )
+        break;
+      await page.keyboard.press("Tab");
+    }
   } else {
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
