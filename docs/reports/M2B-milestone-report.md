@@ -51,6 +51,7 @@ The synthetic benchmark covers 10/50/100/200/201 mixed pages and a 50-page 6.0 M
 - Expanded isolated foundation matrix: **40/40 passed** across the same five profiles, including 200/201-page boundaries, output validity, local-only privacy, lifecycle and recovery.
 - Processor baseline: locked sync, Ruff format/lint, mypy and **2/2 pytest** cases passed. Locked Python audit and `pnpm audit` found no known vulnerabilities.
 - The existing local Docker engine was unavailable for a fresh restricted-container run; no processor/container code changed. Hosted `processor-container` remains the authoritative clean-runner gate.
+- Hosted PR smoke [run 36418753490](https://github.com/Deebest-maker/document-platform/actions/runs/36418753490) passed required `web`, `processor` and `processor-container` on corrected commit `d0d0b8e1f531b35d9cc3ab9178dc4fe22f5ecf65`. Manually dispatched full-matrix [run 36418846816](https://github.com/Deebest-maker/document-platform/actions/runs/36418846816) passed the same three jobs on that exact commit, including 220 product and 40 foundation browser cases. Main protection remains strict with those three required checks, admin enforcement and no force pushes/deletions.
 
 The expanded product run initially exposed WebKit timing/prefetch/screenshot portability differences. Assertions now wait for navigation cleanup, check unpublished HTTP routes through the request client, and use viewport evidence when 200% text exceeds WebKit's 32,767-pixel screenshot limit. The first hosted full-matrix run also showed that Linux WebKit includes different link stops in its keyboard tab order; the test now performs a bounded sequence of real Tab presses until the target, preserving its keyboard-only assertion across host preferences. A separate local Firefox attempt failed before page creation because the restricted Windows sandbox denied Firefox tab subprocesses; the identical unmodified suite passed with approved browser-process permission. No timeout, retry, privacy, accessibility or correctness requirement was weakened.
 
@@ -58,7 +59,7 @@ The expanded product run initially exposed WebKit timing/prefetch/screenshot por
 
 No unapproved architecture or product-scope deviation. This foundation does not expose Split, Organize, Delete, Rotate or Extract as product tools; add a range parser or ZIP flow; preserve document-level forms/bookmarks/signatures; sanitize/repair PDFs; add authentication, persistence, analytics or server processing; or claim hard total-memory bounds. PDF.js glyph-path rendering and the reviewed fixture corpus do not prove fidelity for every font/PDF. Physical-mobile performance and final public product limits remain future acceptance work.
 
-The planned hosted CI/PR references and final commit hashes will be added after publishing this branch. No M3 decision has been made.
+Implementation baseline: `3198084240e9fb0fabb85ec74624197561de556e`; hosted portability correction: `d0d0b8e1f531b35d9cc3ab9178dc4fe22f5ecf65`. [PR #4](https://github.com/Deebest-maker/document-platform/pull/4) remains open for owner review and is not merged. No M3 decision has been made.
 
 ## Recommended next milestone
 
