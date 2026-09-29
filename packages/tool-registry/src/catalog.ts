@@ -158,7 +158,15 @@ export const tools: readonly ToolDefinition[] = [
     processingMode: "LOCAL",
     relatedSlugs: ["rotate-pdf", "delete-pdf-pages"],
     featured: false,
-    availability: "planned",
+    availability: "available",
+    // Conservative M2 page-operation caps; evidence and caveats: ADR-013.
+    limits: {
+      maxFiles: 1,
+      maxFileBytes: 10 * 1024 * 1024,
+      maxTotalBytes: 10 * 1024 * 1024,
+      maxPages: 200,
+      maxOutputBytes: 32 * 1024 * 1024,
+    },
   },
   {
     slug: "extract-pdf-pages",

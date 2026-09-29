@@ -1,5 +1,9 @@
 # Dependency review
 
+## M3A.1 Organize PDF
+
+Reviewed on 29 September 2026. M3A.1 adds no production or development dependency and does not change the lockfile. The product route reuses the reviewed `pdfjs-dist@6.3.289` preview assets and `pdf-lib@1.17.1` structural worker from M2B/M2A. No drag library, archive library, server document engine, AGPL package or analytics integration is introduced. Existing notices, asset verification and locked audits remain applicable.
+
 ## M2B PDF.js and the approved OFL font alternative
 
 Reviewed on 27 September 2026. `pdfjs-dist@6.3.289` is pinned; its runtime is Apache-2.0 and is imported lazily by the preview entry point. The package-specific override `pdfjs-dist@6.3.289>@napi-rs/canvas: "-"` excludes only its unused optional Node canvas dependency. Existing versions and the workspace install-script allowlist are unchanged.

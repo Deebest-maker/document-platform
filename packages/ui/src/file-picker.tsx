@@ -8,12 +8,14 @@ export function FilePicker({
   help,
   onFiles,
   disabled = false,
+  multiple = true,
 }: {
   accept: string;
   label: string;
   help: string;
   onFiles: (files: File[]) => void;
   disabled?: boolean;
+  multiple?: boolean;
 }) {
   const input = useRef<HTMLInputElement>(null);
   const helpId = useId();
@@ -23,19 +25,23 @@ export function FilePicker({
       onDragOver={(event) => event.preventDefault()}
       onDrop={(event) => {
         event.preventDefault();
-        if (!disabled) onFiles(Array.from(event.dataTransfer.files));
+        if (!disabled) {
+          const files = Array.from(event.dataTransfer.files);
+          onFiles(multiple ? files : files.slice(0, 1));
+        }
       }}
     >
       <input
         ref={input}
         type="file"
-        multiple
+        multiple={multiple}
         accept={accept}
         aria-label={label}
         hidden
         disabled={disabled}
         onChange={(event) => {
-          onFiles(Array.from(event.currentTarget.files ?? []));
+          const files = Array.from(event.currentTarget.files ?? []);
+          onFiles(multiple ? files : files.slice(0, 1));
           event.currentTarget.value = "";
         }}
       />

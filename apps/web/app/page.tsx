@@ -20,8 +20,9 @@ export default function HomePage() {
             <br className="desktop-break" /> for your document.
           </h1>
           <p className="intro">
-            Merge PDFs on your device. Explore the tools planned for other
-            everyday file tasks, with processing locations clearly explained.
+            Merge files or organize PDF pages on your device. Explore the tools
+            planned for other everyday file tasks, with processing locations
+            clearly explained.
           </p>
           <Link className="text-link" href="/tools">
             Browse all tools <span aria-hidden="true">→</span>
@@ -88,8 +89,9 @@ export default function HomePage() {
             <br className="desktop-break" /> document would go.
           </h2>
           <p>
-            Merge runs in your browser without uploading your PDFs. Other tools
-            are planned; their labels explain the intended processing location.
+            Merge and Organize run in your browser without uploading your PDFs.
+            Other tools are planned; their labels explain the intended
+            processing location.
           </p>
           <Link className="text-link" href="/privacy">
             Read about privacy <span aria-hidden="true">→</span>

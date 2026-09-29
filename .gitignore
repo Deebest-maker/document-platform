@@ -5,6 +5,7 @@ out/
 coverage/
 playwright-report/
 test-results/
+debug.log
 *.tsbuildinfo
 .venv/
 .tools/

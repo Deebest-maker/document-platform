@@ -3,17 +3,17 @@ import type { RefCallback, ReactNode } from "react";
 
 export interface PageThumbnailProps {
   pageNumber: number;
-  selected: boolean;
+  selected?: boolean;
   disabled?: boolean;
   status: "idle" | "loading" | "ready" | "error";
   rotation: number;
   canvasRef: RefCallback<HTMLCanvasElement>;
-  onSelect: (selected: boolean) => void;
+  onSelect?: (selected: boolean) => void;
   children?: ReactNode;
 }
 export function PageThumbnail({
   pageNumber,
-  selected,
+  selected = false,
   disabled,
   status,
   rotation,
@@ -46,18 +46,22 @@ export function PageThumbnail({
         )}
       </div>
       <figcaption>
-        <label>
-          <input
-            type="checkbox"
-            checked={selected}
-            disabled={disabled}
-            onChange={(event) => onSelect(event.target.checked)}
-          />{" "}
-          Select page {pageNumber}
-        </label>
-        <span className="page-thumbnail__rotation">
-          Additional rotation: {rotation}°
-        </span>
+        {onSelect && (
+          <label>
+            <input
+              type="checkbox"
+              checked={selected}
+              disabled={disabled}
+              onChange={(event) => onSelect(event.target.checked)}
+            />{" "}
+            Select page {pageNumber}
+          </label>
+        )}
+        {rotation !== 0 && (
+          <span className="page-thumbnail__rotation">
+            Additional rotation: {rotation}°
+          </span>
+        )}
       </figcaption>
       {children}
     </figure>

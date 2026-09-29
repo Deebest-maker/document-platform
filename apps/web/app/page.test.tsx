@@ -9,6 +9,9 @@ import {
 import HomePage from "./page";
 import ToolsPage from "./tools/page";
 import MergePreviewPage, { metadata as mergeMetadata } from "./merge-pdf/page";
+import OrganizePage, {
+  metadata as organizeMetadata,
+} from "./organize-pdf/page";
 
 describe("M1 registry integration", () => {
   it("renders homepage discovery from registry records", () => {
@@ -30,7 +33,7 @@ describe("M1 registry integration", () => {
       expect(html).toContain(tool.title);
       expect(html).toContain(tool.description);
     }
-    expect(html).toContain("Merge PDF is available.");
+    expect(html).toContain("Merge and Organize PDF are available.");
   });
 
   it("DEV-004 / FR-GEN-004: connects Merge record to metadata, shell and privacy", () => {
@@ -45,5 +48,17 @@ describe("M1 registry integration", () => {
     expect(html).toContain('type="file"');
     expect(html).toContain("Password-protected PDFs are not supported");
     expect(html).not.toMatch(/<progress|download=/);
+  });
+
+  it("FR-ORG-001: connects Organize to registry metadata and a real local picker", () => {
+    const tool = getTool("organize-pdf")!;
+    expect(organizeMetadata).toMatchObject(getToolMetadata(tool));
+    expect(organizeMetadata.robots).toEqual({ index: false, follow: false });
+    const html = renderToStaticMarkup(<OrganizePage />);
+    expect(html).toContain(`<h1>${tool.title}</h1>`);
+    expect(html).toContain("Processed on your device");
+    expect(html).toContain("Choose a PDF to organize");
+    expect(html).toContain('type="file"');
+    expect(html).not.toContain('multiple=""');
   });
 });

@@ -13,6 +13,8 @@ import {
   type PageInput,
   type PageResult,
   type PageOperationOptions,
+  type PageLimits,
+  type PagePhase,
 } from "@document-platform/pdf-browser/pages";
 import type {
   PreviewDocument,
@@ -30,6 +32,7 @@ export interface PageSnapshot {
   readonly geometry: Readonly<Record<string, PageGeometry>>;
   readonly error?: PageError["code"];
   readonly result?: { readonly url: string; readonly pageCount: number };
+  readonly phase?: PagePhase;
   readonly announcement: string;
 }
 type Opened = { preview: PreviewDocument; scheduler: ThumbnailScheduler };
@@ -44,25 +47,7 @@ interface Services {
   createUrl: (blob: Blob) => string;
   revokeUrl: (url: string) => void;
 }
-const defaults: Services = {
-  open: async (input, signal) => {
-    const previewModule =
-      await import("@document-platform/pdf-browser/preview");
-    const preview = await previewModule.openPreview(input, pageLimits, {
-      signal,
-    });
-    return {
-      preview,
-      scheduler: new previewModule.ThumbnailScheduler(preview),
-    };
-  },
-  transform: async (input, plan, options) =>
-    (await import("@document-platform/pdf-browser/pages")).transformPages(
-      input,
-      plan,
-      pageLimits,
-      options,
-    ),
+const defaults: Pick<Services, "id" | "createUrl" | "revokeUrl"> = {
   id: () => crypto.randomUUID(),
   createUrl: (blob) => URL.createObjectURL(blob),
   revokeUrl: (url) => URL.revokeObjectURL(url),
@@ -87,8 +72,36 @@ export class PreviewSession {
   private exportAbort?: AbortController;
   private disposal: Promise<void> = Promise.resolve();
   private readonly services: Services;
-  constructor(services: Partial<Services> = {}) {
-    this.services = { ...defaults, ...services };
+  constructor(
+    services: Partial<Services> = {},
+    readonly limits: PageLimits = pageLimits,
+  ) {
+    this.services = {
+      ...defaults,
+      open:
+        services.open ??
+        (async (input, signal) => {
+          const previewModule =
+            await import("@document-platform/pdf-browser/preview");
+          const preview = await previewModule.openPreview(input, limits, {
+            signal,
+          });
+          return {
+            preview,
+            scheduler: new previewModule.ThumbnailScheduler(preview),
+          };
+        }),
+      transform:
+        services.transform ??
+        (async (input, plan, options) =>
+          (await import("@document-platform/pdf-browser/pages")).transformPages(
+            input,
+            plan,
+            limits,
+            options,
+          )),
+      ...services,
+    };
   }
   getSnapshot = () => this.snapshot;
   subscribe = (listener: () => void) => {
@@ -139,7 +152,7 @@ export class PreviewSession {
       (file.type &&
         !["application/pdf", "application/octet-stream"].includes(file.type)) ||
       file.size < 1 ||
-      file.size > pageLimits.maxInputBytes
+      file.size > this.limits.maxInputBytes
     ) {
       this.publish({
         ...empty(),
@@ -231,15 +244,24 @@ export class PreviewSession {
     }
   }
   move(id: string, direction: -1 | 1) {
-    this.edit((plan) => {
-      const ids = plan.pages.map((page) => page.id),
-        index = ids.indexOf(id),
-        target = index + direction;
-      if (index < 0 || target < 0 || target >= ids.length)
-        throw new PageError("INVALID_PLAN");
-      [ids[index], ids[target]] = [ids[target], ids[index]];
-      return reorderPages(plan, ids);
-    }, "Page order updated.");
+    const current = this.snapshot.plan?.pages,
+      currentIndex = current?.findIndex((page) => page.id === id) ?? -1,
+      targetIndex = currentIndex + direction,
+      sourcePage = current?.[currentIndex]?.sourcePageNumber;
+    this.edit(
+      (plan) => {
+        const ids = plan.pages.map((page) => page.id),
+          index = ids.indexOf(id),
+          target = index + direction;
+        if (index < 0 || target < 0 || target >= ids.length)
+          throw new PageError("INVALID_PLAN");
+        [ids[index], ids[target]] = [ids[target], ids[index]];
+        return reorderPages(plan, ids);
+      },
+      sourcePage && current
+        ? `Source page ${sourcePage} moved to position ${targetIndex + 1} of ${current.length}.`
+        : "Page order updated.",
+    );
   }
   extract() {
     this.edit(
@@ -334,6 +356,10 @@ export class PreviewSession {
         throw new PageError("CANCELLED");
       const result = await this.services.transform(input, plan, {
         signal: controller.signal,
+        onPhase: (phase) => {
+          if (generation === this.generation)
+            this.publish({ ...this.snapshot, phase });
+        },
       });
       if (controller.signal.aborted || generation !== this.generation) return;
       const url = this.services.createUrl(result.blob);

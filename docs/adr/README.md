@@ -10,5 +10,6 @@ The architecture baseline in `../04_System_Architecture_Technical_Design.docx`, 
 | [ADR-011](011-m1-product-shell.md)        | Accepted with M1 architecture amendments                                       | Registry, nonfunctional preview, neutral privacy wording, and minimal shared UI         |
 | [ADR-012](012-m2a-local-merge.md)         | Implemented within M2A approval; owner acceptance pending                      | LOCAL Merge, measured worker decision, route-local lifecycle and conservative limits    |
 | [ADR-013](013-m2b-page-foundation.md)     | Implemented under M2B and font-alternative approvals; owner acceptance pending | Stable page operations, bounded local PDF.js previews, deliberate OFL font substitution |
+| [ADR-014](014-m3a1-organize-pdf.md)       | Implemented under the approved M3A.1 gate; owner acceptance pending            | Local Organize product session, stable-ID reorder UI and validated export               |
 
 Use the next available identifier for a new decision. Later proposals must state whether they refine or supersede an existing decision and update affected source documents after approval.

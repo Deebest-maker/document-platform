@@ -5,18 +5,20 @@ import {
   getToolMetadata,
 } from "@document-platform/tool-registry";
 import { ToolList } from "../../components/tool-list";
-import { MergeWorkspace } from "../../components/merge/merge-workspace";
+import { OrganizeWorkspace } from "../../components/organize/organize-workspace";
 
-const tool = getTool("merge-pdf");
+const tool = getTool("organize-pdf");
 if (!tool?.limits)
-  throw new Error("Merge requires its registry configuration.");
+  throw new Error("Organize PDF requires registry-backed limits.");
+
 export const metadata: Metadata = {
   ...getToolMetadata(tool),
   robots: { index: false, follow: false },
 };
-export default function MergePage() {
+
+export default function OrganizePdfPage() {
   return (
-    <MergeWorkspace
+    <OrganizeWorkspace
       tool={tool!}
       related={
         <>

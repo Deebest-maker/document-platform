@@ -1,0 +1,79 @@
+{
+  "generatedAt": "2026-09-28T23:14:11.519Z",
+  "browser": "project-pinned Playwright Chromium",
+  "workload": "Synthetic mixed-geometry PDF; 12 later/earlier cycles on source page 1",
+  "rows": [
+    {
+      "viewport": "desktop",
+      "pages": 10,
+      "readyMs": 708,
+      "reorderMoves": 24,
+      "reorderMs": 1121,
+      "previouslyRenderedThumbnailRendersDuringReorder": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": "desktop",
+      "pages": 50,
+      "readyMs": 1121,
+      "reorderMoves": 24,
+      "reorderMs": 1217,
+      "previouslyRenderedThumbnailRendersDuringReorder": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": "desktop",
+      "pages": 100,
+      "readyMs": 2342,
+      "reorderMoves": 24,
+      "reorderMs": 5255,
+      "previouslyRenderedThumbnailRendersDuringReorder": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": "desktop",
+      "pages": 200,
+      "readyMs": 3259,
+      "reorderMoves": 24,
+      "reorderMs": 1418,
+      "previouslyRenderedThumbnailRendersDuringReorder": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": "mobile",
+      "pages": 10,
+      "readyMs": 1175,
+      "reorderMoves": 24,
+      "reorderMs": 1235,
+      "previouslyRenderedThumbnailRendersDuringReorder": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": "mobile",
+      "pages": 50,
+      "readyMs": 1146,
+      "reorderMoves": 24,
+      "reorderMs": 1331,
+      "previouslyRenderedThumbnailRendersDuringReorder": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": "mobile",
+      "pages": 100,
+      "readyMs": 1035,
+      "reorderMoves": 24,
+      "reorderMs": 1397,
+      "previouslyRenderedThumbnailRendersDuringReorder": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": "mobile",
+      "pages": 200,
+      "readyMs": 669,
+      "reorderMoves": 24,
+      "reorderMs": 1595,
+      "previouslyRenderedThumbnailRendersDuringReorder": 0,
+      "horizontalOverflow": false
+    }
+  ]
+}
