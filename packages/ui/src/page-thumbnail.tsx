@@ -9,6 +9,7 @@ export interface PageThumbnailProps {
   rotation: number;
   canvasRef: RefCallback<HTMLCanvasElement>;
   onSelect?: (selected: boolean) => void;
+  selectionLabel?: string;
   children?: ReactNode;
 }
 export function PageThumbnail({
@@ -19,6 +20,7 @@ export function PageThumbnail({
   rotation,
   canvasRef,
   onSelect,
+  selectionLabel,
   children,
 }: PageThumbnailProps) {
   return (
@@ -54,7 +56,7 @@ export function PageThumbnail({
               disabled={disabled}
               onChange={(event) => onSelect(event.target.checked)}
             />{" "}
-            Select page {pageNumber}
+            {selectionLabel ?? `Select page ${pageNumber}`}
           </label>
         )}
         {rotation !== 0 && (

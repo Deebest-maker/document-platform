@@ -219,6 +219,22 @@ export class PreviewSession {
     else selected.delete(id);
     this.publish({ ...this.snapshot, selected: [...selected] });
   }
+  selectAll() {
+    if (!this.snapshot.plan || this.snapshot.state === "exporting") return;
+    this.publish({
+      ...this.snapshot,
+      selected: this.snapshot.plan.pages.map(({ id }) => id),
+      announcement: `All ${this.snapshot.plan.pages.length} pages selected.`,
+    });
+  }
+  clearSelection() {
+    if (!this.snapshot.plan || this.snapshot.state === "exporting") return;
+    this.publish({
+      ...this.snapshot,
+      selected: [],
+      announcement: "Page selection cleared.",
+    });
+  }
   private edit(makePlan: (plan: PagePlan) => PagePlan, announcement: string) {
     if (!this.snapshot.plan || this.snapshot.state === "exporting") return;
     try {
@@ -275,10 +291,14 @@ export class PreviewSession {
       "Selected pages removed.",
     );
   }
-  rotate(all = false) {
+  rotate(all = false, quarterTurn: -90 | 90 = 90) {
+    const count = all
+      ? this.snapshot.plan?.pages.length
+      : this.snapshot.selected.length;
     this.edit(
-      (plan) => rotatePages(plan, all ? "all" : this.snapshot.selected, 90),
-      "Page rotation updated.",
+      (plan) =>
+        rotatePages(plan, all ? "all" : this.snapshot.selected, quarterTurn),
+      `${count ?? 0} ${count === 1 ? "page" : "pages"} rotated ${quarterTurn > 0 ? "right" : "left"}.`,
     );
   }
   updateVisible(requests: readonly Omit<ThumbnailRequest, "onState">[]) {
@@ -325,8 +345,42 @@ export class PreviewSession {
     );
   }
   cancelExport = () => this.exportAbort?.abort();
-  async export() {
-    const { plan } = this.snapshot;
+  export() {
+    return this.exportPlan(this.snapshot.plan);
+  }
+  exportExtracted() {
+    try {
+      return this.exportPlan(
+        this.snapshot.plan
+          ? extractPages(this.snapshot.plan, this.snapshot.selected)
+          : undefined,
+      );
+    } catch {
+      this.publish({
+        ...this.snapshot,
+        error: "INVALID_PLAN",
+        announcement: "Select at least one page to extract.",
+      });
+      return Promise.resolve();
+    }
+  }
+  exportRemaining() {
+    try {
+      return this.exportPlan(
+        this.snapshot.plan
+          ? deletePages(this.snapshot.plan, this.snapshot.selected)
+          : undefined,
+      );
+    } catch {
+      this.publish({
+        ...this.snapshot,
+        error: "INVALID_PLAN",
+        announcement: "At least one page must remain.",
+      });
+      return Promise.resolve();
+    }
+  }
+  private async exportPlan(plan?: PagePlan) {
     if (
       !plan ||
       !this.file ||

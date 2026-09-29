@@ -7,7 +7,7 @@ export function SiteFooter() {
         <div>
           <p className="footer-name">Document &amp; File Platform</p>
           <p className="small-copy">
-            Merge and Organize PDF work on your device. Other tools are planned.
+            Five PDF tools work on your device. Other tools are planned.
           </p>
         </div>
         <nav aria-label="Trust and legal">

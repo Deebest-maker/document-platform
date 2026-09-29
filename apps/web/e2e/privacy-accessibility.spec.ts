@@ -5,6 +5,10 @@ const routes = [
   "/",
   "/tools",
   "/merge-pdf",
+  "/organize-pdf",
+  "/extract-pdf-pages",
+  "/delete-pdf-pages",
+  "/rotate-pdf",
   "/about",
   "/privacy",
   "/terms",
@@ -38,7 +42,15 @@ for (const query of ["word", "nonexistent task"]) {
   });
 }
 
-for (const route of ["/", "/tools", "/merge-pdf"]) {
+for (const route of [
+  "/",
+  "/tools",
+  "/merge-pdf",
+  "/organize-pdf",
+  "/extract-pdf-pages",
+  "/delete-pdf-pages",
+  "/rotate-pdf",
+]) {
   test(`NFR-A11Y-005 / UX-010: ${route} reflows with enlarged text and reduced motion`, async ({
     page,
   }, testInfo) => {

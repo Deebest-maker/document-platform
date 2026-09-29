@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-test("production routes never load PDF.js or fonts; test consumer is absent", async ({
+test("unrelated production routes never load PDF.js or fonts; test consumer is absent", async ({
   page,
   request,
 }) => {

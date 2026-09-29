@@ -2,7 +2,7 @@
 
 Date: 2026-09-29
 
-Status: Implemented under the approved M3 plan and M3A.1 implementation gate; owner acceptance pending.
+Status: Accepted after owner review and merged in PR #5.
 
 ## Authority
 

@@ -1,5 +1,9 @@
 # Dependency review
 
+## M3A.2 Extract, Delete and Rotate PDF pages
+
+Reviewed on 29 September 2026. M3A.2 adds no production or development dependency and does not change the lockfile. The three local product routes reuse the reviewed `pdfjs-dist@6.3.289` preview assets and `pdf-lib@1.17.1` structural worker from M2B/M2A. No range/archive package, drag library, second PDF engine, server document engine, AGPL package, persistence or analytics integration is introduced. Existing notices, PDF.js asset verification and locked JavaScript/Python audits remain applicable.
+
 ## M3A.1 Organize PDF
 
 Reviewed on 29 September 2026. M3A.1 adds no production or development dependency and does not change the lockfile. The product route reuses the reviewed `pdfjs-dist@6.3.289` preview assets and `pdf-lib@1.17.1` structural worker from M2B/M2A. No drag library, archive library, server document engine, AGPL package or analytics integration is introduced. Existing notices, asset verification and locked audits remain applicable.

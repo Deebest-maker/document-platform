@@ -26,8 +26,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <div className="page-width">
             <strong>Product preview</strong>
             <span>
-              Merge and Organize PDF are available on your device. Other tools
-              are planned.
+              Five PDF tools are available on your device. Other tools are
+              planned.
             </span>
           </div>
         </aside>

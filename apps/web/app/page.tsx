@@ -89,7 +89,7 @@ export default function HomePage() {
             <br className="desktop-break" /> document would go.
           </h2>
           <p>
-            Merge and Organize run in your browser without uploading your PDFs.
+            Five PDF tools run in your browser without uploading your PDFs.
             Other tools are planned; their labels explain the intended
             processing location.
           </p>
