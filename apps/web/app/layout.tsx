@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: "%s | Document & File Platform",
   },
   description:
-    "Merge PDFs on your device and explore the planned document toolkit.",
+    "Merge or organize PDFs on your device and explore the planned document toolkit.",
   robots: { index: false, follow: false },
 };
 
@@ -22,14 +22,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           Skip to content
         </a>
         <SiteHeader />
-        <div className="preview-strip">
+        <aside className="preview-strip" aria-label="Product preview status">
           <div className="page-width">
             <strong>Product preview</strong>
             <span>
-              Merge PDF is available on your device. Other tools are planned.
+              Merge and Organize PDF are available on your device. Other tools
+              are planned.
             </span>
           </div>
-        </div>
+        </aside>
         <main
           id="main-content"
           tabIndex={-1}

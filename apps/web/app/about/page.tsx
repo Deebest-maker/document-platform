@@ -17,8 +17,8 @@ export default function AboutPage() {
         collection of document utilities.
       </p>
       <p className="notice">
-        Product preview. Merge PDF is available on your device. All other tools
-        are planned.
+        Product preview. Merge and Organize PDF are available on your device.
+        The remaining tools are planned.
       </p>
       <h2>The intended approach</h2>
       <p>
@@ -26,8 +26,9 @@ export default function AboutPage() {
         when a future operation will require server processing.
       </p>
       <p>
-        Merge PDF combines pages locally and creates a download in your browser.
-        The catalog also describes tools planned for future releases.
+        Merge PDF combines files locally, while Organize PDF reorders pages
+        locally. Both create downloads in your browser. The catalog also
+        describes tools planned for future releases.
       </p>
       <Link className="text-link" href="/tools">
         Explore the tools

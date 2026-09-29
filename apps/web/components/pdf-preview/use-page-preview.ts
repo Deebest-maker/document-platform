@@ -6,10 +6,14 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
+import {
+  pageLimits,
+  type PageLimits,
+} from "@document-platform/pdf-browser/pages";
 import { PreviewSession } from "./preview-session";
 
-export function usePagePreview() {
-  const [session] = useState(() => new PreviewSession());
+export function usePagePreview(limits: PageLimits = pageLimits) {
+  const [session] = useState(() => new PreviewSession({}, limits));
   const snapshot = useSyncExternalStore(
     session.subscribe,
     session.getSnapshot,

@@ -69,16 +69,18 @@ describe("DEV-004: authoritative tool registry", () => {
     ).toEqual(expected);
   });
 
-  it("only makes Merge available; other tools target catalog entries", () => {
+  it("makes only the completed Merge and Organize routes available", () => {
     expect(
       tools
         .filter((tool) => tool.availability === "available")
         .map((tool) => tool.slug),
-    ).toEqual(["merge-pdf"]);
+    ).toEqual(["merge-pdf", "organize-pdf"]);
     for (const tool of tools) {
       expect(getToolPath(tool)).toBe("/" + tool.slug);
       expect(getToolHref(tool)).toBe(
-        tool.slug === "merge-pdf" ? "/merge-pdf" : "/tools#" + tool.slug,
+        ["merge-pdf", "organize-pdf"].includes(tool.slug)
+          ? "/" + tool.slug
+          : "/tools#" + tool.slug,
       );
     }
     expect(getTool("not-a-tool")).toBeUndefined();
@@ -104,7 +106,7 @@ describe("DEV-004: authoritative tool registry", () => {
     });
   });
 
-  it("uses live LOCAL wording and measured limits only for the available Merge tool", () => {
+  it("uses live LOCAL wording and measured limits only for completed tools", () => {
     const merge = getTool("merge-pdf")!;
     expect(
       getPrivacyPresentation(merge.processingMode, merge.availability).label,
@@ -116,9 +118,21 @@ describe("DEV-004: authoritative tool registry", () => {
       maxPages: 200,
       maxOutputBytes: 33554432,
     });
+    const organize = getTool("organize-pdf")!;
+    expect(
+      getPrivacyPresentation(organize.processingMode, organize.availability)
+        .label,
+    ).toBe("Processed on your device");
+    expect(organize.limits).toEqual({
+      maxFiles: 1,
+      maxFileBytes: 10485760,
+      maxTotalBytes: 10485760,
+      maxPages: 200,
+      maxOutputBytes: 33554432,
+    });
     expect(
       tools
-        .filter((tool) => tool.slug !== "merge-pdf")
+        .filter((tool) => !["merge-pdf", "organize-pdf"].includes(tool.slug))
         .every((tool) => tool.availability === "planned" && !tool.limits),
     ).toBe(true);
   });

@@ -74,6 +74,8 @@ export type {
   PageInput,
   PageLimits,
   PageOperationOptions,
+  PagePhase,
   PageResult,
 } from "./page-types";
 export { PageError } from "./page-errors";
+export type { PageErrorCode } from "./page-errors";

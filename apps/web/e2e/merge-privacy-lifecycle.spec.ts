@@ -40,6 +40,7 @@ test("FR-PRV-001/005: full LOCAL flow, errors and offline re-merge never send do
     const allowedPath =
       [
         "/merge-pdf",
+        "/organize-pdf",
         "/",
         "/tools",
         "/about",
