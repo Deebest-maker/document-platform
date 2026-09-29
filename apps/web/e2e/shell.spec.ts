@@ -4,6 +4,10 @@ const routes = [
   "/",
   "/tools",
   "/merge-pdf",
+  "/organize-pdf",
+  "/extract-pdf-pages",
+  "/delete-pdf-pages",
+  "/rotate-pdf",
   "/about",
   "/privacy",
   "/terms",
@@ -25,11 +29,29 @@ for (const route of routes) {
       /noindex/,
     );
     await expect(page.locator('input[type="file"]')).toHaveCount(
-      route === "/merge-pdf" ? 1 : 0,
+      [
+        "/merge-pdf",
+        "/organize-pdf",
+        "/extract-pdf-pages",
+        "/delete-pdf-pages",
+        "/rotate-pdf",
+      ].includes(route)
+        ? 1
+        : 0,
     );
     await expect(page.locator("progress, [download]")).toHaveCount(0);
 
-    if (["/", "/tools", "/merge-pdf"].includes(route)) {
+    if (
+      [
+        "/",
+        "/tools",
+        "/merge-pdf",
+        "/organize-pdf",
+        "/extract-pdf-pages",
+        "/delete-pdf-pages",
+        "/rotate-pdf",
+      ].includes(route)
+    ) {
       await page.screenshot({
         path: testInfo.outputPath(
           `${route === "/" ? "home" : route.slice(1)}.png`,
