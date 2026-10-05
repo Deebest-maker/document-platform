@@ -69,16 +69,28 @@ describe("DEV-004: authoritative tool registry", () => {
     ).toEqual(expected);
   });
 
-  it("makes only the completed Merge and Organize routes available", () => {
+  it("makes only the completed M3A.2 routes available", () => {
     expect(
       tools
         .filter((tool) => tool.availability === "available")
         .map((tool) => tool.slug),
-    ).toEqual(["merge-pdf", "organize-pdf"]);
+    ).toEqual([
+      "merge-pdf",
+      "organize-pdf",
+      "extract-pdf-pages",
+      "delete-pdf-pages",
+      "rotate-pdf",
+    ]);
     for (const tool of tools) {
       expect(getToolPath(tool)).toBe("/" + tool.slug);
       expect(getToolHref(tool)).toBe(
-        ["merge-pdf", "organize-pdf"].includes(tool.slug)
+        [
+          "merge-pdf",
+          "organize-pdf",
+          "extract-pdf-pages",
+          "delete-pdf-pages",
+          "rotate-pdf",
+        ].includes(tool.slug)
           ? "/" + tool.slug
           : "/tools#" + tool.slug,
       );
@@ -118,21 +130,27 @@ describe("DEV-004: authoritative tool registry", () => {
       maxPages: 200,
       maxOutputBytes: 33554432,
     });
-    const organize = getTool("organize-pdf")!;
-    expect(
-      getPrivacyPresentation(organize.processingMode, organize.availability)
-        .label,
-    ).toBe("Processed on your device");
-    expect(organize.limits).toEqual({
-      maxFiles: 1,
-      maxFileBytes: 10485760,
-      maxTotalBytes: 10485760,
-      maxPages: 200,
-      maxOutputBytes: 33554432,
-    });
+    for (const slug of [
+      "organize-pdf",
+      "extract-pdf-pages",
+      "delete-pdf-pages",
+      "rotate-pdf",
+    ]) {
+      const tool = getTool(slug)!;
+      expect(
+        getPrivacyPresentation(tool.processingMode, tool.availability).label,
+      ).toBe("Processed on your device");
+      expect(tool.limits).toEqual({
+        maxFiles: 1,
+        maxFileBytes: 10485760,
+        maxTotalBytes: 10485760,
+        maxPages: 200,
+        maxOutputBytes: 33554432,
+      });
+    }
     expect(
       tools
-        .filter((tool) => !["merge-pdf", "organize-pdf"].includes(tool.slug))
+        .filter((tool) => tool.availability !== "available")
         .every((tool) => tool.availability === "planned" && !tool.limits),
     ).toBe(true);
   });

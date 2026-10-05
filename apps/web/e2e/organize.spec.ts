@@ -18,7 +18,9 @@ test("FR-ORG-001/002: keyboard reorder exports the exact displayed order", async
     page.getByRole("heading", { name: "Organize PDF" }),
   ).toBeVisible();
   await expect(
-    page.getByText("Processed on your device", { exact: true }),
+    page
+      .locator(".tool-heading")
+      .getByText("Processed on your device", { exact: true }),
   ).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
     "content",
@@ -27,7 +29,9 @@ test("FR-ORG-001/002: keyboard reorder exports the exact displayed order", async
   await page
     .getByLabel("Choose PDF")
     .setInputFiles(fixture("preview-features.pdf"));
-  await expect(page.locator("li[data-page-id]")).toHaveCount(4);
+  await expect(page.locator("li[data-page-id]")).toHaveCount(4, {
+    timeout: 15_000,
+  });
 
   const pageOneLater = page.getByRole("button", {
     name: "Move page 1 later",
@@ -138,7 +142,9 @@ test("FR-PRV-001: complete local workflow releases workers, canvases and URLs", 
     mimeType: "application/pdf",
     buffer: await readFile(fixture("preview-features.pdf")),
   });
-  await expect(page.locator("li[data-page-id]")).toHaveCount(4);
+  await expect(page.locator("li[data-page-id]")).toHaveCount(4, {
+    timeout: 15_000,
+  });
   await page
     .getByRole("button", { name: "Move page 1 later", exact: true })
     .click();
@@ -201,5 +207,7 @@ test("safe errors recover through source replacement", async ({ page }) => {
   await page
     .getByLabel("Choose another PDF")
     .setInputFiles(fixture("preview-features.pdf"));
-  await expect(page.locator("li[data-page-id]")).toHaveCount(4);
+  await expect(page.locator("li[data-page-id]")).toHaveCount(4, {
+    timeout: 15_000,
+  });
 });

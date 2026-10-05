@@ -1,0 +1,74 @@
+{
+  "generatedAt": "2026-09-29T10:00:08.369Z",
+  "browser": "project-pinned Playwright Chromium",
+  "workload": "Synthetic 200-page mixed-geometry PDF; Select all/Clear selection on each route; selected-page rotation where applicable",
+  "schedulerInvariant": "ThumbnailScheduler unit coverage fixes concurrency at 1 and retained queue at 8.",
+  "rows": [
+    {
+      "viewport": "desktop",
+      "route": "/extract-pdf-pages",
+      "pages": 200,
+      "readyMs": 1475,
+      "selectAllClearMs": 318,
+      "previouslyRenderedThumbnailRendersDuringSelection": 0,
+      "affectedThumbnailRendersDuringRotation": 0,
+      "unaffectedThumbnailRendersDuringRotation": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": "desktop",
+      "route": "/delete-pdf-pages",
+      "pages": 200,
+      "readyMs": 1863,
+      "selectAllClearMs": 161,
+      "previouslyRenderedThumbnailRendersDuringSelection": 0,
+      "affectedThumbnailRendersDuringRotation": 0,
+      "unaffectedThumbnailRendersDuringRotation": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": "desktop",
+      "route": "/rotate-pdf",
+      "pages": 200,
+      "readyMs": 1659,
+      "selectAllClearMs": 158,
+      "previouslyRenderedThumbnailRendersDuringSelection": 0,
+      "affectedThumbnailRendersDuringRotation": 1,
+      "unaffectedThumbnailRendersDuringRotation": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": "mobile",
+      "route": "/extract-pdf-pages",
+      "pages": 200,
+      "readyMs": 823,
+      "selectAllClearMs": 180,
+      "previouslyRenderedThumbnailRendersDuringSelection": 0,
+      "affectedThumbnailRendersDuringRotation": 0,
+      "unaffectedThumbnailRendersDuringRotation": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": "mobile",
+      "route": "/delete-pdf-pages",
+      "pages": 200,
+      "readyMs": 647,
+      "selectAllClearMs": 137,
+      "previouslyRenderedThumbnailRendersDuringSelection": 0,
+      "affectedThumbnailRendersDuringRotation": 0,
+      "unaffectedThumbnailRendersDuringRotation": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": "mobile",
+      "route": "/rotate-pdf",
+      "pages": 200,
+      "readyMs": 1593,
+      "selectAllClearMs": 146,
+      "previouslyRenderedThumbnailRendersDuringSelection": 0,
+      "affectedThumbnailRendersDuringRotation": 1,
+      "unaffectedThumbnailRendersDuringRotation": 0,
+      "horizontalOverflow": false
+    }
+  ]
+}

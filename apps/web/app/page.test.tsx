@@ -12,6 +12,13 @@ import MergePreviewPage, { metadata as mergeMetadata } from "./merge-pdf/page";
 import OrganizePage, {
   metadata as organizeMetadata,
 } from "./organize-pdf/page";
+import ExtractPage, {
+  metadata as extractMetadata,
+} from "./extract-pdf-pages/page";
+import DeletePage, {
+  metadata as deleteMetadata,
+} from "./delete-pdf-pages/page";
+import RotatePage, { metadata as rotateMetadata } from "./rotate-pdf/page";
 
 describe("M1 registry integration", () => {
   it("renders homepage discovery from registry records", () => {
@@ -33,7 +40,7 @@ describe("M1 registry integration", () => {
       expect(html).toContain(tool.title);
       expect(html).toContain(tool.description);
     }
-    expect(html).toContain("Merge and Organize PDF are available.");
+    expect(html).toContain("Five PDF tools are available.");
   });
 
   it("DEV-004 / FR-GEN-004: connects Merge record to metadata, shell and privacy", () => {
@@ -61,4 +68,33 @@ describe("M1 registry integration", () => {
     expect(html).toContain('type="file"');
     expect(html).not.toContain('multiple=""');
   });
+
+  it.each([
+    [
+      "extract-pdf-pages",
+      ExtractPage,
+      extractMetadata,
+      "Choose a PDF to extract pages from",
+    ],
+    [
+      "delete-pdf-pages",
+      DeletePage,
+      deleteMetadata,
+      "Choose a PDF to remove pages from",
+    ],
+    ["rotate-pdf", RotatePage, rotateMetadata, "Choose a PDF to rotate"],
+  ] as const)(
+    "connects %s to registry metadata and a real local picker",
+    (slug, Page, metadata, heading) => {
+      const tool = getTool(slug)!;
+      expect(metadata).toMatchObject(getToolMetadata(tool));
+      expect(metadata.robots).toEqual({ index: false, follow: false });
+      const html = renderToStaticMarkup(<Page />);
+      expect(html).toContain(`<h1>${tool.title}</h1>`);
+      expect(html).toContain("Processed on your device");
+      expect(html).toContain(heading);
+      expect(html).toContain('type="file"');
+      expect(html).not.toContain('multiple=""');
+    },
+  );
 });

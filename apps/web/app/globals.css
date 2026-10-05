@@ -709,6 +709,86 @@ nav a {
   border-top: 1px solid var(--color-border);
 }
 
+.page-selection-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-block: var(--space-6) var(--space-3);
+  padding-block: var(--space-3);
+  border-block: 1px solid var(--color-border);
+}
+.page-selection-toolbar .selection-summary {
+  margin: 0 auto 0 0;
+}
+.page-selection-state {
+  margin: var(--space-3) 0 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.page-selection-state[data-active="true"] {
+  border-color: var(--color-text);
+}
+.page-selection-guidance {
+  margin-block: var(--space-3) var(--space-5);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.page-selection-guidance[data-blocked="true"] {
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--color-text);
+}
+.page-selection-grid {
+  margin-top: var(--space-4);
+}
+.rotation-scopes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-block: var(--space-6);
+}
+.rotation-scopes fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+}
+.rotation-scopes legend {
+  padding-inline: var(--space-2);
+  font-weight: 700;
+}
+.rotation-scopes p {
+  margin: 0 0 var(--space-3);
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+.rotation-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.rotation-state {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  font-size: 0.8125rem;
+}
+.rotation-state div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.rotation-state dt {
+  color: var(--color-muted);
+}
+.rotation-state dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
 @media (max-width: 36rem) {
   .organize-toolbar {
     align-items: stretch;
@@ -724,6 +804,21 @@ nav a {
     flex-direction: column;
   }
   .organize-grid {
+    grid-template-columns: 1fr;
+  }
+  .page-selection-toolbar,
+  .rotation-buttons {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .page-selection-toolbar .selection-summary {
+    margin-right: 0;
+  }
+  .page-selection-toolbar button,
+  .rotation-buttons button {
+    width: 100%;
+  }
+  .rotation-scopes {
     grid-template-columns: 1fr;
   }
 }

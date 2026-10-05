@@ -50,6 +50,13 @@ export interface ToolDefinition {
 }
 
 const pdf = [{ mime: "application/pdf", extensions: [".pdf"] }] as const;
+const localPageLimits = {
+  maxFiles: 1,
+  maxFileBytes: 10 * 1024 * 1024,
+  maxTotalBytes: 10 * 1024 * 1024,
+  maxPages: 200,
+  maxOutputBytes: 32 * 1024 * 1024,
+} as const;
 
 // Current approved MVP intent. Changes to processing location require review.
 // Descriptive accepted types are not file validation or a processing contract.
@@ -160,13 +167,7 @@ export const tools: readonly ToolDefinition[] = [
     featured: false,
     availability: "available",
     // Conservative M2 page-operation caps; evidence and caveats: ADR-013.
-    limits: {
-      maxFiles: 1,
-      maxFileBytes: 10 * 1024 * 1024,
-      maxTotalBytes: 10 * 1024 * 1024,
-      maxPages: 200,
-      maxOutputBytes: 32 * 1024 * 1024,
-    },
+    limits: localPageLimits,
   },
   {
     slug: "extract-pdf-pages",
@@ -177,7 +178,8 @@ export const tools: readonly ToolDefinition[] = [
     processingMode: "LOCAL",
     relatedSlugs: ["split-pdf", "delete-pdf-pages"],
     featured: false,
-    availability: "planned",
+    availability: "available",
+    limits: localPageLimits,
   },
   {
     slug: "delete-pdf-pages",
@@ -188,7 +190,8 @@ export const tools: readonly ToolDefinition[] = [
     processingMode: "LOCAL",
     relatedSlugs: ["extract-pdf-pages", "organize-pdf"],
     featured: false,
-    availability: "planned",
+    availability: "available",
+    limits: localPageLimits,
   },
   {
     slug: "rotate-pdf",
@@ -199,7 +202,8 @@ export const tools: readonly ToolDefinition[] = [
     processingMode: "LOCAL",
     relatedSlugs: ["organize-pdf", "merge-pdf"],
     featured: false,
-    availability: "planned",
+    availability: "available",
+    limits: localPageLimits,
   },
   {
     slug: "remove-pdf-metadata",
