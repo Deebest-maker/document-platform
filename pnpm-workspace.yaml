@@ -5,6 +5,8 @@ packages:
 # PDF.js is browser-only here. Its optional Node canvas is not used.
 overrides:
   "pdfjs-dist@6.3.289>@napi-rs/canvas": "-"
+  # Temporary reviewed fix for GHSA-vfj7-8cjw-p6xm. Remove after upstream ships a patched release.
+  braces: "file:./vendor/braces"
 
 # These are the only dependency install scripts required by this foundation.
 allowBuilds:

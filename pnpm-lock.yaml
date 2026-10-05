@@ -6,11 +6,15 @@ settings:
 
 overrides:
   pdfjs-dist@6.3.289>@napi-rs/canvas: '-'
+  braces: file:./vendor/braces
 
 importers:
 
   .:
     devDependencies:
+      braces:
+        specifier: file:vendor/braces
+        version: file:vendor/braces
       prettier:
         specifier: 3.9.9
         version: 3.9.9
@@ -1114,8 +1118,8 @@ packages:
     resolution: {integrity: sha512-YovQ3rzhaLMIrDjNDMkNS01tea93qhEhG5xy8f6+R0l+dw3Ki+5sCoIoI942iuLZTHWogWktgwVDhU09iNEimQ==}
     engines: {node: 20 || >=22}
 
-  braces@3.0.3:
-    resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
+  braces@file:vendor/braces:
+    resolution: {directory: vendor/braces, type: directory}
     engines: {node: '>=8'}
 
   browserslist@4.29.0:
@@ -3510,7 +3514,7 @@ snapshots:
     dependencies:
       balanced-match: 4.0.4
 
-  braces@3.0.3:
+  braces@file:vendor/braces:
     dependencies:
       fill-range: 7.1.1
 
@@ -4494,7 +4498,7 @@ snapshots:
 
   micromatch@4.0.8:
     dependencies:
-      braces: 3.0.3
+      braces: file:vendor/braces
       picomatch: 2.3.2
 
   minimatch@10.2.6:

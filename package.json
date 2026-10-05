@@ -13,7 +13,8 @@
     "start": "pnpm --filter @document-platform/web start",
     "lint": "pnpm --filter @document-platform/web lint",
     "typecheck": "pnpm --filter @document-platform/web typecheck",
-    "test": "pnpm --filter @document-platform/pdf-browser test && pnpm --filter @document-platform/web test",
+    "test": "pnpm test:security-patches && pnpm --filter @document-platform/pdf-browser test && pnpm --filter @document-platform/web test",
+    "test:security-patches": "node scripts/test-braces-security.mjs",
     "test:e2e": "pnpm --filter @document-platform/web test:e2e",
     "test:foundation": "node scripts/prepare-pdfjs-assets.mjs && node scripts/build-page-foundation.mjs && pnpm --filter @document-platform/web exec playwright test --config playwright.foundation.config.ts",
     "format": "prettier --write .",
@@ -21,6 +22,7 @@
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e"
   },
   "devDependencies": {
+    "braces": "file:vendor/braces",
     "prettier": "3.9.9"
   }
 }

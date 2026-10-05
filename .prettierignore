@@ -16,3 +16,4 @@ docs/*.docx
 **/.ruff_cache/
 apps/web/public/vendor/
 apps/web/tests/page-foundation/public/
+vendor/braces/
