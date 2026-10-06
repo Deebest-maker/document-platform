@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 export function ReorderControls({
   pageNumber,
@@ -13,17 +13,22 @@ export function ReorderControls({
   onMove: (direction: -1 | 1) => void;
 }) {
   const earlier = useRef<HTMLButtonElement>(null),
-    later = useRef<HTMLButtonElement>(null);
+    later = useRef<HTMLButtonElement>(null),
+    pendingDirection = useRef<-1 | 1 | null>(null);
+  useLayoutEffect(() => {
+    const direction = pendingDirection.current;
+    if (direction === null) return;
+    pendingDirection.current = null;
+    const preferred = direction === -1 ? earlier.current : later.current;
+    const fallback = direction === -1 ? later.current : earlier.current;
+    if (preferred && !preferred.disabled)
+      preferred.focus({ preventScroll: true });
+    else if (fallback && !fallback.disabled)
+      fallback.focus({ preventScroll: true });
+  });
   const move = (direction: -1 | 1) => {
+    pendingDirection.current = direction;
     onMove(direction);
-    requestAnimationFrame(() => {
-      const preferred = direction === -1 ? earlier.current : later.current;
-      const fallback = direction === -1 ? later.current : earlier.current;
-      if (preferred && !preferred.disabled)
-        preferred.focus({ preventScroll: true });
-      else if (fallback && !fallback.disabled)
-        fallback.focus({ preventScroll: true });
-    });
   };
   return (
     <div
