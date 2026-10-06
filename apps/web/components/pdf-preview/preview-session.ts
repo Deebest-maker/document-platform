@@ -22,6 +22,12 @@ import type {
   ThumbnailStatus,
   ThumbnailRequest,
 } from "@document-platform/pdf-browser/preview";
+import type {
+  SplitLimits,
+  SplitOptions,
+  SplitPhase,
+  SplitResult,
+} from "@document-platform/pdf-browser/split";
 
 export interface PageSnapshot {
   readonly state:
@@ -31,8 +37,14 @@ export interface PageSnapshot {
   readonly thumbnails: Readonly<Record<string, ThumbnailStatus>>;
   readonly geometry: Readonly<Record<string, PageGeometry>>;
   readonly error?: PageError["code"];
-  readonly result?: { readonly url: string; readonly pageCount: number };
-  readonly phase?: PagePhase;
+  readonly result?: {
+    readonly url: string;
+    readonly pageCount: number;
+    readonly fileCount: number;
+    readonly kind: "pdf" | "zip";
+    readonly combinedPdfBytes?: number;
+  };
+  readonly phase?: PagePhase | SplitPhase;
   readonly announcement: string;
 }
 type Opened = { preview: PreviewDocument; scheduler: ThumbnailScheduler };
@@ -43,6 +55,12 @@ interface Services {
     plan: PagePlan,
     options: PageOperationOptions,
   ) => Promise<PageResult>;
+  split: (
+    input: PageInput,
+    plans: readonly PagePlan[],
+    options: SplitOptions,
+    limits: SplitLimits,
+  ) => Promise<SplitResult>;
   id: () => string;
   createUrl: (blob: Blob) => string;
   revokeUrl: (url: string) => void;
@@ -99,6 +117,16 @@ export class PreviewSession {
             plan,
             limits,
             options,
+          )),
+      split:
+        services.split ??
+        (async (input, plans, options, splitLimits) =>
+          (await import("@document-platform/pdf-browser/split")).splitPdf(
+            input,
+            plans,
+            limits,
+            options,
+            splitLimits,
           )),
       ...services,
     };
@@ -420,7 +448,12 @@ export class PreviewSession {
       this.publish({
         ...this.snapshot,
         state: "result",
-        result: { url, pageCount: result.pageCount },
+        result: {
+          url,
+          pageCount: result.pageCount,
+          fileCount: 1,
+          kind: "pdf",
+        },
         announcement: "Validated PDF ready to download.",
       });
     } catch (error) {
@@ -430,6 +463,87 @@ export class PreviewSession {
           state: "ready",
           error: error instanceof PageError ? error.code : "OPERATION_FAILED",
           announcement: "Export did not finish. No new download was created.",
+        });
+    } finally {
+      if (generation === this.generation) {
+        this.exportAbort = undefined;
+        opened.scheduler.resume();
+      }
+    }
+  }
+  async exportSplit(plans: readonly PagePlan[], splitLimits: SplitLimits) {
+    if (
+      !plans.length ||
+      !this.file ||
+      !this.opened ||
+      this.snapshot.state === "exporting"
+    )
+      return;
+    this.clearResult();
+    const generation = this.generation,
+      opened = this.opened,
+      sessionId = this.snapshot.plan?.sessionId;
+    if (!sessionId || plans.some((plan) => plan.sessionId !== sessionId)) {
+      this.publish({
+        ...this.snapshot,
+        error: "INVALID_PLAN",
+        announcement: "The split plan is not valid.",
+      });
+      return;
+    }
+    const input = {
+      id: sessionId,
+      blob: this.file.slice(0, this.file.size, this.file.type),
+    };
+    const controller = new AbortController();
+    this.exportAbort = controller;
+    this.publish({
+      ...this.snapshot,
+      state: "exporting",
+      result: undefined,
+      error: undefined,
+      announcement: "Preparing local split outputs.",
+    });
+    try {
+      await opened.scheduler.pause();
+      if (controller.signal.aborted || generation !== this.generation)
+        throw new PageError("CANCELLED");
+      const result = await this.services.split(
+        input,
+        plans,
+        {
+          signal: controller.signal,
+          onPhase: (phase) => {
+            if (generation === this.generation)
+              this.publish({ ...this.snapshot, phase });
+          },
+        },
+        splitLimits,
+      );
+      if (controller.signal.aborted || generation !== this.generation) return;
+      const url = this.services.createUrl(result.blob);
+      this.publish({
+        ...this.snapshot,
+        state: "result",
+        result: {
+          url,
+          pageCount: result.pageCount,
+          fileCount: result.fileCount,
+          kind: result.kind,
+          combinedPdfBytes: result.combinedPdfBytes,
+        },
+        announcement:
+          result.kind === "zip"
+            ? "Validated split archive ready to download."
+            : "Validated split PDF ready to download.",
+      });
+    } catch (error) {
+      if (generation === this.generation)
+        this.publish({
+          ...this.snapshot,
+          state: "ready",
+          error: error instanceof PageError ? error.code : "OPERATION_FAILED",
+          announcement: "Split did not finish. No new download was created.",
         });
     } finally {
       if (generation === this.generation) {

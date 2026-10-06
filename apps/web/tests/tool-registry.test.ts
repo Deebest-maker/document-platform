@@ -69,13 +69,14 @@ describe("DEV-004: authoritative tool registry", () => {
     ).toEqual(expected);
   });
 
-  it("makes only the completed M3A.2 routes available", () => {
+  it("makes only the completed routes through M3A.3 available", () => {
     expect(
       tools
         .filter((tool) => tool.availability === "available")
         .map((tool) => tool.slug),
     ).toEqual([
       "merge-pdf",
+      "split-pdf",
       "organize-pdf",
       "extract-pdf-pages",
       "delete-pdf-pages",
@@ -86,6 +87,7 @@ describe("DEV-004: authoritative tool registry", () => {
       expect(getToolHref(tool)).toBe(
         [
           "merge-pdf",
+          "split-pdf",
           "organize-pdf",
           "extract-pdf-pages",
           "delete-pdf-pages",
@@ -148,6 +150,20 @@ describe("DEV-004: authoritative tool registry", () => {
         maxOutputBytes: 33554432,
       });
     }
+    const split = getTool("split-pdf")!;
+    expect(
+      getPrivacyPresentation(split.processingMode, split.availability).label,
+    ).toBe("Processed on your device");
+    expect(split.limits).toEqual({
+      maxFiles: 1,
+      maxFileBytes: 10485760,
+      maxTotalBytes: 10485760,
+      maxPages: 200,
+      maxOutputBytes: 33554432,
+      maxOutputs: 20,
+      maxCombinedOutputBytes: 67108864,
+      maxArchiveBytes: 67108864,
+    });
     expect(
       tools
         .filter((tool) => tool.availability !== "available")

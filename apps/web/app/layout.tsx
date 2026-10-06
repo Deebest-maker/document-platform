@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: "%s | Document & File Platform",
   },
   description:
-    "Merge or organize PDFs on your device and explore the planned document toolkit.",
+    "Merge, split, or organize PDFs on your device and explore the planned document toolkit.",
   robots: { index: false, follow: false },
 };
 
@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <div className="page-width">
             <strong>Product preview</strong>
             <span>
-              Five PDF tools are available on your device. Other tools are
+              Six PDF tools are available on your device. Other tools are
               planned.
             </span>
           </div>

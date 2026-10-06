@@ -9,6 +9,8 @@ overrides:
   braces: "file:./vendor/braces"
   # Patched release for GHSA-68fv-2mgg-jv7q across Next/PostCSS, Tailwind and test tooling.
   source-map-js: "1.2.2"
+  # Patched release for GHSA-wq5f-xc86-pv6w within Next's compatible optional range.
+  sharp: "0.35.5"
 
 # These are the only dependency install scripts required by this foundation.
 allowBuilds:

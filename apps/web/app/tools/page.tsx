@@ -5,7 +5,7 @@ import { ToolDiscovery } from "../../components/tool-discovery";
 export const metadata: Metadata = {
   title: "All tools",
   description:
-    "Find document tools by task and category. Five PDF tools are available on your device; other tools are planned.",
+    "Find document tools by task and category. Six PDF tools are available on your device; other tools are planned.",
 };
 
 export default function ToolsPage() {
@@ -18,7 +18,7 @@ export default function ToolsPage() {
           Find a task, check its availability, and see where processing happens.
         </p>
         <p className="notice">
-          Five PDF tools are available. The remaining tools are planned and
+          Six PDF tools are available. The remaining tools are planned and
           cannot process documents yet.
         </p>
       </header>

@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-10-06T18:06:04.258Z",
+  "browser": "project-pinned Playwright Chromium",
+  "workload": "Synthetic 200-page mixed-geometry PDF; 20 outputs of 10 pages; stored ZIP",
+  "rows": [
+    {
+      "viewport": "desktop",
+      "inputPages": 200,
+      "outputFiles": 20,
+      "pagesPerOutput": 10,
+      "readyMs": 487,
+      "generateAndArchiveMs": 932,
+      "combinedPdfBytes": 581680,
+      "archiveBytes": 583702,
+      "observedHeapDeltaBytes": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": "mobile",
+      "inputPages": 200,
+      "outputFiles": 20,
+      "pagesPerOutput": 10,
+      "readyMs": 1101,
+      "generateAndArchiveMs": 1584,
+      "combinedPdfBytes": 581680,
+      "archiveBytes": 583702,
+      "observedHeapDeltaBytes": 0,
+      "horizontalOverflow": false
+    }
+  ]
+}

@@ -9,6 +9,16 @@ import {
   type PageInput,
   type PageOperationOptions,
 } from "@document-platform/pdf-browser/pages";
+import type {
+  SplitOptions,
+  SplitResult,
+} from "@document-platform/pdf-browser/split";
+
+const splitLimits = {
+  maxOutputs: 20,
+  maxCombinedPdfBytes: 64 * 1024 * 1024,
+  maxArchiveBytes: 64 * 1024 * 1024,
+};
 
 const file = () =>
   new File(["%PDF-synthetic"], "private-name.pdf", { type: "application/pdf" });
@@ -145,4 +155,78 @@ it("reports safe failed rendering/loading/export states with no partial download
   expect(working.getSnapshot().error).toBe("OUTPUT_INVALID");
   expect(working.getSnapshot().result).toBeUndefined();
   await working.destroy();
+});
+
+it("publishes an atomic split result and revokes its URL on reset", async () => {
+  const resources = opened(),
+    createUrl = vi.fn(() => "blob:split-result"),
+    revokeUrl = vi.fn(),
+    split = vi.fn(async (input: PageInput): Promise<SplitResult> => {
+      expect(input.blob).not.toHaveProperty("name");
+      return {
+        blob: new Blob(["ZIP"], { type: "application/zip" }),
+        kind: "zip",
+        fileCount: 2,
+        pageCount: 3,
+        combinedPdfBytes: 2_048,
+      };
+    });
+  const session = new PreviewSession({
+    open: async () => resources,
+    split,
+    createUrl,
+    revokeUrl,
+    id: () => "one",
+  });
+  await session.setSource(file());
+  const plan = session.getSnapshot().plan!;
+  await session.exportSplit(
+    [
+      { ...plan, pages: plan.pages.slice(0, 2) },
+      { ...plan, pages: plan.pages.slice(2, 3) },
+    ],
+    splitLimits,
+  );
+  expect(session.getSnapshot().result).toEqual({
+    url: "blob:split-result",
+    kind: "zip",
+    fileCount: 2,
+    pageCount: 3,
+    combinedPdfBytes: 2_048,
+  });
+  await session.reset();
+  expect(revokeUrl).toHaveBeenCalledWith("blob:split-result");
+});
+
+it("aborts split generation and ignores a stale completion after reset", async () => {
+  const pending = deferred<SplitResult>(),
+    resources = opened(),
+    createUrl = vi.fn(),
+    split = vi.fn((...args: [PageInput, unknown, SplitOptions]) => {
+      void args;
+      return pending.promise;
+    });
+  const session = new PreviewSession({
+    open: async () => resources,
+    split,
+    createUrl,
+    id: () => "one",
+  });
+  await session.setSource(file());
+  const plan = session.getSnapshot().plan!;
+  const exporting = session.exportSplit([plan], splitLimits);
+  await vi.waitFor(() => expect(split).toHaveBeenCalled());
+  expect(resources.scheduler.stats().paused).toBe(true);
+  await session.reset();
+  expect(split.mock.calls[0][2].signal!.aborted).toBe(true);
+  pending.resolve({
+    blob: new Blob(["%PDF-result"]),
+    kind: "pdf",
+    fileCount: 1,
+    pageCount: 4,
+    combinedPdfBytes: 11,
+  });
+  await exporting;
+  expect(createUrl).not.toHaveBeenCalled();
+  expect(session.getSnapshot().state).toBe("empty");
 });

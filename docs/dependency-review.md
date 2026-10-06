@@ -1,5 +1,17 @@
 # Dependency review
 
+## M3A.3 CI security closeout
+
+Reviewed on 6 October 2026 after GitHub Advisory Database update GHSA-wq5f-xc86-pv6w caused the required audit to reject `sharp@0.35.4` through Next.js. The advisory affects versions below 0.35.5. Next 16.3.6 declares compatible optional range `sharp@^0.35.4`; the workspace override now selects exact `sharp@0.35.5` (Apache-2.0, Node >=20.9.0, npm integrity `sha512-Ywn4OnzGukp7CDMrp08RQ50YKmuwG47brZgIVPTvBaaAfQlRlygrRqSrxdCiL9M+LlzLBiJ68IR1QqvzHyjC7g==`). The upstream release updates its libvips binaries to the patched line. This lockfile security refresh adds no product capability or document-processing path.
+
+## M3A.3 Split PDF
+
+Reviewed on 6 October 2026. The only new runtime dependency is exact `fflate@0.8.3`, sourced from the npm registry and upstream `https://github.com/101arrowz/fflate`. Its installed manifest declares MIT, no runtime dependencies and browser ESM entry `esm/browser.js`. The npm archive integrity is `sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==`; the reviewed archive SHA-256 is `38C2CD824402407B43153C782274AEC2EA83EA688E4AA0B743C5F2C305857D92`. The installed browser entry SHA-256 is `B7CA4450B19559A1D50EB381ADCEE94B82449674BE4CD17789D9BEBA7E6122A1`.
+
+The preserved MIT notice is copyright 2026 Arjun Barrett; its SHA-256 is `0A1DF3A083D0C010560AA342E87959C8C1070E6FD54545741F083F22D0C8B551`. Exact-version advisory review returned no finding. There is no transitive graph, AGPL or unknown license. The package is imported dynamically inside the Split worker only after multiple PDF outputs validate. Bundle and browser checks prove the archive chunk is absent from unrelated routes and single-output generation. Stored ZIP entries avoid spending CPU recompressing already-compressed PDFs. Existing PDF.js, OFL-font and pdf-lib review remains unchanged.
+
+Reproduce metadata with `pnpm view fflate@0.8.3 version license dependencies dist.integrity dist.tarball --json`, inspect the installed package and notice, run the locked audits, build, and run the Split product/isolation browser suites.
+
 ## M3A.2 post-acceptance CI security closeout
 
 Reviewed on 6 October 2026 after GitHub Advisory Database update GHSA-68fv-2mgg-jv7q caused the required audit to reject the previously locked `source-map-js@1.2.1`. The advisory affects versions from 1.0.0 through 1.2.1 and identifies 1.2.2 as patched. The workspace override now resolves every Next/PostCSS, Tailwind and test-tooling path to exact `source-map-js@1.2.2` (BSD-3-Clause, no dependencies, npm integrity `sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==`). This is a same-line transitive security update and adds no product capability or infrastructure.

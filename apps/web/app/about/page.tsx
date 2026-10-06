@@ -17,7 +17,7 @@ export default function AboutPage() {
         collection of document utilities.
       </p>
       <p className="notice">
-        Product preview. Five PDF tools are available on your device. The
+        Product preview. Six PDF tools are available on your device. The
         remaining tools are planned.
       </p>
       <h2>The intended approach</h2>
@@ -26,7 +26,7 @@ export default function AboutPage() {
         when a future operation will require server processing.
       </p>
       <p>
-        Merge, Organize, Extract, Delete, and Rotate PDF create downloads
+        Merge, Split, Organize, Extract, Delete, and Rotate PDF create downloads
         locally in your browser. The catalog also describes tools planned for
         future releases.
       </p>

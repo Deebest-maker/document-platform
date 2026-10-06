@@ -9,12 +9,15 @@
     "./types": "./src/types.ts",
     "./page-model": "./src/page-model.ts",
     "./pages": "./src/page-operation-client.ts",
+    "./split": "./src/split-client.ts",
+    "./split-plan": "./src/split-plan.ts",
     "./preview": "./src/preview/index.ts"
   },
   "scripts": {
     "test": "vitest run"
   },
   "dependencies": {
+    "fflate": "0.8.3",
     "pdf-lib": "1.17.1",
     "pdfjs-dist": "6.3.289"
   },

@@ -8,6 +8,7 @@ const routes = [
   "/extract-pdf-pages",
   "/delete-pdf-pages",
   "/rotate-pdf",
+  "/split-pdf",
   "/about",
   "/privacy",
   "/terms",
@@ -35,6 +36,7 @@ for (const route of routes) {
         "/extract-pdf-pages",
         "/delete-pdf-pages",
         "/rotate-pdf",
+        "/split-pdf",
       ].includes(route)
         ? 1
         : 0,
@@ -50,6 +52,7 @@ for (const route of routes) {
         "/extract-pdf-pages",
         "/delete-pdf-pages",
         "/rotate-pdf",
+        "/split-pdf",
       ].includes(route)
     ) {
       await page.screenshot({
