@@ -7,6 +7,8 @@ overrides:
   "pdfjs-dist@6.3.289>@napi-rs/canvas": "-"
   # Temporary reviewed fix for GHSA-vfj7-8cjw-p6xm. Remove after upstream ships a patched release.
   braces: "file:./vendor/braces"
+  # Patched release for GHSA-68fv-2mgg-jv7q across Next/PostCSS, Tailwind and test tooling.
+  source-map-js: "1.2.2"
 
 # These are the only dependency install scripts required by this foundation.
 allowBuilds:
