@@ -1,5 +1,11 @@
 # Dependency review
 
+## M3A.2 post-acceptance CI security closeout
+
+Reviewed on 6 October 2026 after GitHub Advisory Database update GHSA-68fv-2mgg-jv7q caused the required audit to reject the previously locked `source-map-js@1.2.1`. The advisory affects versions from 1.0.0 through 1.2.1 and identifies 1.2.2 as patched. The workspace override now resolves every Next/PostCSS, Tailwind and test-tooling path to exact `source-map-js@1.2.2` (BSD-3-Clause, no dependencies, npm integrity `sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==`). This is a same-line transitive security update and adds no product capability or infrastructure.
+
+The preceding closeout also retained the reviewed local `braces@3.0.4-document-platform.0` lint-tool patch for GHSA-vfj7-8cjw-p6xm because no upstream patched version exists. Its MIT source provenance, integrity, preserved license and bounded nesting change are recorded in `vendor/braces/SECURITY-PATCH.md`; `scripts/test-braces-security.mjs` covers the security behavior. Neither package is a document-processing engine, and no AGPL or unknown license is introduced.
+
 ## M3A.2 Extract, Delete and Rotate PDF pages
 
 Reviewed on 29 September 2026. M3A.2 adds no production or development dependency and does not change the lockfile. The three local product routes reuse the reviewed `pdfjs-dist@6.3.289` preview assets and `pdf-lib@1.17.1` structural worker from M2B/M2A. No range/archive package, drag library, second PDF engine, server document engine, AGPL package, persistence or analytics integration is introduced. Existing notices, PDF.js asset verification and locked JavaScript/Python audits remain applicable.

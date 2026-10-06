@@ -194,6 +194,7 @@ test("stable selection, keyboard reorder, rotation, extract and validated downlo
 test("thumbnail association, crop and rotation; accessible mobile reflow", async ({
   page,
 }) => {
+  await page.setViewportSize({ width: 390, height: 664 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await page
@@ -211,6 +212,8 @@ test("thumbnail association, crop and rotation; accessible mobile reflow", async
     .toBeGreaterThan(0);
   await expect(first.getByText("Rendering preview…")).toHaveCount(0);
   const fourth = page.locator('li[data-source-page="4"]');
+  await expect(fourth.getByText("Preview waits until nearby")).toBeVisible();
+  const idleHeight = (await fourth.boundingBox())!.height;
   await fourth.scrollIntoViewIfNeeded();
   await expect
     .poll(() =>
@@ -222,6 +225,9 @@ test("thumbnail association, crop and rotation; accessible mobile reflow", async
         ),
     )
     .toBe(true);
+  expect(
+    Math.abs((await fourth.boundingBox())!.height - idleHeight),
+  ).toBeLessThan(1);
   const before = await fourth
     .locator("canvas")
     .evaluate((node: HTMLCanvasElement) => [node.width, node.height]);
