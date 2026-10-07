@@ -24,6 +24,7 @@ export const pagePhaseCopy = {
   reading: "Reading the source PDF locally…",
   transforming: "Writing the requested pages…",
   validating: "Reopening and validating the new PDF…",
+  archiving: "Packaging validated files locally…",
 };
 
 export function pageToolState(snapshot: PageSnapshot): ToolShellState {

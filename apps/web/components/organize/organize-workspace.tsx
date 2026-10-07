@@ -40,6 +40,7 @@ const phaseCopy = {
   reading: "Reading the source PDF locally…",
   transforming: "Writing pages in the displayed order…",
   validating: "Reopening and validating the organized PDF…",
+  archiving: "Packaging validated files locally…",
 };
 
 function stateFor(snapshot: PageSnapshot): ToolShellState {

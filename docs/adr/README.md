@@ -4,13 +4,14 @@ Material architecture decisions require human review under `AGENTS.md`. Record c
 
 The architecture baseline in `../04_System_Architecture_Technical_Design.docx`, section 16, already reserves ADR-001 through ADR-009 for the approved stack, local-first processing, licensing, and infrastructure decisions. Their authoritative text remains in that document.
 
-| Record                                    | Status                                                                         | Decision                                                                                |
-| ----------------------------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
-| [ADR-010](010-m0-workspace-foundation.md) | Accepted within approved M0 scope                                              | Workspace tooling and minimal foundation boundaries                                     |
-| [ADR-011](011-m1-product-shell.md)        | Accepted with M1 architecture amendments                                       | Registry, nonfunctional preview, neutral privacy wording, and minimal shared UI         |
-| [ADR-012](012-m2a-local-merge.md)         | Implemented within M2A approval; owner acceptance pending                      | LOCAL Merge, measured worker decision, route-local lifecycle and conservative limits    |
-| [ADR-013](013-m2b-page-foundation.md)     | Implemented under M2B and font-alternative approvals; owner acceptance pending | Stable page operations, bounded local PDF.js previews, deliberate OFL font substitution |
-| [ADR-014](014-m3a1-organize-pdf.md)       | Accepted after owner review and merged                                         | Local Organize product session, stable-ID reorder UI and validated export               |
-| [ADR-015](015-m3a2-page-tools.md)         | Implemented under the approved M3A.2 gate; owner acceptance pending            | Local Extract/Delete/Rotate routes over the shared page session and selection pattern   |
+| Record                                    | Status                                                                         | Decision                                                                                 |
+| ----------------------------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| [ADR-010](010-m0-workspace-foundation.md) | Accepted within approved M0 scope                                              | Workspace tooling and minimal foundation boundaries                                      |
+| [ADR-011](011-m1-product-shell.md)        | Accepted with M1 architecture amendments                                       | Registry, nonfunctional preview, neutral privacy wording, and minimal shared UI          |
+| [ADR-012](012-m2a-local-merge.md)         | Implemented within M2A approval; owner acceptance pending                      | LOCAL Merge, measured worker decision, route-local lifecycle and conservative limits     |
+| [ADR-013](013-m2b-page-foundation.md)     | Implemented under M2B and font-alternative approvals; owner acceptance pending | Stable page operations, bounded local PDF.js previews, deliberate OFL font substitution  |
+| [ADR-014](014-m3a1-organize-pdf.md)       | Accepted after owner review and merged                                         | Local Organize product session, stable-ID reorder UI and validated export                |
+| [ADR-015](015-m3a2-page-tools.md)         | Accepted and merged after owner manual verification                            | Local Extract/Delete/Rotate routes over the shared page session and selection pattern    |
+| [ADR-016](016-m3a3-split-pdf.md)          | Implemented under the approved M3A.3 gate; owner acceptance pending            | Local range/selected-page Split, atomic PDF batches and dynamically loaded ZIP packaging |
 
 Use the next available identifier for a new decision. Later proposals must state whether they refine or supersede an existing decision and update affected source documents after approval.

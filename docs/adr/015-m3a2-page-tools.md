@@ -2,7 +2,7 @@
 
 Date: 2026-09-29
 
-Status: Implemented under the approved M3A.2 gate; owner acceptance pending.
+Status: Accepted and merged after owner manual verification.
 
 ## Authority
 

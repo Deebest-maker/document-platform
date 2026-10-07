@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-test("unrelated production routes never load PDF.js or fonts; test consumer is absent", async ({
+test("unrelated production routes never load PDF.js, fonts, or ZIP code; test consumer is absent", async ({
   page,
   request,
 }) => {
@@ -8,7 +8,7 @@ test("unrelated production routes never load PDF.js or fonts; test consumer is a
   for (const route of ["/", "/tools", "/merge-pdf"]) await page.goto(route);
   expect(
     requests.filter((url) =>
-      /pdfjs|Liberation|standard_fonts|bcmap/i.test(url),
+      /pdfjs|Liberation|standard_fonts|bcmap|fflate/i.test(url),
     ),
   ).toEqual([]);
   expect((await request.get("/__m2b-foundation")).status()).toBe(404);

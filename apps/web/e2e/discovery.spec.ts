@@ -29,8 +29,10 @@ test("homepage search leads to available LOCAL Merge", async ({ page }) => {
   expect(privacyTarget).not.toBeNull();
   expect(privacyTarget!.height).toBeGreaterThanOrEqual(44);
   await page.getByRole("link", { name: "Split PDF", exact: true }).click();
-  await expect(page).toHaveURL("/tools#split-pdf");
-  await expect(page.locator("#split-pdf")).toBeInViewport();
+  await expect(page).toHaveURL("/split-pdf");
+  await expect(
+    page.getByRole("heading", { name: "Choose a PDF to split" }),
+  ).toBeVisible();
 });
 
 test("catalog records and disclosures agree with the registry", async ({

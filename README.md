@@ -1,6 +1,6 @@
 # Document & File Platform
 
-Privacy-first document utilities, built milestone by milestone. The product delivers **M2A: Merge PDF Vertical Slice**, with the **M2B PDF preview and page-operation foundation** available to future tools. Merge PDFs locally in the browser, arrange file order, download, and start over. The other 12 tools remain planned; M2B adds no product tool routes.
+Privacy-first document utilities, built milestone by milestone. Six PDF tools now work locally in the browser: Merge, Split, Organize, Extract Pages, Delete Pages and Rotate. The remaining documented tools stay planned.
 
 ## Source of truth
 
@@ -10,14 +10,18 @@ Read [AGENTS.md](AGENTS.md) and the approved Word documents in [docs](docs/) bef
 
 [ADR-012](docs/adr/012-m2a-local-merge.md) records the approved Merge boundaries, benchmark-triggered worker, lifecycle and engineering limits. See the [M2A benchmark evidence](docs/benchmarks/M2A.md) and [synthetic fixture manifest](tests/fixtures/pdf/manifest.json).
 
+[ADR-013](docs/adr/013-m2b-page-foundation.md) through [ADR-016](docs/adr/016-m3a3-split-pdf.md) record the shared preview/page-operation foundation and the Organize, Extract/Delete/Rotate and Split product decisions.
+
 ## Product preview
 
 - `/`: task search, featured tools, availability, categories, and processing explanations.
 - `/tools`: all 13 documented MVP records, with in-memory search and category filtering.
 - `/merge-pdf`: choose two or more PDFs, add/remove/move files, merge in a dedicated browser worker, download `merged.pdf`, change the selection or start over. Nothing is uploaded; the processor is not required.
+- `/split-pdf`: define independent range groups or select individual pages, generate validated PDFs locally, then download one PDF or a fixed-name ZIP.
+- `/organize-pdf`, `/extract-pdf-pages`, `/delete-pdf-pages`, `/rotate-pdf`: preview pages and perform the named structural page operation locally.
 - `/about`, `/privacy`, `/terms`, `/contact`: lightweight trust information; unfinished policy/contact copy is labeled clearly.
 
-All routes remain `noindex`. Other tools link to catalog entries instead of nonexistent tool pages. Search queries and document state are not persisted, placed in URLs, or sent to a service. No third-party scripts, remote fonts, analytics or advertising are introduced. `pdf-lib` is isolated in `packages/pdf-browser`; it loads only when Merge is invoked.
+All routes remain `noindex`. Other tools link to catalog entries instead of nonexistent tool pages. Search queries and document state are not persisted, placed in URLs, or sent to a service. No third-party scripts, remote fonts, analytics or advertising are introduced. PDF and ZIP engines are isolated in `packages/pdf-browser` and loaded only by routes that use them.
 
 Current conservative M2A engineering limits: **20 files, 10 MiB per file, 32 MiB combined, 200 pages, 32 MiB output**. Password-protected/encrypted PDFs are unsupported. Interactive forms, bookmarks and other document-level features may not survive copying; digital signatures do not remain valid. Keep originals. These are not final public launch limits or performance guarantees. Cancel terminates the worker. Reset/navigation revokes downloads and releases session references, without claiming secure memory erasure.
 
@@ -54,7 +58,7 @@ uv run --locked --project services/processor uvicorn app.main:app --app-dir serv
 
 `GET http://127.0.0.1:8000/health/live` returns `{"status":"ok"}`. It reports process liveness only. The web shell does not call this service. Stop either development process with Ctrl+C.
 
-## Verify the foundation, product shell and Merge
+## Verify the foundation and current product tools
 
 ```sh
 pnpm check
@@ -112,10 +116,10 @@ The image runs as UID/GID 10001 and contains no conversion engines or developmen
 ## Layout and CI
 
 ```text
-apps/web/                 Routes, discovery, route-local Merge workflow and tests
+apps/web/                 Routes, discovery, route-local product workflows and tests
 packages/tool-registry/    Catalog, modes, availability, privacy copy and limits
 packages/ui/              Tokens, ToolShell, PrivacyIndicator, generic FilePicker
-packages/pdf-browser/     Isolated pdf-lib adapter, validation and local worker
+packages/pdf-browser/     Isolated PDF/ZIP adapters, validation and local workers
 tests/fixtures/           Synthetic PDFs, manifest and optional authoring scripts
 services/processor/       FastAPI health service, Python checks, Dockerfile
 docs/adr/                 Approved implementation decisions
@@ -124,4 +128,4 @@ docs/adr/                 Approved implementation decisions
 
 CI installs from lockfiles, runs the checks above, builds the processor image, and verifies it under the same restrictions. Browser failure artifacts contain only public pages and synthetic test data. Use short-lived feature branches and pull requests for material changes; main requires the unchanged `web`, `processor`, and `processor-container` checks under existing branch protection.
 
-M2A does not include PDF.js, thumbnails, page-level selection/reordering, Split, Organize or other tools. M2B needs its own reviewed plan and explicit approval. Learn/content, production SEO, final branding, final legal policies and public deployment remain later work.
+M3A.3 does not include image conversion, PDF-to-image/text, metadata removal, document repair, server processing or M3B functionality. Learn/content, production SEO, final branding, final legal policies and public deployment remain later work.

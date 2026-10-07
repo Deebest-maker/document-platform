@@ -19,6 +19,7 @@ import DeletePage, {
   metadata as deleteMetadata,
 } from "./delete-pdf-pages/page";
 import RotatePage, { metadata as rotateMetadata } from "./rotate-pdf/page";
+import SplitPage, { metadata as splitMetadata } from "./split-pdf/page";
 
 describe("M1 registry integration", () => {
   it("renders homepage discovery from registry records", () => {
@@ -40,7 +41,7 @@ describe("M1 registry integration", () => {
       expect(html).toContain(tool.title);
       expect(html).toContain(tool.description);
     }
-    expect(html).toContain("Five PDF tools are available.");
+    expect(html).toContain("Six PDF tools are available.");
   });
 
   it("DEV-004 / FR-GEN-004: connects Merge record to metadata, shell and privacy", () => {
@@ -83,6 +84,7 @@ describe("M1 registry integration", () => {
       "Choose a PDF to remove pages from",
     ],
     ["rotate-pdf", RotatePage, rotateMetadata, "Choose a PDF to rotate"],
+    ["split-pdf", SplitPage, splitMetadata, "Choose a PDF to split"],
   ] as const)(
     "connects %s to registry metadata and a real local picker",
     (slug, Page, metadata, heading) => {

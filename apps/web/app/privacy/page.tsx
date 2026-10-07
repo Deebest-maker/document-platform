@@ -17,16 +17,16 @@ export default function PrivacyPage() {
         Draft information — this is not a finalized privacy policy.
       </p>
       <p className="intro">
-        Merge PDF processes documents entirely in your browser. Document bytes
-        are never uploaded to our servers or third parties. Selected files and
-        the result stay in this page session; Start over or leaving the page
-        releases those references. This is not a promise of secure memory
-        erasure.
+        Six available PDF tools process documents entirely in your browser.
+        Document bytes are never uploaded to our servers or third parties.
+        Selected files and results stay in this page session; Start over or
+        leaving the page releases those references. This is not a promise of
+        secure memory erasure.
       </p>
       <h2>Three processing modes</h2>
       <p>
-        Merge is the only available tool. The labels below describe the planned
-        model for future tools.
+        Available tools show their current processing mode. The labels below
+        also describe the planned model for future tools.
       </p>
       <div className="privacy-explanations">
         {processingModes.map((processingMode) => (

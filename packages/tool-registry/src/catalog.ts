@@ -46,6 +46,9 @@ export interface ToolDefinition {
     readonly maxTotalBytes: number;
     readonly maxPages: number;
     readonly maxOutputBytes: number;
+    readonly maxOutputs?: number;
+    readonly maxCombinedOutputBytes?: number;
+    readonly maxArchiveBytes?: number;
   };
 }
 
@@ -101,7 +104,13 @@ export const tools: readonly ToolDefinition[] = [
     processingMode: "LOCAL",
     relatedSlugs: ["extract-pdf-pages", "merge-pdf"],
     featured: false,
-    availability: "planned",
+    availability: "available",
+    limits: {
+      ...localPageLimits,
+      maxOutputs: 20,
+      maxCombinedOutputBytes: 64 * 1024 * 1024,
+      maxArchiveBytes: 64 * 1024 * 1024,
+    },
   },
   {
     slug: "jpg-to-pdf",
