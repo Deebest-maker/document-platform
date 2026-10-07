@@ -1,5 +1,9 @@
 # Dependency review
 
+## M3B.1 Images to PDF
+
+Reviewed on 7 October 2026. M3B.1 adds no production or development dependency and does not change the lockfile. The local route reuses the reviewed `pdf-lib@1.17.1` worker engine plus browser `createImageBitmap`, `OffscreenCanvas` and Blob APIs. JPEG/PNG header and EXIF-orientation inspection is implemented in the first-party browser package. No EXIF library, image codec package, drag library, server document engine, AGPL package, persistence or analytics integration is introduced. Existing notices and locked JavaScript/Python audits remain applicable. ADR-017 records the processing, output-validation, lifecycle and measured-limit decisions.
+
 ## M3A.3 CI security closeout
 
 Reviewed on 6 October 2026 after GitHub Advisory Database update GHSA-wq5f-xc86-pv6w caused the required audit to reject `sharp@0.35.4` through Next.js. The advisory affects versions below 0.35.5. Next 16.3.6 declares compatible optional range `sharp@^0.35.4`; the workspace override now selects exact `sharp@0.35.5` (Apache-2.0, Node >=20.9.0, npm integrity `sha512-Ywn4OnzGukp7CDMrp08RQ50YKmuwG47brZgIVPTvBaaAfQlRlygrRqSrxdCiL9M+LlzLBiJ68IR1QqvzHyjC7g==`). The upstream release updates its libvips binaries to the patched line. This lockfile security refresh adds no product capability or document-processing path.

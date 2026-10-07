@@ -69,7 +69,7 @@ describe("DEV-004: authoritative tool registry", () => {
     ).toEqual(expected);
   });
 
-  it("makes only the completed routes through M3A.3 available", () => {
+  it("makes only the completed routes through M3B.1 available", () => {
     expect(
       tools
         .filter((tool) => tool.availability === "available")
@@ -77,6 +77,7 @@ describe("DEV-004: authoritative tool registry", () => {
     ).toEqual([
       "merge-pdf",
       "split-pdf",
+      "jpg-to-pdf",
       "organize-pdf",
       "extract-pdf-pages",
       "delete-pdf-pages",
@@ -92,6 +93,7 @@ describe("DEV-004: authoritative tool registry", () => {
           "extract-pdf-pages",
           "delete-pdf-pages",
           "rotate-pdf",
+          "jpg-to-pdf",
         ].includes(tool.slug)
           ? "/" + tool.slug
           : "/tools#" + tool.slug,
@@ -163,6 +165,21 @@ describe("DEV-004: authoritative tool registry", () => {
       maxOutputs: 20,
       maxCombinedOutputBytes: 67108864,
       maxArchiveBytes: 67108864,
+    });
+    const images = getTool("jpg-to-pdf")!;
+    expect(images.availability).toBe("available");
+    expect(images.limits).toEqual({
+      maxFiles: 20,
+      maxFileBytes: 10485760,
+      maxTotalBytes: 33554432,
+      maxPages: 20,
+      maxOutputBytes: 67108864,
+      maxWidth: 8192,
+      maxHeight: 8192,
+      maxPixelsPerImage: 24000000,
+      maxAggregatePixels: 160000000,
+      maxDecodedBytesPerImage: 96000000,
+      maxAggregateDecodedBytes: 640000000,
     });
     expect(
       tools

@@ -6,11 +6,13 @@ export function ReorderControls({
   canMoveEarlier,
   canMoveLater,
   onMove,
+  itemLabel,
 }: {
   pageNumber: number;
   canMoveEarlier: boolean;
   canMoveLater: boolean;
   onMove: (direction: -1 | 1) => void;
+  itemLabel?: string;
 }) {
   const earlier = useRef<HTMLButtonElement>(null),
     later = useRef<HTMLButtonElement>(null),
@@ -30,18 +32,15 @@ export function ReorderControls({
     pendingDirection.current = direction;
     onMove(direction);
   };
+  const label = itemLabel ?? `page ${pageNumber}`;
   return (
-    <div
-      className="page-reorder"
-      role="group"
-      aria-label={`Reorder page ${pageNumber}`}
-    >
+    <div className="page-reorder" role="group" aria-label={`Reorder ${label}`}>
       <button
         ref={earlier}
         type="button"
         disabled={!canMoveEarlier}
         onClick={() => move(-1)}
-        aria-label={`Move page ${pageNumber} earlier`}
+        aria-label={`Move ${label} earlier`}
       >
         Move earlier
       </button>
@@ -50,7 +49,7 @@ export function ReorderControls({
         type="button"
         disabled={!canMoveLater}
         onClick={() => move(1)}
-        aria-label={`Move page ${pageNumber} later`}
+        aria-label={`Move ${label} later`}
       >
         Move later
       </button>
