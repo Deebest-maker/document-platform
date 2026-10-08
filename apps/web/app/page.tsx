@@ -89,9 +89,9 @@ export default function HomePage() {
             <br className="desktop-break" /> document would go.
           </h2>
           <p>
-            Six PDF tools run in your browser without uploading your PDFs. Other
-            tools are planned; their labels explain the intended processing
-            location.
+            Seven tools run in your browser without uploading your documents or
+            images. Other tools are planned; their labels explain the intended
+            processing location.
           </p>
           <Link className="text-link" href="/privacy">
             Read about privacy <span aria-hidden="true">→</span>

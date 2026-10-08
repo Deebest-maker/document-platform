@@ -10,6 +10,7 @@ const routes = [
   "/delete-pdf-pages",
   "/rotate-pdf",
   "/split-pdf",
+  "/jpg-to-pdf",
   "/about",
   "/privacy",
   "/terms",
@@ -52,6 +53,7 @@ for (const route of [
   "/delete-pdf-pages",
   "/rotate-pdf",
   "/split-pdf",
+  "/jpg-to-pdf",
 ]) {
   test(`NFR-A11Y-005 / UX-010: ${route} reflows with enlarged text and reduced motion`, async ({
     page,

@@ -1,0 +1,72 @@
+{
+  "generatedAt": "2026-10-07T16:54:54.769Z",
+  "browser": "project-pinned Playwright Chromium",
+  "workload": "Synthetic phone-size JPEGs, transparent PNGs, a 24 MP boundary image, and the 20-image count boundary",
+  "rows": [
+    {
+      "scenario": "typical-phone-set",
+      "imageCount": 6,
+      "aggregatePixels": 73156608,
+      "previewMs": 1066,
+      "generationMs": 920,
+      "cancellationMs": null,
+      "outputBytes": 438674,
+      "peakLiveObjectUrls": 7,
+      "observedHeapDeltaBytes": 0,
+      "cleanup": "0 live object URLs; 0 workers",
+      "horizontalOverflow": false
+    },
+    {
+      "scenario": "mixed-jpeg-png",
+      "imageCount": 4,
+      "aggregatePixels": 23394304,
+      "previewMs": 480,
+      "generationMs": 1923,
+      "cancellationMs": null,
+      "outputBytes": 155875,
+      "peakLiveObjectUrls": 5,
+      "observedHeapDeltaBytes": 0,
+      "cleanup": "0 live object URLs; 0 workers",
+      "horizontalOverflow": false
+    },
+    {
+      "scenario": "single-24mp-boundary",
+      "imageCount": 1,
+      "aggregatePixels": 24000000,
+      "previewMs": 406,
+      "generationMs": 233,
+      "cancellationMs": null,
+      "outputBytes": 145663,
+      "peakLiveObjectUrls": 2,
+      "observedHeapDeltaBytes": 0,
+      "cleanup": "0 live object URLs; 0 workers",
+      "horizontalOverflow": false
+    },
+    {
+      "scenario": "exif-orientation-6",
+      "imageCount": 1,
+      "aggregatePixels": 2400000,
+      "previewMs": 226,
+      "generationMs": 246,
+      "cancellationMs": null,
+      "outputBytes": 17410,
+      "peakLiveObjectUrls": 2,
+      "observedHeapDeltaBytes": 0,
+      "cleanup": "0 live object URLs; 0 workers",
+      "horizontalOverflow": false
+    },
+    {
+      "scenario": "maximum-count",
+      "imageCount": 20,
+      "aggregatePixels": 21600000,
+      "previewMs": 541,
+      "generationMs": 276,
+      "cancellationMs": 112,
+      "outputBytes": 163578,
+      "peakLiveObjectUrls": 21,
+      "observedHeapDeltaBytes": 0,
+      "cleanup": "0 live object URLs; 0 workers",
+      "horizontalOverflow": false
+    }
+  ]
+}

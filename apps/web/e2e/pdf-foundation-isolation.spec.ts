@@ -5,7 +5,8 @@ test("unrelated production routes never load PDF.js, fonts, or ZIP code; test co
 }) => {
   const requests: string[] = [];
   page.on("request", (request) => requests.push(request.url()));
-  for (const route of ["/", "/tools", "/merge-pdf"]) await page.goto(route);
+  for (const route of ["/", "/tools", "/merge-pdf", "/jpg-to-pdf"])
+    await page.goto(route);
   expect(
     requests.filter((url) =>
       /pdfjs|Liberation|standard_fonts|bcmap|fflate/i.test(url),

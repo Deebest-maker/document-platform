@@ -14,7 +14,7 @@ export default function TermsPage() {
         Placeholder — final terms have not been approved.
       </p>
       <p className="intro">
-        This is an early product preview. Six PDF tools are available for local
+        This is an early product preview. Seven tools are available for local
         processing; other document tools are planned.
       </p>
       <p>

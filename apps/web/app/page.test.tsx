@@ -20,6 +20,9 @@ import DeletePage, {
 } from "./delete-pdf-pages/page";
 import RotatePage, { metadata as rotateMetadata } from "./rotate-pdf/page";
 import SplitPage, { metadata as splitMetadata } from "./split-pdf/page";
+import ImagesToPdfPage, {
+  metadata as imagesToPdfMetadata,
+} from "./jpg-to-pdf/page";
 
 describe("M1 registry integration", () => {
   it("renders homepage discovery from registry records", () => {
@@ -41,7 +44,7 @@ describe("M1 registry integration", () => {
       expect(html).toContain(tool.title);
       expect(html).toContain(tool.description);
     }
-    expect(html).toContain("Six PDF tools are available.");
+    expect(html).toContain("Seven tools are available.");
   });
 
   it("DEV-004 / FR-GEN-004: connects Merge record to metadata, shell and privacy", () => {
@@ -99,4 +102,16 @@ describe("M1 registry integration", () => {
       expect(html).not.toContain('multiple=""');
     },
   );
+
+  it("FR-I2P-001/003: connects Images to PDF to its local multi-image workspace", () => {
+    const tool = getTool("jpg-to-pdf")!;
+    expect(imagesToPdfMetadata).toMatchObject(getToolMetadata(tool));
+    expect(imagesToPdfMetadata.robots).toEqual({ index: false, follow: false });
+    const html = renderToStaticMarkup(<ImagesToPdfPage />);
+    expect(html).toContain(`<h1>${tool.title}</h1>`);
+    expect(html).toContain("Processed on your device");
+    expect(html).toContain("Build a PDF from images");
+    expect(html).toContain('type="file"');
+    expect(html).toContain('multiple=""');
+  });
 });

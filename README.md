@@ -1,6 +1,6 @@
 # Document & File Platform
 
-Privacy-first document utilities, built milestone by milestone. Six PDF tools now work locally in the browser: Merge, Split, Organize, Extract Pages, Delete Pages and Rotate. The remaining documented tools stay planned.
+Privacy-first document utilities, built milestone by milestone. Seven tools now work locally in the browser: Merge, Split, Organize, Extract Pages, Delete Pages, Rotate and Images to PDF. The remaining documented tools stay planned.
 
 ## Source of truth
 
@@ -10,7 +10,7 @@ Read [AGENTS.md](AGENTS.md) and the approved Word documents in [docs](docs/) bef
 
 [ADR-012](docs/adr/012-m2a-local-merge.md) records the approved Merge boundaries, benchmark-triggered worker, lifecycle and engineering limits. See the [M2A benchmark evidence](docs/benchmarks/M2A.md) and [synthetic fixture manifest](tests/fixtures/pdf/manifest.json).
 
-[ADR-013](docs/adr/013-m2b-page-foundation.md) through [ADR-016](docs/adr/016-m3a3-split-pdf.md) record the shared preview/page-operation foundation and the Organize, Extract/Delete/Rotate and Split product decisions.
+[ADR-013](docs/adr/013-m2b-page-foundation.md) through [ADR-017](docs/adr/017-m3b1-images-to-pdf.md) record the shared preview/page-operation foundation and the Organize, Extract/Delete/Rotate, Split and Images to PDF product decisions.
 
 ## Product preview
 
@@ -18,12 +18,15 @@ Read [AGENTS.md](AGENTS.md) and the approved Word documents in [docs](docs/) bef
 - `/tools`: all 13 documented MVP records, with in-memory search and category filtering.
 - `/merge-pdf`: choose two or more PDFs, add/remove/move files, merge in a dedicated browser worker, download `merged.pdf`, change the selection or start over. Nothing is uploaded; the processor is not required.
 - `/split-pdf`: define independent range groups or select individual pages, generate validated PDFs locally, then download one PDF or a fixed-name ZIP.
+- `/jpg-to-pdf`: choose JPEG/PNG images, arrange them, select Auto/A4/Letter and Contain/Cover layout, then generate `images-to-pdf.pdf` locally.
 - `/organize-pdf`, `/extract-pdf-pages`, `/delete-pdf-pages`, `/rotate-pdf`: preview pages and perform the named structural page operation locally.
 - `/about`, `/privacy`, `/terms`, `/contact`: lightweight trust information; unfinished policy/contact copy is labeled clearly.
 
 All routes remain `noindex`. Other tools link to catalog entries instead of nonexistent tool pages. Search queries and document state are not persisted, placed in URLs, or sent to a service. No third-party scripts, remote fonts, analytics or advertising are introduced. PDF and ZIP engines are isolated in `packages/pdf-browser` and loaded only by routes that use them.
 
 Current conservative M2A engineering limits: **20 files, 10 MiB per file, 32 MiB combined, 200 pages, 32 MiB output**. Password-protected/encrypted PDFs are unsupported. Interactive forms, bookmarks and other document-level features may not survive copying; digital signatures do not remain valid. Keep originals. These are not final public launch limits or performance guarantees. Cancel terminates the worker. Reset/navigation revokes downloads and releases session references, without claiming secure memory erasure.
+
+Images to PDF currently accepts **20 JPEG/PNG images, 10 MiB each, 32 MiB compressed total, 24 MP per image, 160 MP total and 64 MiB output**. It uses one page per image and a white PDF page behind transparent PNG areas. These evidence-based engineering caps are recorded in ADR-017 and remain subject to physical-device validation.
 
 ## Prerequisites
 
@@ -94,6 +97,8 @@ The separate Next.js test consumer lives under `apps/web/tests/page-foundation`,
 
 `node apps/web/benchmarks/run-preview.mjs` generates ignored synthetic 10/50/100/200/201-page and image-heavy inputs, compares concurrency 1/2/4, and records resource measurements under `docs/benchmarks`. Run after asset preparation and with other test/build workloads stopped. No real documents belong in these artifact-producing checks. Foundation limits are 10 MiB input, 200 pages and 32 MiB output; encrypted files are rejected. Page copying does not preserve document-level forms, bookmarks or digital signatures. Keep originals.
 
+`node apps/web/benchmarks/run-images-to-pdf.mjs` exercises synthetic phone-size JPEGs, transparent PNGs, the 24 MP boundary and the 20-image boundary. It records timings and cleanup evidence without retaining filenames or user data.
+
 ## Verify the processor container
 
 From the repository root:
@@ -128,4 +133,4 @@ docs/adr/                 Approved implementation decisions
 
 CI installs from lockfiles, runs the checks above, builds the processor image, and verifies it under the same restrictions. Browser failure artifacts contain only public pages and synthetic test data. Use short-lived feature branches and pull requests for material changes; main requires the unchanged `web`, `processor`, and `processor-container` checks under existing branch protection.
 
-M3A.3 does not include image conversion, PDF-to-image/text, metadata removal, document repair, server processing or M3B functionality. Learn/content, production SEO, final branding, final legal policies and public deployment remain later work.
+M3B.1 includes only Images to PDF. PDF-to-image/text, metadata removal, document repair, server processing and later M3B/M4 functionality remain outside this slice. Learn/content, production SEO, final branding, final legal policies and public deployment remain later work.

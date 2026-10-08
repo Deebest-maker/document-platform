@@ -49,6 +49,12 @@ export interface ToolDefinition {
     readonly maxOutputs?: number;
     readonly maxCombinedOutputBytes?: number;
     readonly maxArchiveBytes?: number;
+    readonly maxWidth?: number;
+    readonly maxHeight?: number;
+    readonly maxPixelsPerImage?: number;
+    readonly maxAggregatePixels?: number;
+    readonly maxDecodedBytesPerImage?: number;
+    readonly maxAggregateDecodedBytes?: number;
   };
 }
 
@@ -124,7 +130,21 @@ export const tools: readonly ToolDefinition[] = [
     processingMode: "LOCAL",
     relatedSlugs: ["pdf-to-jpg", "merge-pdf"],
     featured: true,
-    availability: "planned",
+    availability: "available",
+    // Conservative M3B.1 engineering caps; evidence and caveats: ADR-017.
+    limits: {
+      maxFiles: 20,
+      maxFileBytes: 10 * 1024 * 1024,
+      maxTotalBytes: 32 * 1024 * 1024,
+      maxPages: 20,
+      maxOutputBytes: 64 * 1024 * 1024,
+      maxWidth: 8192,
+      maxHeight: 8192,
+      maxPixelsPerImage: 24_000_000,
+      maxAggregatePixels: 160_000_000,
+      maxDecodedBytesPerImage: 96_000_000,
+      maxAggregateDecodedBytes: 640_000_000,
+    },
   },
   {
     slug: "pdf-to-jpg",
