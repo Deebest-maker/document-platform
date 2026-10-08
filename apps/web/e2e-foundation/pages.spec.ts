@@ -247,6 +247,7 @@ test("thumbnail association, crop and rotation; accessible mobile reflow", async
     )
     .toBe(true);
   expect(before[0]).toBeGreaterThan(before[1]);
+  await expect(fourth.getByText("Rendering preview…")).toHaveCount(0);
   const redTop = await fourth
     .locator("canvas")
     .evaluate((canvas: HTMLCanvasElement) => {
