@@ -1,0 +1,41 @@
+{
+  "measuredAt": "2026-10-10T07:51:29.401Z",
+  "rows": [
+    {
+      "name": "mixed-four-pages-150dpi",
+      "pages": 4,
+      "dpi": 150,
+      "previewMs": 5046,
+      "generationMs": 4210,
+      "outputBytes": 174606,
+      "combinedJpegBytes": 174184,
+      "peakWorkers": 1,
+      "peakLiveUrls": 1,
+      "unexpectedRequestsOrErrors": 0
+    },
+    {
+      "name": "rotated-page-300dpi",
+      "pages": 1,
+      "dpi": 300,
+      "previewMs": 4872,
+      "generationMs": 5752,
+      "outputBytes": 88362,
+      "combinedJpegBytes": 88362,
+      "peakWorkers": 1,
+      "peakLiveUrls": 1,
+      "unexpectedRequestsOrErrors": 0
+    },
+    {
+      "name": "maximum-count-96dpi",
+      "pages": 50,
+      "dpi": 96,
+      "previewMs": 4439,
+      "generationMs": 8896,
+      "outputBytes": 295372,
+      "combinedJpegBytes": 290350,
+      "peakWorkers": 1,
+      "peakLiveUrls": 1,
+      "unexpectedRequestsOrErrors": 0
+    }
+  ]
+}

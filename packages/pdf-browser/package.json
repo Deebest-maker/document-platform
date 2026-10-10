@@ -11,6 +11,7 @@
     "./pages": "./src/page-operation-client.ts",
     "./split": "./src/split-client.ts",
     "./split-plan": "./src/split-plan.ts",
+    "./pdf-to-jpg": "./src/pdf-to-jpg.ts",
     "./images": "./src/images-to-pdf-client.ts",
     "./image-inspection": "./src/image-inspection.ts",
     "./image-layout": "./src/image-layout.ts",

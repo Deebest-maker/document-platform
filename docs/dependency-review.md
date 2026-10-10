@@ -1,5 +1,9 @@
 # Dependency review
 
+## M3B.2 PDF to JPG
+
+Reviewed on 10 October 2026. M3B.2 adds no production or development dependency and does not change the lockfile. The local route reuses the reviewed `pdfjs-dist@6.3.289` preview document, first-party PDF.js/OFL assets and existing dynamically loaded `fflate@0.8.3`. JPEG encoding uses the browser canvas API. No image codec package, alternate PDF engine, server document engine, AGPL package, persistence or analytics integration is introduced. Existing notices, asset verification and locked JavaScript/Python audits remain applicable. ADR-018 records the rendering, output-validation, archive, lifecycle and measured-limit decisions.
+
 ## M3B.1 post-acceptance CI security closeout
 
 Reviewed on 8 October 2026 after GitHub Advisory Database update `GHSA-cjq9-62q9-8jv4` caused the required audit to reject `next@16.3.6`. The advisory affects Next.js versions from 16.0.0 through 16.3.7 and identifies 16.3.8 as patched. The web runtime and matching lint configuration now use exact `next@16.3.8` and `eslint-config-next@16.3.8`; the lockfile records the registry integrity values and matching platform SWC packages. The update adds no route, product capability, document-processing path, infrastructure or license category. The locked audit reports no known vulnerabilities.
