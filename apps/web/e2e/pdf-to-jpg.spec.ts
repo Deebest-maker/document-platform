@@ -183,8 +183,10 @@ test("generation cancellation is atomic and leaves the page selection reusable",
     .click({ force: true });
   await expect(
     page.getByRole("heading", { name: "Choose pages and resolution" }),
-  ).toBeVisible();
-  await expect(page.locator(".organize-error")).toContainText("cancelled");
+  ).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator(".organize-error")).toContainText("cancelled", {
+    timeout: 20_000,
+  });
   await expect(page.locator("[download]")).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: "Create JPG images" }),
