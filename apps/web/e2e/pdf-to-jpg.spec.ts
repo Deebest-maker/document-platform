@@ -177,10 +177,18 @@ test("generation cancellation is atomic and leaves the page selection reusable",
   await expect(page.locator("li[data-page-id]")).toHaveCount(50, {
     timeout: 30_000,
   });
+  await page.evaluate(() => {
+    const observer = new MutationObserver(() => {
+      const cancelButton = [...document.querySelectorAll("button")].find(
+        (button) => button.textContent?.trim() === "Cancel generation",
+      );
+      if (!cancelButton) return;
+      observer.disconnect();
+      cancelButton.click();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
   await page.getByRole("button", { name: "Create JPG images" }).click();
-  await page
-    .getByRole("button", { name: "Cancel generation" })
-    .click({ force: true });
   await expect(
     page.getByRole("heading", { name: "Choose pages and resolution" }),
   ).toBeVisible({ timeout: 20_000 });
