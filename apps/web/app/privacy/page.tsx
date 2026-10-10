@@ -17,7 +17,7 @@ export default function PrivacyPage() {
         Draft information — this is not a finalized privacy policy.
       </p>
       <p className="intro">
-        Seven available tools process documents and images entirely in your
+        Eight available tools process documents and images entirely in your
         browser. Document bytes are never uploaded to our servers or third
         parties. Selected files and results stay in this page session; Start
         over or leaving the page releases those references. This is not a

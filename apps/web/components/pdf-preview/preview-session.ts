@@ -23,6 +23,12 @@ import type {
   ThumbnailRequest,
 } from "@document-platform/pdf-browser/preview";
 import type {
+  PdfJpegDpi,
+  PdfToJpegLimits,
+  PdfToJpegPhase,
+  PdfToJpegResult,
+} from "@document-platform/pdf-browser/pdf-to-jpg";
+import type {
   SplitLimits,
   SplitOptions,
   SplitPhase,
@@ -41,10 +47,15 @@ export interface PageSnapshot {
     readonly url: string;
     readonly pageCount: number;
     readonly fileCount: number;
-    readonly kind: "pdf" | "zip";
+    readonly kind: "pdf" | "jpg" | "zip";
     readonly combinedPdfBytes?: number;
+    readonly combinedJpegBytes?: number;
+    readonly dpi?: PdfJpegDpi;
+    readonly pages?: PdfToJpegResult["pages"];
   };
   readonly phase?: PagePhase | SplitPhase;
+  readonly jpegPhase?: PdfToJpegPhase;
+  readonly progress?: { readonly current: number; readonly total: number };
   readonly announcement: string;
 }
 type Opened = { preview: PreviewDocument; scheduler: ThumbnailScheduler };
@@ -61,6 +72,21 @@ interface Services {
     options: SplitOptions,
     limits: SplitLimits,
   ) => Promise<SplitResult>;
+  rasterize: (
+    preview: PreviewDocument,
+    plan: PagePlan,
+    limits: PdfToJpegLimits,
+    options: {
+      dpi: PdfJpegDpi;
+      selectedIds: readonly string[] | "all";
+      signal: AbortSignal;
+      onProgress: (progress: {
+        phase: PdfToJpegPhase;
+        current: number;
+        total: number;
+      }) => void;
+    },
+  ) => Promise<PdfToJpegResult>;
   id: () => string;
   createUrl: (blob: Blob) => string;
   revokeUrl: (url: string) => void;
@@ -128,6 +154,12 @@ export class PreviewSession {
             options,
             splitLimits,
           )),
+      rasterize:
+        services.rasterize ??
+        (async (preview, plan, jpegLimits, options) =>
+          (
+            await import("@document-platform/pdf-browser/pdf-to-jpg")
+          ).renderPdfPagesToJpeg(preview, plan, jpegLimits, options)),
       ...services,
     };
   }
@@ -544,6 +576,99 @@ export class PreviewSession {
           state: "ready",
           error: error instanceof PageError ? error.code : "OPERATION_FAILED",
           announcement: "Split did not finish. No new download was created.",
+        });
+    } finally {
+      if (generation === this.generation) {
+        this.exportAbort = undefined;
+        opened.scheduler.resume();
+      }
+    }
+  }
+  async exportJpeg(
+    selectedIds: readonly string[] | "all",
+    dpi: PdfJpegDpi,
+    jpegLimits: PdfToJpegLimits,
+  ) {
+    if (
+      !this.snapshot.plan ||
+      !this.opened ||
+      this.snapshot.state === "exporting"
+    )
+      return;
+    this.clearResult();
+    const generation = this.generation;
+    const opened = this.opened;
+    const controller = new AbortController();
+    this.exportAbort = controller;
+    this.publish({
+      ...this.snapshot,
+      state: "exporting",
+      result: undefined,
+      error: undefined,
+      jpegPhase: "rendering",
+      progress: { current: 0, total: 0 },
+      announcement: "Preparing local page images.",
+    });
+    try {
+      await opened.scheduler.pause();
+      if (controller.signal.aborted || generation !== this.generation)
+        throw new PageError("CANCELLED");
+      const result = await this.services.rasterize(
+        opened.preview,
+        this.snapshot.plan,
+        jpegLimits,
+        {
+          dpi,
+          selectedIds,
+          signal: controller.signal,
+          onProgress: ({ phase, current, total }) => {
+            if (generation === this.generation)
+              this.publish({
+                ...this.snapshot,
+                jpegPhase: phase,
+                progress: { current, total },
+                announcement:
+                  phase === "rendering"
+                    ? `Rendering page ${current} of ${total}.`
+                    : phase === "validating"
+                      ? `Validating image ${current} of ${total}.`
+                      : "Packaging validated images locally.",
+              });
+          },
+        },
+      );
+      if (controller.signal.aborted || generation !== this.generation) return;
+      const url = this.services.createUrl(result.blob);
+      this.publish({
+        ...this.snapshot,
+        state: "result",
+        result: {
+          url,
+          pageCount: result.fileCount,
+          fileCount: result.fileCount,
+          kind: result.kind,
+          combinedJpegBytes: result.combinedJpegBytes,
+          dpi,
+          pages: result.pages,
+        },
+        progress: undefined,
+        announcement:
+          result.kind === "zip"
+            ? "Validated JPG archive ready to download."
+            : "Validated JPG ready to download.",
+      });
+    } catch (error) {
+      if (generation === this.generation)
+        this.publish({
+          ...this.snapshot,
+          state: "ready",
+          error: error instanceof PageError ? error.code : "OPERATION_FAILED",
+          jpegPhase: undefined,
+          progress: undefined,
+          announcement:
+            error instanceof PageError && error.code === "CANCELLED"
+              ? "Image generation cancelled. Your page choices remain available."
+              : "Image generation did not finish. No download was created.",
         });
     } finally {
       if (generation === this.generation) {

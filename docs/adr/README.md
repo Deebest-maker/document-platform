@@ -14,5 +14,6 @@ The architecture baseline in `../04_System_Architecture_Technical_Design.docx`, 
 | [ADR-015](015-m3a2-page-tools.md)         | Accepted and merged after owner manual verification                            | Local Extract/Delete/Rotate routes over the shared page session and selection pattern    |
 | [ADR-016](016-m3a3-split-pdf.md)          | Implemented under the approved M3A.3 gate; owner acceptance pending            | Local range/selected-page Split, atomic PDF batches and dynamically loaded ZIP packaging |
 | [ADR-017](017-m3b1-images-to-pdf.md)      | Implemented under the approved M3B.1 gate; owner acceptance pending            | Local JPEG/PNG inspection, ordered one-image pages and validated PDF generation          |
+| [ADR-018](018-m3b2-pdf-to-jpg.md)         | Implemented under the approved M3B.2 gate; owner acceptance pending            | Local bounded PDF.js raster export with validated JPG and ZIP publication                |
 
 Use the next available identifier for a new decision. Later proposals must state whether they refine or supersede an existing decision and update affected source documents after approval.

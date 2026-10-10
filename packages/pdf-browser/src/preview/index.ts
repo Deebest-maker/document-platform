@@ -3,7 +3,13 @@ import { normalizeRotation, type PageGeometry } from "../page-model";
 import { readPageInput } from "../page-validation";
 import { pageLimits, type PageInput, type PageLimits } from "../page-types";
 import { thumbnailLimits } from "./limits";
-import type { PreviewDocument, PreviewOptions, ThumbnailSize } from "./types";
+import type {
+  JpegRenderOptions,
+  JpegRenderResult,
+  PreviewDocument,
+  PreviewOptions,
+  ThumbnailSize,
+} from "./types";
 import type {
   PDFDocumentProxy,
   PDFDocumentLoadingTask,
@@ -11,7 +17,13 @@ import type {
   RenderTask,
 } from "pdfjs-dist";
 
-export type { PreviewDocument, PreviewOptions, ThumbnailSize } from "./types";
+export type {
+  JpegRenderOptions,
+  JpegRenderResult,
+  PreviewDocument,
+  PreviewOptions,
+  ThumbnailSize,
+} from "./types";
 export { thumbnailLimits } from "./limits";
 export { PageError } from "../page-errors";
 export { ThumbnailScheduler } from "./render-scheduler";
@@ -235,11 +247,103 @@ export async function openPreview(
     );
     return pending;
   }
+  function renderJpeg(
+    number: number,
+    jpeg: JpegRenderOptions,
+  ): Promise<JpegRenderResult> {
+    const controller = new AbortController();
+    const abortRender = () => controller.abort();
+    jpeg.signal?.addEventListener("abort", abortRender, { once: true });
+    if (jpeg.signal?.aborted) controller.abort();
+    let task: RenderTask | undefined;
+    const cancelTask = () => task?.cancel();
+    controller.signal.addEventListener("abort", cancelTask);
+    const pending = (async () => {
+      let page: PDFPageProxy | undefined;
+      let canvas: HTMLCanvasElement | undefined;
+      let ownsPage = false;
+      try {
+        const doc = validPage(number);
+        if (
+          controller.signal.aborted ||
+          ![96, 150, 300].includes(jpeg.dpi) ||
+          !Number.isFinite(jpeg.quality) ||
+          jpeg.quality <= 0 ||
+          jpeg.quality > 1 ||
+          !Number.isSafeInteger(jpeg.maxPixels) ||
+          jpeg.maxPixels < 1 ||
+          !Number.isSafeInteger(jpeg.maxCanvasBytes) ||
+          jpeg.maxCanvasBytes < 4 ||
+          busyPages.has(number)
+        )
+          throw new PageError("RENDER_FAILED");
+        busyPages.add(number);
+        ownsPage = true;
+        page = await doc.getPage(number);
+        live();
+        if (controller.signal.aborted) throw new PageError("CANCELLED");
+        const viewport = page.getViewport({ scale: jpeg.dpi / 72 });
+        const width = Math.max(1, Math.round(viewport.width));
+        const height = Math.max(1, Math.round(viewport.height));
+        const pixels = width * height;
+        if (
+          !Number.isSafeInteger(pixels) ||
+          pixels > jpeg.maxPixels ||
+          pixels * 4 > jpeg.maxCanvasBytes
+        )
+          throw new PageError("OUTPUT_LIMIT");
+        canvas = window.document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        task = page.render({ canvas, viewport, background: "#ffffff" });
+        rendering.add(task);
+        await task.promise;
+        live();
+        if (controller.signal.aborted) throw new PageError("CANCELLED");
+        const blob = await new Promise<Blob>((resolve, reject) =>
+          canvas!.toBlob(
+            (value) => (value ? resolve(value) : reject(new Error("encode"))),
+            "image/jpeg",
+            jpeg.quality,
+          ),
+        );
+        if (controller.signal.aborted) throw new PageError("CANCELLED");
+        return { blob, width, height };
+      } catch (error) {
+        if (error instanceof PageError) throw error;
+        throw new PageError(
+          controller.signal.aborted || closing ? "CANCELLED" : "RENDER_FAILED",
+        );
+      } finally {
+        controller.signal.removeEventListener("abort", cancelTask);
+        jpeg.signal?.removeEventListener("abort", abortRender);
+        if (task) rendering.delete(task);
+        if (canvas) canvas.width = canvas.height = 0;
+        if (ownsPage) {
+          busyPages.delete(number);
+          page?.cleanup();
+        }
+      }
+    })();
+    jobs.set(
+      controller,
+      pending.then(
+        () => undefined,
+        () => undefined,
+      ),
+    );
+    void pending.then(
+      () => jobs.delete(controller),
+      () => jobs.delete(controller),
+    );
+    return pending;
+  }
   return Object.freeze({
     sessionId: input.id,
     pageCount: document!.numPages,
     geometry,
     render,
+    renderJpeg,
     destroy,
   });
 }
