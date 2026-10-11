@@ -55,6 +55,9 @@ export interface ToolDefinition {
     readonly maxAggregatePixels?: number;
     readonly maxDecodedBytesPerImage?: number;
     readonly maxAggregateDecodedBytes?: number;
+    readonly maxSelectedPages?: number;
+    readonly maxPixelsPerPage?: number;
+    readonly maxCanvasBytes?: number;
   };
 }
 
@@ -155,7 +158,18 @@ export const tools: readonly ToolDefinition[] = [
     processingMode: "LOCAL",
     relatedSlugs: ["jpg-to-pdf", "extract-pdf-pages"],
     featured: false,
-    availability: "planned",
+    availability: "available",
+    // Conservative M3B.2 raster caps; evidence and caveats: ADR-018.
+    limits: {
+      ...localPageLimits,
+      maxOutputBytes: 64 * 1024 * 1024,
+      maxSelectedPages: 50,
+      maxPixelsPerPage: 25_000_000,
+      maxAggregatePixels: 220_000_000,
+      maxCanvasBytes: 100_000_000,
+      maxCombinedOutputBytes: 64 * 1024 * 1024,
+      maxArchiveBytes: 64 * 1024 * 1024,
+    },
   },
   {
     slug: "pdf-to-word",

@@ -69,7 +69,7 @@ describe("DEV-004: authoritative tool registry", () => {
     ).toEqual(expected);
   });
 
-  it("makes only the completed routes through M3B.1 available", () => {
+  it("makes only the completed routes through M3B.2 available", () => {
     expect(
       tools
         .filter((tool) => tool.availability === "available")
@@ -78,6 +78,7 @@ describe("DEV-004: authoritative tool registry", () => {
       "merge-pdf",
       "split-pdf",
       "jpg-to-pdf",
+      "pdf-to-jpg",
       "organize-pdf",
       "extract-pdf-pages",
       "delete-pdf-pages",
@@ -94,6 +95,7 @@ describe("DEV-004: authoritative tool registry", () => {
           "delete-pdf-pages",
           "rotate-pdf",
           "jpg-to-pdf",
+          "pdf-to-jpg",
         ].includes(tool.slug)
           ? "/" + tool.slug
           : "/tools#" + tool.slug,
@@ -180,6 +182,21 @@ describe("DEV-004: authoritative tool registry", () => {
       maxAggregatePixels: 160000000,
       maxDecodedBytesPerImage: 96000000,
       maxAggregateDecodedBytes: 640000000,
+    });
+    const pdfToJpg = getTool("pdf-to-jpg")!;
+    expect(pdfToJpg.availability).toBe("available");
+    expect(pdfToJpg.limits).toEqual({
+      maxFiles: 1,
+      maxFileBytes: 10485760,
+      maxTotalBytes: 10485760,
+      maxPages: 200,
+      maxOutputBytes: 67108864,
+      maxSelectedPages: 50,
+      maxPixelsPerPage: 25000000,
+      maxAggregatePixels: 220000000,
+      maxCanvasBytes: 100000000,
+      maxCombinedOutputBytes: 67108864,
+      maxArchiveBytes: 67108864,
     });
     expect(
       tools

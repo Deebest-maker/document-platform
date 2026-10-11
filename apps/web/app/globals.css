@@ -859,6 +859,49 @@ nav a {
 .page-selection-grid {
   margin-top: var(--space-4);
 }
+.page-geometry {
+  margin: var(--space-2) 0 0;
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+.pdf-jpg-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-block: var(--space-6);
+}
+.pdf-jpg-options fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+}
+.pdf-jpg-options legend {
+  padding-inline: var(--space-2);
+  font-weight: 700;
+}
+.pdf-jpg-options label {
+  display: flex;
+  align-items: start;
+  gap: var(--space-2);
+  min-height: var(--control-height);
+  padding-block: var(--space-2);
+  cursor: pointer;
+}
+.pdf-jpg-options label > span {
+  display: grid;
+  gap: var(--space-1);
+}
+.pdf-jpg-options label small {
+  color: var(--color-muted);
+}
+.pdf-jpg-options input {
+  margin-top: 0.35rem;
+}
+.pdf-jpg-options .small-copy {
+  margin: var(--space-2) 0 0;
+}
 .rotation-scopes {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1027,6 +1070,9 @@ nav a {
     width: 100%;
   }
   .rotation-scopes {
+    grid-template-columns: 1fr;
+  }
+  .pdf-jpg-options {
     grid-template-columns: 1fr;
   }
   .split-mode {

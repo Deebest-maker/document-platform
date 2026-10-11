@@ -46,6 +46,7 @@ test("FR-PRV-001/005: full LOCAL flow, errors and offline re-merge never send do
         "/rotate-pdf",
         "/split-pdf",
         "/jpg-to-pdf",
+        "/pdf-to-jpg",
         "/",
         "/tools",
         "/about",

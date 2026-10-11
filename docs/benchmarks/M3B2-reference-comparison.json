@@ -1,0 +1,52 @@
+{
+  "measuredAt": "2026-10-10T08:05:02.528898+00:00",
+  "reference": "Poppler pdftoppm JPEG at the same DPI",
+  "note": "Pixel differences include independent rasterizer antialiasing and JPEG encoding.",
+  "rows": [
+    {
+      "name": "page-001-150dpi",
+      "width": 1042,
+      "height": 1354,
+      "meanAbsoluteChannelDifference": 0.9919,
+      "normalizedMeanDifference": 0.00389,
+      "browserJpegBytes": 45788,
+      "popplerJpegBytes": 47733
+    },
+    {
+      "name": "page-002-150dpi",
+      "width": 1042,
+      "height": 1354,
+      "meanAbsoluteChannelDifference": 1.5672,
+      "normalizedMeanDifference": 0.006146,
+      "browserJpegBytes": 52092,
+      "popplerJpegBytes": 49053
+    },
+    {
+      "name": "page-003-150dpi",
+      "width": 1042,
+      "height": 1354,
+      "meanAbsoluteChannelDifference": 0.9499,
+      "normalizedMeanDifference": 0.003725,
+      "browserJpegBytes": 42404,
+      "popplerJpegBytes": 45172
+    },
+    {
+      "name": "page-004-150dpi",
+      "width": 1167,
+      "height": 875,
+      "meanAbsoluteChannelDifference": 1.1283,
+      "normalizedMeanDifference": 0.004425,
+      "browserJpegBytes": 33900,
+      "popplerJpegBytes": 34508
+    },
+    {
+      "name": "page-004-300dpi",
+      "width": 2333,
+      "height": 1750,
+      "meanAbsoluteChannelDifference": 0.8774,
+      "normalizedMeanDifference": 0.003441,
+      "browserJpegBytes": 88362,
+      "popplerJpegBytes": 107329
+    }
+  ]
+}

@@ -23,6 +23,7 @@ import SplitPage, { metadata as splitMetadata } from "./split-pdf/page";
 import ImagesToPdfPage, {
   metadata as imagesToPdfMetadata,
 } from "./jpg-to-pdf/page";
+import PdfToJpgPage, { metadata as pdfToJpgMetadata } from "./pdf-to-jpg/page";
 
 describe("M1 registry integration", () => {
   it("renders homepage discovery from registry records", () => {
@@ -44,7 +45,7 @@ describe("M1 registry integration", () => {
       expect(html).toContain(tool.title);
       expect(html).toContain(tool.description);
     }
-    expect(html).toContain("Seven tools are available.");
+    expect(html).toContain("Eight tools are available.");
   });
 
   it("DEV-004 / FR-GEN-004: connects Merge record to metadata, shell and privacy", () => {
@@ -113,5 +114,17 @@ describe("M1 registry integration", () => {
     expect(html).toContain("Build a PDF from images");
     expect(html).toContain('type="file"');
     expect(html).toContain('multiple=""');
+  });
+
+  it("FR-P2I-001/003: connects PDF to JPG to its local page-image workspace", () => {
+    const tool = getTool("pdf-to-jpg")!;
+    expect(pdfToJpgMetadata).toMatchObject(getToolMetadata(tool));
+    expect(pdfToJpgMetadata.robots).toEqual({ index: false, follow: false });
+    const html = renderToStaticMarkup(<PdfToJpgPage />);
+    expect(html).toContain(`<h1>${tool.title}</h1>`);
+    expect(html).toContain("Processed on your device");
+    expect(html).toContain("Choose a PDF to turn into JPG images");
+    expect(html).toContain('type="file"');
+    expect(html).not.toContain('multiple=""');
   });
 });
