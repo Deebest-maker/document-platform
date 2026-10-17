@@ -34,6 +34,7 @@
 ## 2. Deviations from plan
 
 None of substance. Two small reshuffles:
+
 - The async subprocess runner lives in `app/jobs/runner.py` even though M4A does not spawn processes, because the engine protocol commits to its cancellation shape and tests exercise it directly against the real `python -c …` command. This keeps M4B's slot in the engine interface already proven.
 - The convert endpoint collapses the "validating" state into a brief pre-engine transition; M4B will insert the DOCX validator between `UPLOADING→VALIDATING` and `VALIDATING→PROCESSING` without changing route shape.
 
@@ -48,16 +49,16 @@ uv run pytest -q               → 65 passed in 0.84s
 
 Breakdown of the 65 passing tests:
 
-- `tests/jobs/test_errors.py`              — 3
-- `tests/jobs/test_state.py`               — 7
-- `tests/jobs/test_auth.py`                — 7
-- `tests/jobs/test_store.py`               — 10
-- `tests/jobs/test_workspace.py`           — 11
-- `tests/jobs/test_janitor.py`             — 4
-- `tests/jobs/test_runner.py`              — 4
-- `tests/jobs/test_fake_engine.py`         — 4
-- `tests/test_health.py`                   — 3
-- `tests/test_jobs_api.py`                 — 12
+- `tests/jobs/test_errors.py` — 3
+- `tests/jobs/test_state.py` — 7
+- `tests/jobs/test_auth.py` — 7
+- `tests/jobs/test_store.py` — 10
+- `tests/jobs/test_workspace.py` — 11
+- `tests/jobs/test_janitor.py` — 4
+- `tests/jobs/test_runner.py` — 4
+- `tests/jobs/test_fake_engine.py` — 4
+- `tests/test_health.py` — 3
+- `tests/test_jobs_api.py` — 12
 
 `uv audit --locked` fails on this cloud container because the proxy blocks `api.osv.dev`; this is NOT an M4A issue — the hosted GitHub Actions `processor` job runs the same audit without the proxy restriction and remains authoritative.
 

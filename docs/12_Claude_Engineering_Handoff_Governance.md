@@ -9,11 +9,9 @@
 
 > This document is the standing operating contract for Claude. It is intended to let Claude continue architecture, implementation, verification, documentation, and milestone closeout without depending on prior ChatGPT context. The Product Owner retains final product authority.
 
-
 ## 1. Purpose, Authority and Operating Model
 
 This file exists so Claude can take over the project as the standing senior software architect, engineering reviewer and implementation engineer while preserving the original product direction. It must be usable in a fresh Claude Cowork or Claude Code session without relying on chat history.
-
 
 ### 1.1 Product Owner
 
@@ -24,7 +22,6 @@ This file exists so Claude can take over the project as the standing senior soft
 - The Product Owner should not be asked to execute routine debugging commands when Claude Code has direct terminal access.
 
 - The Product Owner prefers concise progress reports and a single clear next action, not long back-and-forth for every minor failure.
-
 
 ### 1.2 Role model
 
@@ -60,19 +57,16 @@ The project has three operating roles. Claude Cowork is the primary engineer; Cl
 
 - Follows the same binding governance context (this handoff plus AGENTS.md) and the same escalation rules.
 
-
 ### 1.3 Escalation threshold
 
 Claude should decide normal engineering details autonomously. Escalate to the Product Owner only when a decision materially changes product scope, public privacy/retention wording, recurring infrastructure cost, licensing obligations, irreversible architecture, launch behavior, or meaningful residual security risk.
-
 
 ## 2. Source of Truth and Conflict Resolution
 
 At the beginning of every new working session, Claude must read this handoff, root AGENTS.md, git status/branch/HEAD, the current milestone report/ADR, and the relevant authoritative documents. Source code wins over stale milestone prose for current implementation state; approved requirements and security rules win over implementation convenience.
 
-
-|Priority|Source|Use|
-|---|---|---|
+| Priority | Source | Use |
+| -------- | ------ | --- |
 
 |1|Root AGENTS.md|Repository-specific coding/agent rules.|
 
@@ -88,10 +82,7 @@ At the beginning of every new working session, Claude must read this handoff, ro
 
 |7|Milestone reports / benchmark reports|Evidence and historical context; correct drift when found.|
 
-
-
 If documents conflict, Claude must identify the conflict, choose the narrowest interpretation that preserves security/privacy and approved roadmap scope, record the reconciliation in an ADR or milestone report, and avoid silently expanding scope.
-
 
 ## 3. Product and Architecture Invariants
 
@@ -115,9 +106,7 @@ If documents conflict, Claude must identify the conflict, choose the narrowest i
 
 - User-facing copy must never overstate security, redaction, fidelity, retention or processing guarantees.
 
-
 ## 4. Current Technical Architecture
-
 
 ### 4.1 Monorepo boundaries
 
@@ -133,27 +122,22 @@ docs/benchmarks/           Measured engineering evidence
 docs/reports/              Milestone reports
 ```
 
-
 ### 4.2 Browser engine boundary
 
 packages/pdf-browser is the sole browser PDF engine boundary. Do not place server job logic inside it. Existing approved browser dependencies include pdf-lib, pdfjs-dist and fflate. Preserve lazy loading and existing worker/lifecycle patterns.
-
 
 ### 4.3 Processor boundary
 
 FastAPI is a control plane, not a document engine. Native engines sit behind a small adapter boundary: validate → prepare isolated workspace → execute under limits → validate output → publish/stream → cleanup.
 
-
 ### 4.4 UI pattern
 
 ToolShell owns presentation states, not processing logic. Route-owned sessions manage generation guards, cancellation, result lifecycle and Blob/Object URL cleanup. FilePicker does not upload automatically. PrivacyIndicator is registry-driven.
 
-
 ## 5. Accepted Milestone History
 
-
-|Milestone|Status|Accepted outcome|
-|---|---|---|
+| Milestone | Status | Accepted outcome |
+| --------- | ------ | ---------------- |
 
 |M0 — Repository/Foundation|COMPLETE|pnpm monorepo, Next.js shell, FastAPI liveness, processor container, lockfiles, CI, ADR-010.|
 
@@ -175,10 +159,7 @@ ToolShell owns presentation states, not processing logic. Route-owned sessions m
 
 |M9 — Monetization Readiness|FUTURE|AdSense only after product/content/policy readiness.|
 
-
-
 Current accepted repository state after M3: main = c26481e, origin/main synchronized, working tree clean.
-
 
 ## 6. Standing Development Workflow
 
@@ -204,11 +185,9 @@ Current accepted repository state after M3: main = c26481e, origin/main synchron
 
 11. After merge, update main, verify clean state, close the milestone/slice report, and only then start the next approved slice.
 
-
 ### 6.1 Routine errors
 
 When Claude Code has terminal access, do not ask the Product Owner to relay every lint/type/test failure. Diagnose and fix routine issues autonomously. Stop only for a true blocker, ambiguous product decision, missing credential/service, licensing concern, security trade-off, or destructive action requiring approval.
-
 
 ## 7. Definition of Done and Verification Gates
 
@@ -232,7 +211,6 @@ When Claude Code has terminal access, do not ask the Product Owner to relay ever
 
 - Required GitHub CI is green and Product Owner manual acceptance passes before merge.
 
-
 ### 7.1 Required existing CI job names
 
 - web
@@ -243,9 +221,7 @@ When Claude Code has terminal access, do not ask the Product Owner to relay ever
 
 Do not rename or weaken these required branch-protection jobs. Evolve their checks as the milestone requires.
 
-
 ## 8. Security and Privacy Rules Claude Must Enforce
-
 
 ### 8.1 LOCAL tools
 
@@ -254,7 +230,6 @@ Do not rename or weaken these required branch-protection jobs. Evolve their chec
 - Document-derived canaries must not appear in URLs, headers, bodies, console or persistent browser storage.
 
 - Do not broaden LOCAL allowlists simply to accommodate SERVER tooling.
-
 
 ### 8.2 SERVER tools
 
@@ -278,11 +253,9 @@ Do not rename or weaken these required branch-protection jobs. Evolve their chec
 
 - Structured allowlisted logs only; no sensitive content or raw filenames.
 
-
 ## 9. Current M4 Architecture Baseline
 
 M4 is the first SERVER milestone. The current planning work has been reviewed and the following baseline should be treated as the starting decision set unless implementation evidence disproves it.
-
 
 ### 9.1 M4 scope
 
@@ -302,7 +275,6 @@ M4 is the first SERVER milestone. The current planning work has been reviewed an
 
 - Benchmarks for LibreOffice fidelity/resource behavior and processor cold start.
 
-
 ### 9.2 Explicit M4 exclusions
 
 - PDF→Word implementation (M5 spike/GO-DEFER).
@@ -313,12 +285,10 @@ M4 is the first SERVER milestone. The current planning work has been reviewed an
 
 - PyMuPDF, Ghostscript AGPL and other unapproved AGPL engines.
 
-
 ### 9.3 Accepted architecture direction
 
-
-|Decision|Baseline|Status / guardrail|
-|---|---|---|
+| Decision | Baseline | Status / guardrail |
+| -------- | -------- | ------------------ |
 
 |Job API|Staged create → upload/input → state → authorized download → delete|Accepted shape; exact OpenAPI may evolve only with ADR rationale.|
 
@@ -344,9 +314,6 @@ M4 is the first SERVER milestone. The current planning work has been reviewed an
 
 |Dev/prod origin|Dev explicit CORS allowlist; production same-origin reverse proxy expectation|Accepted direction; do not create upload proxy rewrites without body-size verification.|
 
-
-
-
 ### 9.4 Job states
 
 ```text
@@ -354,7 +321,6 @@ CREATED → UPLOADING → VALIDATING → PROCESSING → SUCCEEDED
 Any non-terminal state → FAILED
 Created/succeeded/failed artifacts may transition to EXPIRED by cleanup/lifecycle.
 ```
-
 
 ### 9.5 Server tool flow
 
@@ -371,9 +337,7 @@ Open /word-to-pdf
 → cleanup/delete/reset
 ```
 
-
 ## 10. M4 Security/Validation Requirements
-
 
 ### 10.1 DOCX preflight
 
@@ -388,7 +352,6 @@ Open /word-to-pdf
 - Reject DTDs in the small XML parts the validator actually parses. Do not overclaim XML/LibreOffice parser safety.
 
 - Do not execute macros. External relationship behavior must be tested; no-network sandboxing is the baseline control unless M4B decides to reject specific relationship classes.
-
 
 ### 10.2 LibreOffice process
 
@@ -406,7 +369,6 @@ Open /word-to-pdf
 
 - Because baseline is same-container/same-UID, preserve the concurrency=1 + single active on-disk workspace invariant and prove the child cannot read unrelated job data/process memory under the chosen hardening.
 
-
 ### 10.3 Janitor/root safety
 
 - Jobs root must be an absolute dedicated safe path with a sentinel/marker and ownership validation.
@@ -417,12 +379,10 @@ Open /word-to-pdf
 
 - Cleanup tests cover success, failure, timeout, cancellation, crash-leftover and startup cleanup.
 
-
 ## 11. M4 Slice Plan and Review Gates
 
-
-|Slice|Scope|Gate|
-|---|---|---|
+| Slice | Scope | Gate |
+| ----- | ----- | ---- |
 
 |M4A — Processor Job Core|State model/store, capability auth, safe workspace root, upload path, cleanup/janitor, async runner, cancellation, safe errors/logs, dev CORS, health/ready, fake adapter tests.|Architecture + ADR-021 review; no LibreOffice yet.|
 
@@ -432,18 +392,14 @@ Open /word-to-pdf
 
 |M4D — Verification & Closeout|Full M0–M4 regression, fidelity/cold-start benchmarks, cleanup/auth/container evidence, final limit proposal, ADR-023, milestone report/manual acceptance script.|CI green + Product Owner manual acceptance before merge/close.|
 
-
-
 Do not implement the whole milestone as one mega-commit. Each slice should have its own branch/PR or clearly reviewable gate as the repository workflow permits.
-
 
 ## 12. M4 Open Decisions Claude Owns
 
 Claude is authorized to resolve these through spikes, benchmarks and ADRs without returning to an external architect. Product Owner approval is needed only where noted.
 
-
-|Decision|How to resolve|Owner gate|
-|---|---|---|
+| Decision | How to resolve | Owner gate |
+| -------- | -------------- | ---------- |
 
 |LibreOffice package/version|M4B distro/image spike + reproducibility/security review.|No, unless licensing/cost changes.|
 
@@ -463,9 +419,6 @@ Claude is authorized to resolve these through spikes, benchmarks and ADRs withou
 
 |Image vulnerability scanner|Prefer SHA-pinned scanner if it adds meaningful container coverage; document waiver process.|No, unless it creates recurring service cost or policy burden.|
 
-
-
-
 ## 13. Dependency and Licensing Governance
 
 - Every new runtime/development dependency requires a documented purpose, license review, lockfile impact and alternatives considered.
@@ -480,9 +433,7 @@ Claude is authorized to resolve these through spikes, benchmarks and ADRs withou
 
 - PyMuPDF and Ghostscript AGPL variants remain prohibited without a separate explicit commercial/legal decision.
 
-
 ## 14. Future Milestone Boundaries
-
 
 ### 14.1 M5 — Hard Tools / Spikes
 
@@ -492,13 +443,11 @@ Claude is authorized to resolve these through spikes, benchmarks and ADRs withou
 
 - Do not pull either into M4.
 
-
 ### 14.2 M6 — Content / SEO
 
 - Canonical functional tool pages, original Learn guides, sitemap/robots/metadata and internal linking.
 
 - Do not generate scaled keyword filler.
-
 
 ### 14.3 M7 — QA / Hardening
 
@@ -506,20 +455,17 @@ Claude is authorized to resolve these through spikes, benchmarks and ADRs withou
 
 - Finalize public abuse/rate controls and security hardening not already required earlier.
 
-
 ### 14.4 M8 — Staging / Launch
 
 - Choose production host, DNS/TLS, reverse proxy/body-size controls, monitoring, legal copy, final retention wording and launch gates.
 
 - No Vercel Hobby or other incompatible commercial-use plan.
 
-
 ### 14.5 M9 — Monetization
 
 - AdSense only after product/content/policy readiness.
 
 - No ads inside or adjacent to upload/processing/result critical controls.
-
 
 ## 15. Git, Branch and PR Discipline
 
@@ -537,7 +483,6 @@ Claude is authorized to resolve these through spikes, benchmarks and ADRs withou
 
 - Never merge without Product Owner manual acceptance for milestone-critical user flows.
 
-
 ## 16. Documentation and Continuity Rules
 
 - Every architecture decision that changes boundaries, processing location, retention/security behavior, engine choice or deployment constraint gets an ADR or an explicit ADR update.
@@ -550,9 +495,7 @@ Claude is authorized to resolve these through spikes, benchmarks and ADRs withou
 
 - Update this handoff document after each milestone or major architecture change so a fresh Claude session can resume without chat history.
 
-
 ## 17. Standard Claude Reporting Format
-
 
 ### 17.1 Planning report
 
@@ -570,7 +513,6 @@ IMPLEMENTATION PLAN — <MILESTONE/SLICE>
 10. GO / BLOCKED verdict
 ```
 
-
 ### 17.2 Completion report
 
 ```text
@@ -587,11 +529,9 @@ IMPLEMENTATION & VERIFICATION REPORT — <MILESTONE/SLICE>
 10. Product Owner manual tests still required
 ```
 
-
 ### 17.3 Failure/blocker report
 
 For a genuine blocker, report only: what failed, why routine self-repair is not safe/possible, what decision/access is required from the Product Owner, and the smallest recommended next action.
-
 
 ## 18. New Claude Session Startup Protocol
 
@@ -608,7 +548,6 @@ At the start of any new Claude Cowork or Claude Code session, use this sequence 
 8. Continue the existing plan; do not restart architecture from scratch unless evidence requires it.
 ```
 
-
 ## 19. Reusable Standing Directive for Claude Code
 
 ```text
@@ -623,7 +562,6 @@ Do not merge milestone PRs and do not start the next milestone until required CI
 
 For the current milestone, first identify the approved slice and its gate from this handoff and the current docs/reports. Stop only for a genuine owner decision or blocker.
 ```
-
 
 ## 20. Current Handoff Point — 17 October 2026
 
