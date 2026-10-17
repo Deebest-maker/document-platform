@@ -54,6 +54,7 @@ Three functions run after conversion, fail-closed:
 ### 6. Container (`Dockerfile`)
 
 The existing multi-stage Dockerfile gains:
+
 - `libreoffice-writer` installed with `--no-install-recommends` (Debian slim).
 - `qpdf` for PDF structural validation.
 - `fonts-liberation` (Liberation Sans/Serif/Mono, OFL-1.1) for deterministic metric-compatible rendering.
