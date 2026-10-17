@@ -16,6 +16,8 @@
     "./image-inspection": "./src/image-inspection.ts",
     "./image-layout": "./src/image-layout.ts",
     "./image-types": "./src/image-types.ts",
+    "./pdf-to-text": "./src/pdf-to-text.ts",
+    "./metadata-removal": "./src/metadata-removal.ts",
     "./preview": "./src/preview/index.ts"
   },
   "scripts": {

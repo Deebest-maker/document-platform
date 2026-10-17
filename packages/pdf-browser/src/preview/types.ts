@@ -17,6 +17,15 @@ export interface JpegRenderResult {
   readonly width: number;
   readonly height: number;
 }
+export interface TextExtractionOptions {
+  readonly signal?: AbortSignal;
+}
+export interface PageTextContent {
+  // The deterministic plain-text body of a single page, assembled from
+  // PDF.js's natural content-item order and its explicit `hasEOL` signal.
+  // No raw PDF.js TextItem/MarkedContent object crosses this boundary.
+  readonly text: string;
+}
 export interface PreviewDocument {
   readonly sessionId: string;
   readonly pageCount: number;
@@ -32,6 +41,10 @@ export interface PreviewDocument {
     sourcePageNumber: number,
     options: JpegRenderOptions,
   ): Promise<JpegRenderResult>;
+  extractText?(
+    sourcePageNumber: number,
+    options?: TextExtractionOptions,
+  ): Promise<PageTextContent>;
   destroy(): Promise<void>;
 }
 export interface PreviewOptions {

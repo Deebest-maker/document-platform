@@ -1,6 +1,6 @@
 # Document & File Platform
 
-Privacy-first document utilities, built milestone by milestone. Eight tools now work locally in the browser: Merge, Split, Organize, Extract Pages, Delete Pages, Rotate, Images to PDF and PDF to JPG. The remaining documented tools stay planned.
+Privacy-first document utilities, built milestone by milestone. Ten tools now work locally in the browser: Merge, Split, Organize, Extract Pages, Delete Pages, Rotate, Images to PDF, PDF to JPG, PDF to Text and Remove PDF Metadata. The remaining documented tools stay planned.
 
 ## Source of truth
 
@@ -10,7 +10,7 @@ Read [AGENTS.md](AGENTS.md) and the approved Word documents in [docs](docs/) bef
 
 [ADR-012](docs/adr/012-m2a-local-merge.md) records the approved Merge boundaries, benchmark-triggered worker, lifecycle and engineering limits. See the [M2A benchmark evidence](docs/benchmarks/M2A.md) and [synthetic fixture manifest](tests/fixtures/pdf/manifest.json).
 
-[ADR-013](docs/adr/013-m2b-page-foundation.md) through [ADR-018](docs/adr/018-m3b2-pdf-to-jpg.md) record the shared preview/page-operation foundation and the Organize, Extract/Delete/Rotate, Split, Images to PDF and PDF to JPG product decisions.
+[ADR-013](docs/adr/013-m2b-page-foundation.md) through [ADR-020](docs/adr/020-m3b4-remove-pdf-metadata.md) record the shared preview/page-operation foundation and the Organize, Extract/Delete/Rotate, Split, Images to PDF, PDF to JPG, PDF to Text and Remove PDF Metadata product decisions.
 
 ## Product preview
 
@@ -20,6 +20,8 @@ Read [AGENTS.md](AGENTS.md) and the approved Word documents in [docs](docs/) bef
 - `/split-pdf`: define independent range groups or select individual pages, generate validated PDFs locally, then download one PDF or a fixed-name ZIP.
 - `/jpg-to-pdf`: choose JPEG/PNG images, arrange them, select Auto/A4/Letter and Contain/Cover layout, then generate `images-to-pdf.pdf` locally.
 - `/pdf-to-jpg`: choose a PDF, keep all pages or select pages, pick 96/150/300 DPI, generate JPGs locally and download one `page-NNN.jpg` or a fixed-name `pdf-pages-jpg.zip`.
+- `/pdf-to-text`: choose a PDF, extract text locally in natural reading order, see a bounded preview, then Copy the full text or download a fixed-name `extracted-text.txt`. Scanned PDFs with no meaningful text layer are honestly disclosed instead of silently producing an empty file; this tool does not perform OCR.
+- `/remove-pdf-metadata`: choose a PDF; the browser removes every entry in the Document Information dictionary (standard and custom), the Catalog XMP metadata stream and — where this build is able — the trailer identifier, then publishes a cleaned PDF for local download. A truthful before/after table shows what was present and what was removed. **Not secure redaction**: text and images on each page are preserved as-is. The trailer-identifier outcome is reported honestly; if this build cannot suppress it, a note says so.
 - `/organize-pdf`, `/extract-pdf-pages`, `/delete-pdf-pages`, `/rotate-pdf`: preview pages and perform the named structural page operation locally.
 - `/about`, `/privacy`, `/terms`, `/contact`: lightweight trust information; unfinished policy/contact copy is labeled clearly.
 
@@ -30,6 +32,10 @@ Current conservative M2A engineering limits: **20 files, 10 MiB per file, 32 MiB
 Images to PDF currently accepts **20 JPEG/PNG images, 10 MiB each, 32 MiB compressed total, 24 MP per image, 160 MP total and 64 MiB output**. It uses one page per image and a white PDF page behind transparent PNG areas. These evidence-based engineering caps are recorded in ADR-017 and remain subject to physical-device validation.
 
 PDF to JPG currently accepts **one PDF, 10 MiB input, 200 pages, up to 50 selected pages, 25 MP per rendered page, 220 MP total, 64 MiB per output, 64 MiB combined JPG bytes and 64 MiB ZIP**. Pages are rendered sequentially at 96, 150 or 300 DPI (150 is the default) with an opaque white background behind every page. Browser JPEG encoding is not byte-identical across engines. These evidence-based engineering caps are recorded in ADR-018 and remain subject to physical-device validation.
+
+PDF to Text currently accepts **one PDF, 10 MiB input, 200 pages, 2,000,000 extracted characters, 8 MiB UTF-8 output and a 20,000-character bounded DOM preview**. Pages are walked sequentially; `item.hasEOL` becomes a literal `\n` and page bodies are joined by a blank line. Partial-text documents yield the valid text plus an explicit list of pages without a meaningful text layer. A whole document with no meaningful text layer shows an honest OCR-may-be-required message, never a silent empty download. These evidence-based engineering caps are recorded in ADR-019 and remain subject to physical-device validation.
+
+Remove PDF Metadata currently accepts **one PDF, 10 MiB input, 200 pages and 32 MiB output**. Removal targets are the Document Information dictionary (every ISO 32000-1 §14.3.3 standard entry plus every custom key), the Catalog XMP metadata stream, and — as a SPIKE — the trailer identifier. The engine reopens the saved bytes and asserts that every targeted field is absent before publishing; a mismatch aborts the operation. Page count, media boxes and rotation are preserved and verified. This tool is **not secure redaction**: content inside the pages themselves is untouched. The trailer-identifier outcome is reported honestly; the UI only claims removal when the save round-trip confirmed it. ADR-020 records the engine, verification pass, trailer-/ID spike handling and privacy canary audit. The synthetic benchmark lives at `apps/web/benchmarks/run-remove-pdf-metadata.mjs` and writes to `docs/benchmarks/M3B4-remove-pdf-metadata-results.json`.
 
 ## Prerequisites
 
@@ -104,6 +110,8 @@ The separate Next.js test consumer lives under `apps/web/tests/page-foundation`,
 
 `node apps/web/benchmarks/run-pdf-to-jpg.mjs` exercises mixed crop/orientation fixtures at 150 DPI, a rotated page at 300 DPI and the 50-page selected-pages boundary at 96 DPI. It records timings, output byte sizes and peak-worker/Blob-URL evidence without retaining filenames or user data, and writes an independent Poppler comparison file beside it.
 
+`node apps/web/benchmarks/run-pdf-to-text.mjs` exercises a representative text-heavy fixture, the project's XSS-canary fixture (literal `<script>alert(1)</script>` and tag payloads), the partial-text fixture (text on pages 1 and 3, blank page 2) and the scanned/image-only fixture. It records open time, extraction duration, character/UTF-8 byte totals, preview truncation and cleanup/cancellation evidence without retaining filenames or document text.
+
 ## Verify the processor container
 
 From the repository root:
@@ -138,4 +146,4 @@ docs/adr/                 Approved implementation decisions
 
 CI installs from lockfiles, runs the checks above, builds the processor image, and verifies it under the same restrictions. Browser failure artifacts contain only public pages and synthetic test data. Use short-lived feature branches and pull requests for material changes; main requires the unchanged `web`, `processor`, and `processor-container` checks under existing branch protection.
 
-M3B.2 includes only PDF to JPG. PDF-to-text, metadata removal, document repair, server processing and later M3B/M4 functionality remain outside this slice. Learn/content, production SEO, final branding, final legal policies and public deployment remain later work.
+M3B closes with PDF to Text and Remove PDF Metadata. Document repair, server processing and later M4+ functionality remain outside M3. Learn/content, production SEO, final branding, final legal policies and public deployment remain later work.

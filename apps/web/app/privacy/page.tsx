@@ -17,11 +17,13 @@ export default function PrivacyPage() {
         Draft information — this is not a finalized privacy policy.
       </p>
       <p className="intro">
-        Eight available tools process documents and images entirely in your
+        Ten available tools process documents and images entirely in your
         browser. Document bytes are never uploaded to our servers or third
-        parties. Selected files and results stay in this page session; Start
-        over or leaving the page releases those references. This is not a
-        promise of secure memory erasure.
+        parties. Remove PDF Metadata removes supported fields only — it is not
+        secure redaction and does not touch content inside the pages. Selected
+        files and results stay in this page session; Start over or leaving the
+        page releases those references. This is not a promise of secure memory
+        erasure.
       </p>
       <h2>Three processing modes</h2>
       <p>

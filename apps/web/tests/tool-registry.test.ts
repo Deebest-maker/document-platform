@@ -69,7 +69,7 @@ describe("DEV-004: authoritative tool registry", () => {
     ).toEqual(expected);
   });
 
-  it("makes only the completed routes through M3B.2 available", () => {
+  it("makes only the completed routes through M3B.4 available", () => {
     expect(
       tools
         .filter((tool) => tool.availability === "available")
@@ -83,6 +83,8 @@ describe("DEV-004: authoritative tool registry", () => {
       "extract-pdf-pages",
       "delete-pdf-pages",
       "rotate-pdf",
+      "remove-pdf-metadata",
+      "pdf-to-text",
     ]);
     for (const tool of tools) {
       expect(getToolPath(tool)).toBe("/" + tool.slug);
@@ -96,6 +98,8 @@ describe("DEV-004: authoritative tool registry", () => {
           "rotate-pdf",
           "jpg-to-pdf",
           "pdf-to-jpg",
+          "remove-pdf-metadata",
+          "pdf-to-text",
         ].includes(tool.slug)
           ? "/" + tool.slug
           : "/tools#" + tool.slug,

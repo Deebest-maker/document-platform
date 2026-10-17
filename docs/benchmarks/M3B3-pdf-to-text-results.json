@@ -1,0 +1,51 @@
+{
+  "generatedAt": "2026-10-17T01:01:11.936Z",
+  "node": "v24.16.0",
+  "browser": "chromium (Playwright)",
+  "cases": [
+    {
+      "case": "preview-features (4 pages, embedded fonts)",
+      "expect": "text",
+      "readyMs": 5350,
+      "previewCharacters": 528,
+      "sameOriginRequests": true
+    },
+    {
+      "case": "text-partial (text + blank + text)",
+      "expect": "text",
+      "readyMs": 3377,
+      "previewCharacters": 94,
+      "sameOriginRequests": true
+    },
+    {
+      "case": "text-xss (literal script tokens)",
+      "expect": "text",
+      "readyMs": 3906,
+      "previewCharacters": 144,
+      "sameOriginRequests": true
+    },
+    {
+      "case": "text-scanned (image-only)",
+      "expect": "no-text",
+      "readyMs": 3041,
+      "previewCharacters": 0,
+      "sameOriginRequests": true
+    },
+    {
+      "case": "large-50 (page boundary, numbered text)",
+      "expect": "text",
+      "readyMs": 3807,
+      "previewCharacters": 939,
+      "sameOriginRequests": true
+    }
+  ],
+  "requestAudit": {
+    "totalRequests": 145,
+    "crossOrigin": 0,
+    "nonGet": 0,
+    "canaryLeaks": 0,
+    "webSockets": 0,
+    "consoleCanaryLeaks": 0,
+    "storageEntries": 0
+  }
+}
