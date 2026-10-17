@@ -17,5 +17,6 @@ The architecture baseline in `../04_System_Architecture_Technical_Design.docx`, 
 | [ADR-018](018-m3b2-pdf-to-jpg.md)          | Accepted and merged under the approved M3B.2 gate                              | Local bounded PDF.js raster export with validated JPG and ZIP publication                                                |
 | [ADR-019](019-m3b3-pdf-to-text.md)         | Implemented under the approved M3B.3 gate; owner acceptance pending            | Local PDF to Text via PDF.js `getTextContent`, bounded preview, Copy/Download, honest no-text and partial-text behaviour |
 | [ADR-020](020-m3b4-remove-pdf-metadata.md) | Implemented under the approved M3B.4 gate; owner acceptance pending            | Local Remove PDF Metadata via pdf-lib Info/XMP removal, trailer /ID spike reported truthfully, not secure redaction      |
+| [ADR-021](021-m4a-processor-job-core.md)   | Implemented under the approved M4A gate; owner acceptance pending              | Processor job core with capability auth, safe workspace root, janitor, async subprocess runner and fake conversion engine |
 
 Use the next available identifier for a new decision. Later proposals must state whether they refine or supersede an existing decision and update affected source documents after approval.
