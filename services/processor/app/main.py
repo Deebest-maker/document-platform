@@ -24,6 +24,7 @@ from app.api import health as health_api
 from app.api import jobs as jobs_api
 from app.config import Settings, load_settings
 from app.jobs.engines.fake import FakeEngine
+from app.jobs.engines.libreoffice import LibreOfficeEngine
 from app.jobs.janitor import Janitor
 from app.jobs.store import InMemoryJobStore
 from app.jobs.workspace import validate_jobs_root
@@ -53,7 +54,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             yield
             return
         store = InMemoryJobStore(max_inflight=settings.max_inflight_jobs)
-        engine = FakeEngine()
+        # Use LibreOffice in production/development; fall back to FakeEngine
+        # in test or when soffice is not installed (local dev without LO).
+        import shutil
+
+        if settings.environment == "test" or shutil.which("soffice") is None:
+            engine: FakeEngine | LibreOfficeEngine = FakeEngine()
+        else:
+            engine = LibreOfficeEngine(
+                timeout_seconds=float(settings.runner_timeout_seconds),
+            )
         janitor = Janitor(
             store=store,
             jobs_root=jobs_root,
