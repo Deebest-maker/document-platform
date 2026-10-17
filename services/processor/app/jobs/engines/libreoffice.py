@@ -106,9 +106,7 @@ class LibreOfficeEngine:
         ]
 
         # ── Cancel event ────────────────────────────────────────────
-        cancel_event = (
-            cancel_token if isinstance(cancel_token, asyncio.Event) else None
-        )
+        cancel_event = cancel_token if isinstance(cancel_token, asyncio.Event) else None
 
         # ── Run ─────────────────────────────────────────────────────
         result = await run_process(

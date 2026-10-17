@@ -60,9 +60,7 @@ async def validate_pdf_qpdf(output_path: Path, *, timeout: float = 30.0) -> None
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
-        stdout, stderr = await asyncio.wait_for(
-            proc.communicate(), timeout=timeout
-        )
+        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=timeout)
     except TimeoutError:
         raise ProcessorError(ErrorCode.INTERNAL) from None
     except Exception:
@@ -73,9 +71,7 @@ async def validate_pdf_qpdf(output_path: Path, *, timeout: float = 30.0) -> None
         raise ProcessorError(ErrorCode.INTERNAL)
 
 
-async def validate_pdf_page_count(
-    output_path: Path, *, timeout: float = 10.0
-) -> int:
+async def validate_pdf_page_count(output_path: Path, *, timeout: float = 10.0) -> int:
     """Return the page count, raising if it exceeds the sanity bound.
 
     Uses ``qpdf --show-npages``. Returns 0 and skips if qpdf is absent.

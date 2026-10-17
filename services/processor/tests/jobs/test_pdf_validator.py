@@ -97,9 +97,7 @@ class TestPdfQpdf:
         await validate_pdf_qpdf(p)  # no error
 
     @pytest.mark.asyncio
-    async def test_valid_pdf_passes_if_qpdf_present(
-        self, tmp_path: Path
-    ) -> None:
+    async def test_valid_pdf_passes_if_qpdf_present(self, tmp_path: Path) -> None:
         """If qpdf is installed, a structurally valid PDF passes."""
         import shutil
 
@@ -109,9 +107,7 @@ class TestPdfQpdf:
         await validate_pdf_qpdf(p)
 
     @pytest.mark.asyncio
-    async def test_corrupt_pdf_rejected_if_qpdf_present(
-        self, tmp_path: Path
-    ) -> None:
+    async def test_corrupt_pdf_rejected_if_qpdf_present(self, tmp_path: Path) -> None:
         """If qpdf is installed, a corrupt file is rejected."""
         import shutil
 
@@ -137,9 +133,7 @@ class TestPdfPageCount:
         assert result == 0
 
     @pytest.mark.asyncio
-    async def test_returns_page_count_if_qpdf_present(
-        self, tmp_path: Path
-    ) -> None:
+    async def test_returns_page_count_if_qpdf_present(self, tmp_path: Path) -> None:
         import shutil
 
         if shutil.which("qpdf") is None:

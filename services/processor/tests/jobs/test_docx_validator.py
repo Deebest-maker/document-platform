@@ -125,9 +125,7 @@ class TestMissingParts:
         assert info.value.code is ErrorCode.INVALID_INPUT
 
     def test_missing_document_xml(self) -> None:
-        data = _make_zip(
-            **{"[Content_Types].xml": b'<?xml version="1.0"?><Types/>'}
-        )
+        data = _make_zip(**{"[Content_Types].xml": b'<?xml version="1.0"?><Types/>'})
         with pytest.raises(ProcessorError) as info:
             validate_docx(data)
         assert info.value.code is ErrorCode.INVALID_INPUT
