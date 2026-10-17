@@ -36,6 +36,12 @@ from app.jobs.auth import extract_bearer_token, issue
 from app.jobs.engines.base import ConversionEngine
 from app.jobs.state import Job, JobState
 from app.jobs.store import InMemoryJobStore
+from app.jobs.validators.docx import validate_docx
+from app.jobs.validators.pdf import (
+    validate_pdf_header,
+    validate_pdf_page_count,
+    validate_pdf_qpdf,
+)
 from app.jobs.workspace import create_workspace, remove_workspace
 from app.logging import safe_log
 
@@ -188,8 +194,21 @@ async def convert(
     output_path = workspace / _OUTPUT_FILENAME
 
     await ctx.store.transition(job_id, JobState.VALIDATING)
-    # M4A has no DOCX validator yet; the fake engine's `convert` is the
-    # single step. M4B replaces this block with the real validator.
+
+    # ── DOCX preflight (M4B) ───────────────────────────────────────
+    try:
+        import asyncio
+
+        docx_bytes = input_path.read_bytes()
+        await asyncio.to_thread(validate_docx, docx_bytes)
+    except ProcessorError as err:
+        await ctx.store.mark_failed(job_id, err.code)
+        _raise(err.code)
+    except Exception:  # noqa: BLE001
+        await ctx.store.mark_failed(job_id, ErrorCode.INTERNAL)
+        _raise(ErrorCode.INTERNAL)
+
+    # ── Conversion ─────────────────────────────────────────────────
     try:
         await ctx.store.transition(job_id, JobState.PROCESSING)
         cancel_event = ctx.store.cancellation_event(job_id)
@@ -205,9 +224,19 @@ async def convert(
     except Exception:  # noqa: BLE001
         await ctx.store.mark_failed(job_id, ErrorCode.INTERNAL)
         _raise(ErrorCode.INTERNAL)
+
+    # ── PDF output validation (M4B) ────────────────────────────────
     if not output_path.exists():
         await ctx.store.mark_failed(job_id, ErrorCode.INTERNAL)
         _raise(ErrorCode.INTERNAL)
+    try:
+        validate_pdf_header(output_path)
+        await validate_pdf_qpdf(output_path)
+        await validate_pdf_page_count(output_path)
+    except ProcessorError as err:
+        await ctx.store.mark_failed(job_id, err.code)
+        _raise(err.code)
+
     output_size = output_path.stat().st_size
     if output_size > ctx.settings.max_output_bytes:
         await ctx.store.mark_failed(job_id, ErrorCode.LIMIT_EXCEEDED)

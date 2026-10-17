@@ -1,15 +1,50 @@
-"""HTTP-level integration tests for the M4A job surface.
+"""HTTP-level integration tests for the job surface.
 
 These tests cover the happy path (create → upload → convert → download →
 delete) with the fake engine, plus authorization, state-transition and
-input-validation edges.
+input-validation edges. M4B adds DOCX preflight validation, so the
+happy path must upload a valid DOCX.
 """
 
 from __future__ import annotations
 
+import io
+import zipfile
+
 from fastapi.testclient import TestClient
 
 from app.config import Settings
+
+
+def _minimal_docx() -> bytes:
+    """Build a minimal valid DOCX that passes preflight validation."""
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr(
+            "[Content_Types].xml",
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+            '<Default Extension="rels" ContentType='
+            '"application/vnd.openxmlformats-package.relationships+xml"/>'
+            '<Default Extension="xml" ContentType="application/xml"/>'
+            '<Override PartName="/word/document.xml" ContentType='
+            '"application/vnd.openxmlformats-officedocument.wordprocessingml'
+            '.document.main+xml"/>'
+            "</Types>",
+        )
+        zf.writestr(
+            "_rels/.rels",
+            '<?xml version="1.0"?><Relationships/>',
+        )
+        zf.writestr(
+            "word/document.xml",
+            '<?xml version="1.0"?>'
+            '<w:document xmlns:w="http://schemas.openxmlformats.org/'
+            'wordprocessingml/2006/main">'
+            "<w:body><w:p><w:r><w:t>test</w:t></w:r></w:p></w:body>"
+            "</w:document>",
+        )
+    return buf.getvalue()
 
 
 def _create(client: TestClient) -> tuple[str, str]:
@@ -27,16 +62,17 @@ def _bearer(token: str) -> dict[str, str]:
 def test_happy_path(client: TestClient) -> None:
     job_id, token = _create(client)
 
+    docx_bytes = _minimal_docx()
     upload = client.put(
         f"/v1/jobs/{job_id}/input",
         headers=_bearer(token),
-        content=b"PK fake docx bytes",
+        content=docx_bytes,
     )
     assert upload.status_code == 200
 
     state = client.get(f"/v1/jobs/{job_id}", headers=_bearer(token)).json()
     assert state["state"] == "uploading"
-    assert state["input_bytes"] == len(b"PK fake docx bytes")
+    assert state["input_bytes"] == len(docx_bytes)
 
     convert = client.post(f"/v1/jobs/{job_id}/convert", headers=_bearer(token))
     assert convert.status_code == 200, convert.text
