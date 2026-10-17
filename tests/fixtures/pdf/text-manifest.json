@@ -1,0 +1,51 @@
+{
+  "provenance": "Project-authored M3B.3 PDF-to-text synthetic fixtures.",
+  "license": "Project-owned test data; no third-party document license.",
+  "authoringTools": {
+    "reportlab": "5.0.1",
+    "pypdf": "6.18.0",
+    "Pillow": "12.3.0"
+  },
+  "pages": {
+    "text-xss.pdf": [
+      {
+        "sourcePageNumber": 1,
+        "expectedText": [
+          "XSS canary fixture",
+          "<script>alert(1)</script>",
+          "<img src=\"x\" onerror=\"document.title=1\">",
+          "javascript:alert('x')",
+          "ampersand & less < greater > quote \""
+        ]
+      }
+    ],
+    "text-partial.pdf": [
+      {
+        "sourcePageNumber": 1,
+        "expectedText": ["PartialPage1Marker", "Partial fixture page one."]
+      },
+      {
+        "sourcePageNumber": 2,
+        "expectedText": [],
+        "meaningful": false
+      },
+      {
+        "sourcePageNumber": 3,
+        "expectedText": ["PartialPage3Marker", "Partial fixture page three."]
+      }
+    ],
+    "text-scanned.pdf": [
+      {
+        "sourcePageNumber": 1,
+        "expectedText": [],
+        "meaningful": false,
+        "note": "Image-only page; no text layer."
+      }
+    ]
+  },
+  "sha256": {
+    "text-xss.pdf": "ed24feb8a71a9aa02c589953b2d21fb415a194d07c9018576ebcb80b1307fba0",
+    "text-partial.pdf": "8339f2b9f78cccea26f8aafd8a6c16cc57314258dd3a3f2c698462c356467cd6",
+    "text-scanned.pdf": "024da7cb115273ccd38e1b21f007aa56671df80e45c47b6ec33610d3b4c19479"
+  }
+}

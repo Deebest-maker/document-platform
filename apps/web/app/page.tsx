@@ -89,7 +89,7 @@ export default function HomePage() {
             <br className="desktop-break" /> document would go.
           </h2>
           <p>
-            Eight tools run in your browser without uploading your documents or
+            Ten tools run in your browser without uploading your documents or
             images. Other tools are planned; their labels explain the intended
             processing location.
           </p>

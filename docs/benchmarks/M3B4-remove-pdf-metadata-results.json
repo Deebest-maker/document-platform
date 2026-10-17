@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-10-17T00:58:16.341Z",
+  "node": "v24.16.0",
+  "browser": "chromium (Playwright)",
+  "scenarios": {
+    "metadata-rich": {
+      "openMs": 934,
+      "processMs": 1280,
+      "standardInfoBeforeAfter": ["9", "0"],
+      "customInfoBeforeAfter": ["2", "0"],
+      "xmpBeforeAfter": ["present", "absent"],
+      "trailerIdPresentBeforeAfter": ["absent", "absent"],
+      "downloadFilename": "metadata-removed.pdf",
+      "downloadIsBlob": true,
+      "trailerIdControllableReported": true
+    },
+    "no-metadata": {
+      "openMs": 212,
+      "processMs": 442,
+      "standardInfoBeforeAfter": ["0", "0"],
+      "customInfoBeforeAfter": ["0", "0"],
+      "xmpBeforeAfter": ["absent", "absent"],
+      "trailerIdPresentBeforeAfter": ["absent", "absent"],
+      "downloadFilename": "metadata-removed.pdf",
+      "downloadIsBlob": true,
+      "trailerIdControllableReported": true
+    }
+  },
+  "requestAudit": {
+    "totalRequests": 40,
+    "crossOrigin": 0,
+    "nonGet": 0,
+    "canaryLeaks": 0,
+    "webSockets": 0,
+    "consoleCanaryLeaks": 0,
+    "storageEntries": 0
+  }
+}

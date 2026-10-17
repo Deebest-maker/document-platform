@@ -1088,3 +1088,76 @@ nav a {
     width: 100%;
   }
 }
+
+/* M3B.3 PDF to Text workspace. Keep extracted text in a text node under a
+   <pre> element; never render via dangerouslySetInnerHTML or any HTML/Markdown
+   interpretation path. The preview is capped by maxPreviewCharacters so the
+   DOM stays responsive even for very large documents. */
+.pdf-text-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+}
+.pdf-text-no-text,
+.pdf-text-partial,
+.pdf-text-truncation {
+  margin: 0;
+  padding: var(--space-3, 0.75rem);
+  border-radius: 0.5rem;
+  border: 1px solid var(--token-border, #d8d8d8);
+  background: var(--token-surface-muted, #faf7f0);
+  font-size: 0.95rem;
+}
+.pdf-text-no-text {
+  border-color: var(--token-attention, #a4661d);
+}
+.pdf-text-partial {
+  border-style: dashed;
+}
+.pdf-text-preview-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+.pdf-text-preview-label {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.pdf-text-preview {
+  margin: 0;
+  padding: var(--space-3, 0.75rem);
+  min-height: 10rem;
+  max-height: 24rem;
+  overflow: auto;
+  border: 1px solid var(--token-border, #d8d8d8);
+  border-radius: 0.5rem;
+  background: var(--token-surface, #ffffff);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  tab-size: 4;
+}
+.pdf-text-preview:focus-visible {
+  outline: 2px solid var(--token-focus, #2353a0);
+  outline-offset: 2px;
+}
+.pdf-text-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3, 0.75rem);
+}
+.pdf-text-announcer {
+  min-height: 1.5rem;
+}
+@media (max-width: 640px) {
+  .pdf-text-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .pdf-text-actions .primary-button,
+  .pdf-text-actions .quiet-button {
+    width: 100%;
+  }
+}

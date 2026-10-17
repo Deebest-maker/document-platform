@@ -58,6 +58,9 @@ export interface ToolDefinition {
     readonly maxSelectedPages?: number;
     readonly maxPixelsPerPage?: number;
     readonly maxCanvasBytes?: number;
+    readonly maxTextCharacters?: number;
+    readonly maxTextBytes?: number;
+    readonly maxPreviewCharacters?: number;
   };
 }
 
@@ -258,7 +261,11 @@ export const tools: readonly ToolDefinition[] = [
     processingMode: "LOCAL",
     relatedSlugs: ["compress-pdf", "pdf-to-text"],
     featured: false,
-    availability: "planned",
+    availability: "available",
+    // Conservative M3B.4 caps; evidence and caveats: ADR-020. The tool is not
+    // a secure-redaction system — see the ADR and the UI disclosure. Trailer
+    // /ID removal is best-effort and reported honestly in the result.
+    limits: localPageLimits,
   },
   {
     slug: "pdf-to-text",
@@ -270,6 +277,16 @@ export const tools: readonly ToolDefinition[] = [
     processingMode: "LOCAL",
     relatedSlugs: ["pdf-to-word", "extract-pdf-pages"],
     featured: false,
-    availability: "planned",
+    availability: "available",
+    // Conservative M3B.3 text caps; evidence and caveats: ADR-019.
+    // Document inputs inherit the shared single-file / 10 MiB / 200-page preview
+    // ceiling; the text-specific caps govern the extracted result and the
+    // bounded DOM preview.
+    limits: {
+      ...localPageLimits,
+      maxTextCharacters: 2_000_000,
+      maxTextBytes: 8 * 1024 * 1024,
+      maxPreviewCharacters: 20_000,
+    },
   },
 ];

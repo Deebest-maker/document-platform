@@ -6,8 +6,10 @@ import { thumbnailLimits } from "./limits";
 import type {
   JpegRenderOptions,
   JpegRenderResult,
+  PageTextContent,
   PreviewDocument,
   PreviewOptions,
+  TextExtractionOptions,
   ThumbnailSize,
 } from "./types";
 import type {
@@ -20,8 +22,10 @@ import type {
 export type {
   JpegRenderOptions,
   JpegRenderResult,
+  PageTextContent,
   PreviewDocument,
   PreviewOptions,
+  TextExtractionOptions,
   ThumbnailSize,
 } from "./types";
 export { thumbnailLimits } from "./limits";
@@ -338,12 +342,74 @@ export async function openPreview(
     );
     return pending;
   }
+  async function extractText(
+    number: number,
+    text: TextExtractionOptions = {},
+  ): Promise<PageTextContent> {
+    const controller = new AbortController();
+    const abortExtract = () => controller.abort();
+    text.signal?.addEventListener("abort", abortExtract, { once: true });
+    if (text.signal?.aborted) controller.abort();
+    let page: PDFPageProxy | undefined;
+    let ownsPage = false;
+    try {
+      const doc = validPage(number);
+      if (controller.signal.aborted) throw new PageError("CANCELLED");
+      if (busyPages.has(number)) throw new PageError("RENDER_FAILED");
+      busyPages.add(number);
+      ownsPage = true;
+      page = await doc.getPage(number);
+      live();
+      if (controller.signal.aborted) throw new PageError("CANCELLED");
+      let content: Awaited<ReturnType<PDFPageProxy["getTextContent"]>>;
+      try {
+        content = await page.getTextContent({
+          includeMarkedContent: false,
+          disableNormalization: false,
+        });
+      } catch {
+        throw new PageError(
+          controller.signal.aborted || closing ? "CANCELLED" : "RENDER_FAILED",
+        );
+      }
+      live();
+      if (controller.signal.aborted) throw new PageError("CANCELLED");
+      // Walk PDF.js text items in their natural content-stream order and
+      // emit `item.str` straight through. hasEOL becomes a literal "\n".
+      // No space is invented between adjacent items: PDF.js already includes
+      // trailing spaces inside item.str when the stream expresses whitespace,
+      // and inserting extra spaces blindly would corrupt scripts without
+      // word separators (CJK, Thai) and punctuation adjacency. Marked-content
+      // items (no `str`) are filtered out at this boundary so PDF.js live
+      // objects never cross into the engine or into React.
+      let assembled = "";
+      for (const raw of content.items as readonly unknown[]) {
+        const candidate = raw as { str?: unknown; hasEOL?: unknown };
+        if (typeof candidate.str !== "string") continue;
+        if (candidate.str.length > 0) assembled += candidate.str;
+        if (candidate.hasEOL === true) assembled += "\n";
+      }
+      return Object.freeze({ text: assembled });
+    } catch (error) {
+      if (error instanceof PageError) throw error;
+      throw new PageError(
+        controller.signal.aborted || closing ? "CANCELLED" : "RENDER_FAILED",
+      );
+    } finally {
+      text.signal?.removeEventListener("abort", abortExtract);
+      if (ownsPage) {
+        busyPages.delete(number);
+        page?.cleanup();
+      }
+    }
+  }
   return Object.freeze({
     sessionId: input.id,
     pageCount: document!.numPages,
     geometry,
     render,
     renderJpeg,
+    extractText,
     destroy,
   });
 }
