@@ -1,6 +1,10 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { getTool, type ProcessingMode } from "@document-platform/tool-registry";
+import {
+  getTool,
+  type PageAvailability,
+  type ProcessingMode,
+} from "@document-platform/tool-registry";
 import {
   PrivacyIndicator,
   ToolShell,
@@ -26,19 +30,38 @@ describe("DEV-006: PrivacyIndicator", () => {
 
   it("derives the shell disclosure from the supplied tool mode", () => {
     const original = getTool("merge-pdf")!;
-    const renderMode = (processingMode: ProcessingMode) =>
+    const renderMode = (
+      processingMode: ProcessingMode,
+      availability: PageAvailability = original.availability,
+    ) =>
       renderToStaticMarkup(
         <ToolShell
-          tool={{ ...original, processingMode }}
+          tool={{ ...original, processingMode, availability }}
           state="idle"
           workspace={<p>Unavailable</p>}
         />,
       );
     expect(renderMode("LOCAL")).toContain("Processed on your device");
-    expect(renderMode("SERVER")).toContain("Planned: server processing");
-    expect(renderMode("SERVER")).not.toContain(
+    expect(renderMode("SERVER", "planned")).toContain(
+      "Planned: server processing",
+    );
+    expect(renderMode("SERVER", "planned")).not.toContain(
       "Planned: processed on your device",
     );
+  });
+
+  it("renders SERVER+available disclosure for active server tools", () => {
+    const wordToPdf = getTool("word-to-pdf")!;
+    const html = renderToStaticMarkup(
+      <ToolShell
+        tool={wordToPdf}
+        state="idle"
+        workspace={<p>Word workspace</p>}
+      />,
+    );
+    expect(html).toContain("Secure server processing");
+    expect(html).not.toContain("Planned: server processing");
+    expect(html).not.toContain("Processed on your device");
   });
 });
 
