@@ -44,11 +44,35 @@ function authHeaders(token: string): Record<string, string> {
   return { Authorization: `Bearer ${token}` };
 }
 
+/**
+ * Read the processor's error body.
+ *
+ * The processor is a FastAPI app, so failures arrive as
+ * `{"detail": {"code": "limit_exceeded", "message": "..."}}` with lowercase
+ * codes. This returns `{ code: "LIMIT_EXCEEDED", message }` (codes are
+ * upper-cased so callers compare against one vocabulary), or `undefined` for
+ * anything that is not that shape (proxy error pages, FastAPI validation
+ * lists, empty bodies).
+ */
+export function parseProcessorError(
+  body: unknown,
+): ProcessorApiError | undefined {
+  if (typeof body !== "object" || body === null) return undefined;
+  const detail = (body as { detail?: unknown }).detail;
+  if (typeof detail !== "object" || detail === null) return undefined;
+  const { code, message } = detail as { code?: unknown; message?: unknown };
+  if (typeof code !== "string" || code === "") return undefined;
+  return {
+    code: code.toUpperCase(),
+    message: typeof message === "string" ? message : "",
+  };
+}
+
 async function ensureOk(response: Response): Promise<void> {
   if (!response.ok) {
     let detail: ProcessorApiError | undefined;
     try {
-      detail = (await response.json()) as ProcessorApiError;
+      detail = parseProcessorError(await response.json());
     } catch {
       /* body may not be JSON */
     }
@@ -128,7 +152,7 @@ export function uploadInput(
       } else {
         let detail: ProcessorApiError | undefined;
         try {
-          detail = JSON.parse(xhr.responseText) as ProcessorApiError;
+          detail = parseProcessorError(JSON.parse(xhr.responseText));
         } catch {
           /* response may not be JSON */
         }

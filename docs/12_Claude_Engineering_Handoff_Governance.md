@@ -147,7 +147,7 @@ ToolShell owns presentation states, not processing logic. Route-owned sessions m
 
 |M3 — Local Tool Family|COMPLETE|Split, Organize, Extract, Delete, Rotate, Images→PDF, PDF→JPG, PDF→Text, Remove Metadata.|
 
-|M4 — Server Processing Core|CURRENT|FastAPI job contract, server lifecycle/security core and Word→PDF.|
+|M4 — Server Processing Core|COMPLETE|FastAPI job contract, server lifecycle/security core, LibreOffice adapter, Word→PDF product slice, benchmark-derived limits, enforced retention and single-conversion gate (ADR-021 to ADR-024).|
 
 |M5 — Hard Tools / Spikes|FUTURE|Compression benchmark/implementation and PDF→Word GO/DEFER.|
 
@@ -390,7 +390,7 @@ Open /word-to-pdf
 
 |M4C — Word→PDF Product Slice|Registry activation, neutral SERVER disclosure, route, job client/session/workspace, progress/cancel/download, privacy copy and server E2E.|Retention/public copy resolved; Product Owner flow review.|
 
-|M4D — Verification & Closeout|Full M0–M4 regression, fidelity/cold-start benchmarks, cleanup/auth/container evidence, final limit proposal, ADR-023, milestone report/manual acceptance script.|CI green + Product Owner manual acceptance before merge/close.|
+|M4D — Verification & Closeout|Full M0–M4 regression, fidelity/cold-start benchmarks, cleanup/auth/container evidence, final limit proposal, ADR-024, milestone report/manual acceptance script.|CI green + Product Owner manual acceptance before merge/close.|
 
 Do not implement the whole milestone as one mega-commit. Each slice should have its own branch/PR or clearly reviewable gate as the repository workflow permits.
 

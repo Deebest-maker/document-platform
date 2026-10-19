@@ -146,6 +146,18 @@ class InMemoryJobStore:
                 event.set()
             return job
 
+    def discard(self, job_id: str) -> None:
+        """Drop a job synchronously (janitor expiry).
+
+        Fires the cancel event so any engine still working on it stops. There
+        is no await in here, so on the event loop it cannot interleave with
+        another coroutine and does not need the lock.
+        """
+        self._jobs.pop(job_id, None)
+        event = self._cancel_events.pop(job_id, None)
+        if event is not None:
+            event.set()
+
     async def delete(self, job_id: str) -> None:
         async with self._lock:
             self._jobs.pop(job_id, None)

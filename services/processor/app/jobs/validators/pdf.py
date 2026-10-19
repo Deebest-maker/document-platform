@@ -22,9 +22,11 @@ from app.errors import ErrorCode, ProcessorError
 
 _PDF_HEADER: Final[bytes] = b"%PDF-"
 
-# Maximum pages a single Word→PDF conversion should reasonably produce.
-# A 10 000-page output from a single DOCX is almost certainly a bug.
-MAX_PAGES: Final[int] = 10_000
+# Maximum pages a single Word→PDF conversion may produce. Set from the M4D
+# benchmark (docs/benchmarks/M4D-libreoffice-results.json): a 1,018-page text
+# document converted in about 14 s, so the bound is 2x the largest realistic
+# document measured. Beyond this, output is treated as a runaway.
+MAX_PAGES: Final[int] = 2_000
 
 
 def validate_pdf_header(output_path: Path) -> None:
