@@ -35,5 +35,11 @@ export function getPrivacyPresentation(
       explanation:
         "Your documents are processed in this browser. Document bytes are never uploaded to our servers or third parties. Start over or leave this page to release this session's files and result.",
     };
+  if (mode === "SERVER" && availability === "available")
+    return {
+      label: "Secure server processing",
+      explanation:
+        "Your file is uploaded to our processing server over an encrypted connection, converted, and deleted automatically. The file is never shared with third parties.",
+    };
   return privacy[mode];
 }

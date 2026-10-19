@@ -11,6 +11,7 @@ const routes = [
   "/split-pdf",
   "/jpg-to-pdf",
   "/pdf-to-jpg",
+  "/word-to-pdf",
   "/about",
   "/privacy",
   "/terms",
@@ -41,6 +42,7 @@ for (const route of routes) {
         "/split-pdf",
         "/jpg-to-pdf",
         "/pdf-to-jpg",
+        "/word-to-pdf",
       ].includes(route)
         ? 1
         : 0,
@@ -59,6 +61,7 @@ for (const route of routes) {
         "/split-pdf",
         "/jpg-to-pdf",
         "/pdf-to-jpg",
+        "/word-to-pdf",
       ].includes(route)
     ) {
       await page.screenshot({
@@ -88,7 +91,7 @@ for (const route of routes) {
 test("unpublished tools return 404 rather than bulk placeholders", async ({
   request,
 }) => {
-  for (const route of ["/compress-pdf", "/word-to-pdf", "/not-a-tool"]) {
+  for (const route of ["/compress-pdf", "/pdf-to-word", "/not-a-tool"]) {
     const response = await request.get(route);
     expect(response.status()).toBe(404);
   }

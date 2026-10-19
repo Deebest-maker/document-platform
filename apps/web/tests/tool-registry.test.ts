@@ -69,7 +69,7 @@ describe("DEV-004: authoritative tool registry", () => {
     ).toEqual(expected);
   });
 
-  it("makes only the completed routes through M3B.4 available", () => {
+  it("makes only the completed routes through M4C available", () => {
     expect(
       tools
         .filter((tool) => tool.availability === "available")
@@ -79,6 +79,7 @@ describe("DEV-004: authoritative tool registry", () => {
       "split-pdf",
       "jpg-to-pdf",
       "pdf-to-jpg",
+      "word-to-pdf",
       "organize-pdf",
       "extract-pdf-pages",
       "delete-pdf-pages",
@@ -100,6 +101,7 @@ describe("DEV-004: authoritative tool registry", () => {
           "pdf-to-jpg",
           "remove-pdf-metadata",
           "pdf-to-text",
+          "word-to-pdf",
         ].includes(tool.slug)
           ? "/" + tool.slug
           : "/tools#" + tool.slug,
@@ -202,6 +204,19 @@ describe("DEV-004: authoritative tool registry", () => {
       maxCombinedOutputBytes: 67108864,
       maxArchiveBytes: 67108864,
     });
+    const wordToPdf = getTool("word-to-pdf")!;
+    expect(wordToPdf.availability).toBe("available");
+    expect(wordToPdf.limits).toEqual({
+      maxFiles: 1,
+      maxFileBytes: 20971520,
+      maxTotalBytes: 20971520,
+      maxPages: 0,
+      maxOutputBytes: 33554432,
+    });
+    expect(
+      getPrivacyPresentation(wordToPdf.processingMode, wordToPdf.availability)
+        .label,
+    ).toBe("Secure server processing");
     expect(
       tools
         .filter((tool) => tool.availability !== "available")

@@ -199,8 +199,18 @@ export const tools: readonly ToolDefinition[] = [
     ],
     processingMode: "SERVER",
     relatedSlugs: ["pdf-to-word", "merge-pdf"],
-    featured: false,
-    availability: "planned",
+    featured: true,
+    availability: "available",
+    // M4C activation caps; aligned with processor config defaults.
+    // maxPages is 0 — page count is not enforced client-side for server
+    // conversion; the processor's own output validation handles it.
+    limits: {
+      maxFiles: 1,
+      maxFileBytes: 20 * 1024 * 1024, // 20 MiB — matches processor max_input_bytes
+      maxTotalBytes: 20 * 1024 * 1024,
+      maxPages: 0,
+      maxOutputBytes: 32 * 1024 * 1024, // 32 MiB — matches processor max_output_bytes
+    },
   },
   {
     slug: "organize-pdf",
