@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import type { MetadataRemovalLimits } from "@document-platform/pdf-browser/metadata-removal";
-import { getRelatedTools, getTool } from "@document-platform/tool-registry";
+import { getTool } from "@document-platform/tool-registry";
 import { RemovePdfMetadataWorkspace } from "../../components/remove-pdf-metadata/remove-pdf-metadata-workspace";
-import { ToolList } from "../../components/tool-list";
+import { ToolGuide } from "../../components/tool-guide";
 import { toolMetadata } from "../../lib/seo";
 
 const tool = getTool("remove-pdf-metadata");
@@ -30,12 +30,7 @@ export default function RemovePdfMetadataPage() {
     <RemovePdfMetadataWorkspace
       tool={tool!}
       limits={limits}
-      related={
-        <>
-          <h2>Related tools</h2>
-          <ToolList records={getRelatedTools(tool!)} />
-        </>
-      }
+      related={<ToolGuide tool={tool!} />}
     />
   );
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { getRelatedTools, getTool } from "@document-platform/tool-registry";
+import { getTool } from "@document-platform/tool-registry";
 import { RotateWorkspace } from "../../components/page-tools/rotate-workspace";
-import { ToolList } from "../../components/tool-list";
+import { ToolGuide } from "../../components/tool-guide";
 import { toolMetadata } from "../../lib/seo";
 
 const tool = getTool("rotate-pdf");
@@ -11,15 +11,5 @@ if (!tool?.limits)
 export const metadata: Metadata = toolMetadata(tool);
 
 export default function RotatePdfPage() {
-  return (
-    <RotateWorkspace
-      tool={tool!}
-      related={
-        <>
-          <h2>Related tools</h2>
-          <ToolList records={getRelatedTools(tool!)} />
-        </>
-      }
-    />
-  );
+  return <RotateWorkspace tool={tool!} related={<ToolGuide tool={tool!} />} />;
 }

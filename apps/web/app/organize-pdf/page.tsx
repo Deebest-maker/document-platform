@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { getRelatedTools, getTool } from "@document-platform/tool-registry";
-import { ToolList } from "../../components/tool-list";
+import { getTool } from "@document-platform/tool-registry";
+import { ToolGuide } from "../../components/tool-guide";
 import { OrganizeWorkspace } from "../../components/organize/organize-workspace";
 import { toolMetadata } from "../../lib/seo";
 
@@ -12,14 +12,6 @@ export const metadata: Metadata = toolMetadata(tool);
 
 export default function OrganizePdfPage() {
   return (
-    <OrganizeWorkspace
-      tool={tool!}
-      related={
-        <>
-          <h2>Related tools</h2>
-          <ToolList records={getRelatedTools(tool!)} />
-        </>
-      }
-    />
+    <OrganizeWorkspace tool={tool!} related={<ToolGuide tool={tool!} />} />
   );
 }

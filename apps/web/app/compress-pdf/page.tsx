@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import type { CompressLimits } from "@document-platform/pdf-browser/compress";
 import { DEFAULT_COMPRESS_LIMITS } from "@document-platform/pdf-browser/compress";
-import { getRelatedTools, getTool } from "@document-platform/tool-registry";
+import { getTool } from "@document-platform/tool-registry";
 import { CompressPdfWorkspace } from "../../components/compress-pdf/compress-pdf-workspace";
-import { ToolList } from "../../components/tool-list";
+import { ToolGuide } from "../../components/tool-guide";
 import { toolMetadata } from "../../lib/seo";
 
 const tool = getTool("compress-pdf");
@@ -34,12 +34,7 @@ export default function CompressPdfPage() {
     <CompressPdfWorkspace
       tool={tool!}
       limits={limits}
-      related={
-        <>
-          <h2>Related tools</h2>
-          <ToolList records={getRelatedTools(tool!)} />
-        </>
-      }
+      related={<ToolGuide tool={tool!} />}
     />
   );
 }

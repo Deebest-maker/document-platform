@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { getRelatedTools, getTool } from "@document-platform/tool-registry";
+import { getTool } from "@document-platform/tool-registry";
 import { SelectionExportWorkspace } from "../../components/page-tools/selection-export-workspace";
-import { ToolList } from "../../components/tool-list";
+import { ToolGuide } from "../../components/tool-guide";
 import { toolMetadata } from "../../lib/seo";
 
 const tool = getTool("delete-pdf-pages");
@@ -15,12 +15,7 @@ export default function DeletePdfPagesPage() {
     <SelectionExportWorkspace
       tool={tool!}
       mode="delete"
-      related={
-        <>
-          <h2>Related tools</h2>
-          <ToolList records={getRelatedTools(tool!)} />
-        </>
-      }
+      related={<ToolGuide tool={tool!} />}
     />
   );
 }

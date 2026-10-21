@@ -151,7 +151,7 @@ ToolShell owns presentation states, not processing logic. Route-owned sessions m
 
 |M5 — Hard Tools / Spikes|COMPLETE|M5A Compress PDF implemented on device with benchmark-derived limits (ADR-025, ADR-026), accepted and merged. M5B PDF→Word fidelity benchmark complete: DEFER to V1.1 (ADR-027), accepted and merged.|
 
-|M6 — Content/SEO|IN PROGRESS|M6A technical SEO foundation implemented (ADR-028): build-time site settings, shared metadata helper, robots.txt, sitemap, indexing off by default; owner acceptance pending. M6B tool-page content, M6C Learn, M6D structured data not started.|
+|M6 — Content/SEO|IN PROGRESS|M6A technical SEO foundation (ADR-028), accepted and merged. M6B tool-page guides for the 12 available tools (ADR-029) implemented; owner acceptance pending. M6C Learn hub and M6D structured data not started.|
 
 |M7 — QA/Hardening|FUTURE|Expanded fixture/browser/accessibility/security/performance hardening.|
 

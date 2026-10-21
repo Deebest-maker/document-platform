@@ -1,6 +1,6 @@
 # ADR-028: Technical SEO foundation, with indexing off by default (M6A)
 
-**Status:** Implemented under the approved M6 gate; owner acceptance pending
+**Status:** Implemented under the approved M6 gate; accepted and merged (`54b2252`)
 **Date:** 2026-10-21
 **Scope:** The first slice of M6: how pages declare themselves to search engines, `robots.txt`, `sitemap.xml` and the "do not index" safeguards. No page content, no structured data, no Learn section and no analytics were added.
 **Relates to:** SEO strategy (server-rendered pages, canonical tags from the registry, sitemap only for published canonical pages, staging `noindex`, real 404s for missing tools, no scaled keyword filler); governance §14.2 (M6) and §14.4 (M8 launch); the tool registry as the one source of tool facts (`availability`).

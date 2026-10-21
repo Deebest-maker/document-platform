@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { getRelatedTools, getTool } from "@document-platform/tool-registry";
-import { ToolList } from "../../components/tool-list";
+import { getTool } from "@document-platform/tool-registry";
+import { ToolGuide } from "../../components/tool-guide";
 import { WordToPdfWorkspace } from "../../components/word-to-pdf/word-to-pdf-workspace";
 import { toolMetadata } from "../../lib/seo";
 
@@ -10,14 +10,6 @@ if (!tool?.limits)
 export const metadata: Metadata = toolMetadata(tool);
 export default function WordToPdfPage() {
   return (
-    <WordToPdfWorkspace
-      tool={tool!}
-      related={
-        <>
-          <h2>Related tools</h2>
-          <ToolList records={getRelatedTools(tool!)} />
-        </>
-      }
-    />
+    <WordToPdfWorkspace tool={tool!} related={<ToolGuide tool={tool!} />} />
   );
 }

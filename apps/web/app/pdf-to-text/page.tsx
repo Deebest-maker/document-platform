@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import type { PdfToTextLimits } from "@document-platform/pdf-browser/pdf-to-text";
-import { getRelatedTools, getTool } from "@document-platform/tool-registry";
+import { getTool } from "@document-platform/tool-registry";
 import { PdfToTextWorkspace } from "../../components/pdf-to-text/pdf-to-text-workspace";
-import { ToolList } from "../../components/tool-list";
+import { ToolGuide } from "../../components/tool-guide";
 import { toolMetadata } from "../../lib/seo";
 
 const tool = getTool("pdf-to-text");
@@ -28,12 +28,7 @@ export default function PdfToTextPage() {
     <PdfToTextWorkspace
       tool={tool!}
       limits={limits}
-      related={
-        <>
-          <h2>Related tools</h2>
-          <ToolList records={getRelatedTools(tool!)} />
-        </>
-      }
+      related={<ToolGuide tool={tool!} />}
     />
   );
 }
