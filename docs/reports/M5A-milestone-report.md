@@ -59,7 +59,7 @@ No upload, no server call, no new dependency (AGPL engines still excluded). Work
 
 ## Finding outside this milestone
 
-pdf-lib 1.17 can trim one or two trailing Flate checksum bytes when `/Length` is an indirect reference. Compress detects and repairs it. **Other tools that re-save PDFs through pdf-lib (merge, split, organize, page tools, metadata removal) may produce the same truncated streams.** Not fixed here; proposed for M7.
+pdf-lib 1.17 can trim one or two trailing Flate checksum bytes when `/Length` is an indirect reference. Compress detects and repairs it. The same bug affected Merge, the page tools, Split and Remove metadata; it is fixed for them in ADR-026 (PR #19, merged).
 
 ## Deviations from plan
 
@@ -70,8 +70,7 @@ pdf-lib 1.17 can trim one or two trailing Flate checksum bytes when `/Length` is
 
 1. **Confirm HYBRID → LOCAL** for Compress PDF (the architecture document needs the matching edit).
 2. **Limits:** accept the desktop-measured caps for the preview, or ask for a lower public JPEG cap (for example 48 MP) until a phone has been tested.
-3. **pdf-lib truncation:** approve investigating the other tools in M7.
-4. **Still pending from M4:** retention default (A 15 min / B 10 min / C 5 min); the default stays 15 min until you choose.
+3. **Still pending from M4:** retention default (A 15 min / B 10 min / C 5 min); the default stays 15 min until you choose.
 
 ## Manual acceptance script
 

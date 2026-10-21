@@ -55,7 +55,7 @@ Grayscale images are re-encoded as RGB JPEG (a DeviceRGB dictionary replaces Dev
 
 **Handling in Compress.** The engine inflates the raw deflate data (skipping the 2-byte zlib header), classifies the trailer as _valid_, _truncated_ (the lost bytes can only have been line-ending bytes) or _invalid_ (stream skipped), and rewrites truncated streams with a correct trailer. Unit tests reproduce the trimming with an indirect `/Length`.
 
-**Possible impact elsewhere.** Other tools that load and re-save PDFs through pdf-lib (merge, split, organize, page tools, metadata removal) may emit Flate streams with a truncated checksum in the same circumstance. Most readers tolerate this, so it has not shown up in any test, but it is a latent correctness risk. It is **not** fixed here. Recommended: investigate and fix in M7.
+**Impact elsewhere (resolved).** Merge, the page tools, Split and Remove metadata could emit the same truncated checksums. A shared first-party repair for those tools shipped separately in [ADR-026](026-pdf-lib-trailer-repair.md) (PR #19, merged). Compress keeps its own, more general repair described above.
 
 ### 6. Verification before anything is offered
 
@@ -104,11 +104,10 @@ All work happens in a dedicated worker on the device. No document content, filen
 - Safari, Firefox and phone validation (no devices here): M7/M8 gate.
 - Garbage collection of unreferenced objects and duplicate-image merging: needs a safe reachability pass over the whole object graph; separate spike.
 - CMYK/Indexed/masked image recompression: needs colour management and mask handling; the safe default is to leave them.
-- Fixing the pdf-lib trailing-byte trimming in other tools: M7 (see §5).
+- Fixing the pdf-lib trailing-byte trimming in other tools: done in ADR-026 (see §5).
 
 ## Unresolved decisions for the Product Owner
 
 1. Confirm HYBRID → LOCAL for Compress PDF (architecture document needs the matching edit).
 2. Accept the desktop-measured limits for launch preview, or request a lower public JPEG decode cap until a phone has been tested.
-3. Approve scheduling the pdf-lib trailing-byte investigation for other tools in M7.
-4. The M4 retention default (A 15 min / B 10 min / C 5 min) is still pending and unchanged.
+3. The M4 retention default (A 15 min / B 10 min / C 5 min) is still pending and unchanged.
