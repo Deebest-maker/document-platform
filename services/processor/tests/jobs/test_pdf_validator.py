@@ -14,6 +14,7 @@ import pytest
 
 from app.errors import ErrorCode, ProcessorError
 from app.jobs.validators.pdf import (
+    MAX_PAGES,
     validate_pdf_header,
     validate_pdf_page_count,
     validate_pdf_qpdf,
@@ -141,3 +142,22 @@ class TestPdfPageCount:
         p = _write(tmp_path, "good.pdf", _MINIMAL_PDF)
         result = await validate_pdf_page_count(p)
         assert result >= 0  # 1 for a valid single-page PDF
+
+    @pytest.mark.asyncio
+    async def test_page_bound_is_the_benchmarked_value(self) -> None:
+        # M4D: 2x the 1,018-page document measured in the benchmark.
+        assert MAX_PAGES == 2_000
+
+    @pytest.mark.asyncio
+    async def test_rejects_output_above_the_page_bound(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        import shutil
+
+        if shutil.which("qpdf") is None:
+            pytest.skip("qpdf not installed")
+        monkeypatch.setattr("app.jobs.validators.pdf.MAX_PAGES", 0)
+        p = _write(tmp_path, "good.pdf", _MINIMAL_PDF)
+        with pytest.raises(ProcessorError) as caught:
+            await validate_pdf_page_count(p)
+        assert caught.value.code is ErrorCode.LIMIT_EXCEEDED

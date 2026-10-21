@@ -34,6 +34,7 @@ from app.config import Settings
 from app.errors import MESSAGES, STATUS, ErrorCode, ProcessorError
 from app.jobs.auth import extract_bearer_token, issue
 from app.jobs.engines.base import ConversionEngine
+from app.jobs.gate import ConversionGate
 from app.jobs.state import Job, JobState
 from app.jobs.store import InMemoryJobStore
 from app.jobs.validators.docx import validate_docx
@@ -59,6 +60,7 @@ class JobsContext:
     store: InMemoryJobStore
     engine: ConversionEngine
     jobs_root: Path
+    gate: ConversionGate
 
 
 class CreateJobRequest(BaseModel):
@@ -161,10 +163,19 @@ async def upload_input(
         await ctx.store.mark_failed(job_id, ErrorCode.INTERNAL)
         _raise(ErrorCode.INTERNAL)
     input_path = workspace / _INPUT_FILENAME
-    input_path.write_bytes(body)
-    await ctx.store.set_workspace(job_id, str(workspace))
-    await ctx.store.record_input_bytes(job_id, size)
-    await ctx.store.transition(job_id, JobState.UPLOADING)
+    try:
+        input_path.write_bytes(body)
+        await ctx.store.set_workspace(job_id, str(workspace))
+        await ctx.store.record_input_bytes(job_id, size)
+        await ctx.store.transition(job_id, JobState.UPLOADING)
+    except ProcessorError as err:
+        # The job expired or was deleted while its body was still arriving.
+        remove_workspace(ctx.jobs_root, workspace)
+        _raise(err.code)
+    except Exception:  # noqa: BLE001
+        remove_workspace(ctx.jobs_root, workspace)
+        await ctx.store.mark_failed(job_id, ErrorCode.INTERNAL)
+        _raise(ErrorCode.INTERNAL)
     safe_log(
         logging.getLogger("processor.jobs"),
         logging.INFO,
@@ -189,7 +200,24 @@ async def convert(
         _raise(err.code)
     if job.state != JobState.UPLOADING or job.workspace is None:
         _raise(ErrorCode.CONFLICT)
-    workspace = Path(job.workspace)
+
+    # Governance §9.3: exactly one on-disk conversion at a time. The caller is
+    # authorised before it may queue, and the job is re-checked once the slot
+    # is won because it may have been deleted or started while it waited.
+    try:
+        async with ctx.gate.slot():
+            job = _authorize(ctx, job_id, authorization)
+            if job.state != JobState.UPLOADING or job.workspace is None:
+                _raise(ErrorCode.CONFLICT)
+            return await _run_conversion(ctx, job_id, Path(job.workspace))
+    except ProcessorError as err:
+        _raise(err.code)
+
+
+async def _run_conversion(
+    ctx: JobsContext, job_id: str, workspace: Path
+) -> JobStateResponse:
+    """Validate, convert and validate again. Caller holds the conversion slot."""
     input_path = workspace / _INPUT_FILENAME
     output_path = workspace / _OUTPUT_FILENAME
 

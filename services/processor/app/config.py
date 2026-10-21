@@ -14,9 +14,9 @@ Design rules:
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import Final
+from typing import Final, Self
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 # Reasonable, measured-independent defaults for M4A. Numeric production
 # values are determined by M4B/M4D benchmarks before any public rollout.
@@ -26,6 +26,7 @@ _DEFAULT_JOB_LIFETIME_SECONDS: Final[int] = 15 * 60  # 15 minutes
 _DEFAULT_RUNNER_TIMEOUT_SECONDS: Final[int] = 120  # 2 minutes
 _DEFAULT_JANITOR_INTERVAL_SECONDS: Final[int] = 60
 _DEFAULT_MAX_INFLIGHT_JOBS: Final[int] = 32
+_DEFAULT_CONVERT_QUEUE_WAIT_SECONDS: Final[int] = 20
 
 
 class Settings(BaseModel):
@@ -56,9 +57,27 @@ class Settings(BaseModel):
         default=_DEFAULT_JANITOR_INTERVAL_SECONDS, gt=0
     )
     max_inflight_jobs: int = Field(default=_DEFAULT_MAX_INFLIGHT_JOBS, gt=0)
+    convert_queue_wait_seconds: int = Field(
+        default=_DEFAULT_CONVERT_QUEUE_WAIT_SECONDS, gt=0
+    )
+    """Longest a /convert call waits for the single conversion slot before it
+    gets a 503. Conversions run one at a time (governance §9.3)."""
 
     dev_cors_origins: tuple[str, ...] = Field(default=())
     """Only honoured when `environment == "development"`."""
+
+    @model_validator(mode="after")
+    def _lifetime_outlasts_a_conversion(self) -> Self:
+        """The janitor expires jobs by age in every state, so the lifetime must
+        be longer than the longest a job can legitimately be busy."""
+        busy = self.runner_timeout_seconds + self.convert_queue_wait_seconds
+        if self.job_lifetime_seconds <= busy:
+            msg = (
+                "job_lifetime_seconds must exceed runner_timeout_seconds + "
+                f"convert_queue_wait_seconds ({busy}s)"
+            )
+            raise ValueError(msg)
+        return self
 
     @field_validator("dev_cors_origins", mode="before")
     @classmethod
@@ -107,6 +126,10 @@ def load_settings() -> Settings:
         ),
         max_inflight_jobs=_get_env_int(
             "PROCESSOR_MAX_INFLIGHT_JOBS", _DEFAULT_MAX_INFLIGHT_JOBS
+        ),
+        convert_queue_wait_seconds=_get_env_int(
+            "PROCESSOR_CONVERT_QUEUE_WAIT_SECONDS",
+            _DEFAULT_CONVERT_QUEUE_WAIT_SECONDS,
         ),
         dev_cors_origins=os.environ.get("PROCESSOR_DEV_CORS_ORIGINS", ""),  # type: ignore[arg-type]
     )

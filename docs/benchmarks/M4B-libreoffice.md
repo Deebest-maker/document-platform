@@ -1,6 +1,6 @@
 # M4B LibreOffice benchmark harness
 
-This document defines the methodology for benchmarking the LibreOffice headless Word→PDF conversion pipeline. Actual results will be recorded in `M4B-libreoffice-results.json` after a dedicated run against the built container image.
+This document defines the methodology for benchmarking the LibreOffice headless Word→PDF conversion pipeline. **Status: executed in M4D.** Results are in [`M4D-libreoffice.md`](M4D-libreoffice.md) and `M4D-libreoffice-results.json`, produced by `services/processor/tools/m4d_benchmark.py`. The M4D run used a dev host, not the production image (no Docker daemon available); a re-run inside the real image is required before launch (M8). Where this plan and the executed run differ: W5 was run at ~19 MiB (the current input limit) and a 50 MiB case (W6) was added; W7 (large raster), W8 (~1,000 pages), H1 (pixel bomb) and a concurrency probe were added.
 
 ## Objectives
 
@@ -50,13 +50,15 @@ For each rejection workload R1–R5:
 
 ## Harness script
 
-The harness (`tools/m4b-benchmark.py`, not yet written) will:
+The harness (`services/processor/tools/m4d_benchmark.py`) does the following:
 
 1. Build synthetic DOCX files for each workload using `python-docx` or raw `zipfile`.
 2. Start the processor in test mode with `LibreOfficeEngine` (not `FakeEngine`).
 3. Run each workload 5 times, discard the first (cold), report median and p95 of the remaining 4.
-4. Capture per-metric measurements and write them to `M4B-libreoffice-results.json`.
+4. Capture per-metric measurements and write them to `M4D-libreoffice-results.json`.
 5. Verify all rejection workloads return `INVALID_INPUT` within 100 ms.
+
+(As executed: runs call the pipeline in process rather than starting the HTTP server, so HTTP and transfer time are excluded.)
 
 ## Environment
 

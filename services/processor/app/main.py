@@ -25,6 +25,7 @@ from app.api import jobs as jobs_api
 from app.config import Settings, load_settings
 from app.jobs.engines.fake import FakeEngine
 from app.jobs.engines.libreoffice import LibreOfficeEngine
+from app.jobs.gate import ConversionGate
 from app.jobs.janitor import Janitor
 from app.jobs.store import InMemoryJobStore
 from app.jobs.workspace import validate_jobs_root
@@ -76,6 +77,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             store=store,
             engine=engine,
             jobs_root=jobs_root,
+            gate=ConversionGate(
+                max_waiting=settings.max_inflight_jobs,
+                wait_timeout_seconds=float(settings.convert_queue_wait_seconds),
+            ),
         )
         app.state.processor = {"ready": True, "janitor": janitor}
         await janitor.start()

@@ -1,10 +1,10 @@
 """Background janitor.
 
-Walks the validated jobs root at a configured interval and removes
-workspaces whose job is already terminal + older than the retention
-cutoff. Also removes workspaces whose owning job no longer exists in
-the registry at all (crash-leftover case). The janitor only touches
-direct children of the validated jobs root and never follows symlinks.
+Runs at a configured interval and expires every job (in any state) that has
+had no state change for ``job_lifetime_seconds``: its workspace is removed and
+its registry entry dropped. Also removes workspaces whose owning job no longer
+exists in the registry (crash-leftover case). The janitor only touches direct
+children of the validated jobs root and never follows symlinks.
 """
 
 from __future__ import annotations
@@ -14,7 +14,6 @@ import logging
 import time
 from pathlib import Path
 
-from app.jobs.state import TERMINAL_STATES
 from app.jobs.store import InMemoryJobStore
 from app.jobs.workspace import direct_children, remove_workspace
 
@@ -70,25 +69,31 @@ class Janitor:
                 continue
 
     def sweep(self) -> int:
-        """Remove eligible workspaces. Returns the count removed."""
+        """Expire old jobs and clean up orphans. Returns workspaces removed.
+
+        A job expires once ``job_lifetime_seconds`` have passed since its last
+        state change, whatever state it is in. That covers abandoned uploads
+        (``created`` / ``uploading``), which the browser's own cleanup cannot
+        guarantee, as well as finished jobs nobody downloaded. Expiry removes
+        the workspace and drops the registry entry, which also frees the
+        in-flight slot. ``Settings`` guarantees the lifetime is longer than
+        any legitimate conversion, so a running job is never cut short.
+        """
         now = time.monotonic()
-        known_ids = {job.id for job in self._store.iter_jobs()}
         removed = 0
+        for job in self._store.iter_jobs():
+            if (now - job.updated_at) < self._lifetime:
+                continue
+            if remove_workspace(self._jobs_root, self._jobs_root / job.id):
+                removed += 1
+            self._store.discard(job.id)
         for child in direct_children(self._jobs_root):
             # Never touch the sentinel itself (direct_children filters it
             # because it is a file, but we double-check by name just in case).
             if child.name == self._sentinel:
                 continue
-            job = self._store.get(child.name)
-            if job is None and child.name not in known_ids:
-                # Workspace with no owning job — treat as crash leftover.
+            if self._store.get(child.name) is None:
+                # Workspace with no owning job: crash leftover.
                 if remove_workspace(self._jobs_root, child):
                     removed += 1
-                continue
-            if job is None:
-                continue
-            if job.state in TERMINAL_STATES:
-                if (now - job.updated_at) >= self._lifetime:
-                    if remove_workspace(self._jobs_root, child):
-                        removed += 1
         return removed

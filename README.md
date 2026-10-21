@@ -129,7 +129,7 @@ docker stop document-platform-processor-m0
 docker rm document-platform-processor-m0
 ```
 
-The image runs as UID/GID 10001 and contains no conversion engines or development dependencies. The smoke limits above are for the health service, not future conversion limits.
+The image runs as UID/GID 10001. Since M4B it contains LibreOffice Writer, qpdf and fonts for Word to PDF, and no development dependencies. The smoke limits above are for the health service only; conversion sizing and the deployment requirements (memory, disk, proxy limits) are in [ADR-024](docs/adr/024-m4d-verification-limits.md).
 
 ## Layout and CI
 
