@@ -11,6 +11,8 @@ overrides:
   source-map-js: "1.2.2"
   # Patched release for GHSA-wq5f-xc86-pv6w within Next's compatible optional range.
   sharp: "0.35.5"
+  # Patched release for GHSA-587h-7wmj-h5pm (launch-editor path check). vite is reached only through vitest (test tooling).
+  vite: "8.3.4"
 
 # These are the only dependency install scripts required by this foundation.
 allowBuilds:
