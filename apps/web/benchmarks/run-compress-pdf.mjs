@@ -312,7 +312,11 @@ let allRuns = runs;
 if (args.merge) {
   let previous = [];
   try {
-    previous = JSON.parse(await readFile(resultPath, "utf8")).runs ?? [];
+    const earlier = JSON.parse(await readFile(resultPath, "utf8"));
+    previous = earlier.runs ?? [];
+    // Counters accumulate so the audit always covers every merged invocation.
+    for (const key of Object.keys(audit))
+      audit[key] += earlier.privacyAudit?.[key] ?? 0;
   } catch {
     /* first run */
   }
