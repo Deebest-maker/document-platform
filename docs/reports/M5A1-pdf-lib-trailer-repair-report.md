@@ -19,7 +19,7 @@ pdf-lib 1.17.1 can drop the last one or two bytes (the Flate checksum) of a stre
 
 - 10 new tests: restore for LF, CR and CR LF endings; conforming and direct-length files unchanged; damaged checksum, non-Flate stream, missing zlib header and spent budget left alone; Merge, page tools and Remove metadata write the restored stream. **Without the repair, 6 of them fail.**
 - Format, lint (0 warnings), typecheck clean. Unit: pdf-browser 133 and web 110 pass.
-- Browser tests on the production build: running when this draft was committed; result added before the PR is opened.
+- Browser tests on the production build: merge, merge privacy, isolation, remove metadata, split, page tools and organize specs (chromium): **26 passed, 5 failed**. The 5 are the known older source-replacement tests (organize, extract/delete/rotate, split) that also fail on untouched `main` in this container; the Split "without loading archive code" test passes. Not run: the other specs and the mobile project; CI runs the full suite.
 - Alternatives checked (ADR-026): the `@cantoo/pdf-lib` fork has the same bug, so switching would not help.
 
 ## Limitations
