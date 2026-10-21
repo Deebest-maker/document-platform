@@ -42,7 +42,7 @@ No provisional limit was changed. All were **confirmed by measurement except two
 
 - Unit: 265 (pdf-browser, incl. the engine) + 133 (web) tests pass.
 - Format, lint (0 warnings), typecheck, production build: clean.
-- Playwright: full run in progress when this draft was committed; result is added below before the PR is opened.
+- Playwright, full suite on the final production build: **222 passed, 14 failed** (236 tests, chromium and mobile-chromium). All 14 are the 7 known older tests below, run in both projects; the 14 Compress tests pass.
 - Independent checks of every benchmark output: qpdf, pdfium SSIM, text comparison.
 - **Pre-existing failures in this container:** 7 older E2E tests (organize, extract/delete/rotate, split source-replacement; PDF to JPG) fail on untouched `main` (`9ca7c14`) too, so they are not caused by M5A. They report an encrypted PDF as "damaged" and PDF to JPG as "did not finish" in the preview module. CI (Node 24) should be checked; I did not change that code.
 
