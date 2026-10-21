@@ -1,7 +1,7 @@
 # M5A Milestone Report: Compress PDF
 
 **Date:** 2026-10-21
-**Status:** Implementation complete; awaiting Product Owner acceptance. Not merged.
+**Status:** Accepted and merged (`d8bd7f9`).
 **Preceding milestone:** M4D — Verification & Closeout (accepted and merged, `9ca7c14`).
 **Decision record:** [ADR-025](../adr/025-m5a-compress-pdf.md). **Evidence:** [`M5A-compress-pdf.md`](../benchmarks/M5A-compress-pdf.md), [`M5A-compress-pdf-results.json`](../benchmarks/M5A-compress-pdf-results.json), [`M5A-compress-pdf-evaluation.json`](../benchmarks/M5A-compress-pdf-evaluation.json).
 
