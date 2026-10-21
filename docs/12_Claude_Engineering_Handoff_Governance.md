@@ -149,7 +149,7 @@ ToolShell owns presentation states, not processing logic. Route-owned sessions m
 
 |M4 — Server Processing Core|COMPLETE|FastAPI job contract, server lifecycle/security core, LibreOffice adapter, Word→PDF product slice, benchmark-derived limits, enforced retention and single-conversion gate (ADR-021 to ADR-024).|
 
-|M5 — Hard Tools / Spikes|IN PROGRESS|M5A Compress PDF implemented on device with benchmark-derived limits (ADR-025, ADR-026), accepted and merged. M5B PDF→Word fidelity benchmark complete: DEFER to V1.1 (ADR-027), owner acceptance pending.|
+|M5 — Hard Tools / Spikes|COMPLETE|M5A Compress PDF implemented on device with benchmark-derived limits (ADR-025, ADR-026), accepted and merged. M5B PDF→Word fidelity benchmark complete: DEFER to V1.1 (ADR-027), accepted and merged.|
 
 |M6 — Content/SEO|FUTURE|Canonical content surfaces, Learn, sitemap/robots/metadata.|
 
