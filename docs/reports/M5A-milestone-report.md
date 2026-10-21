@@ -44,7 +44,7 @@ No provisional limit was changed. All were **confirmed by measurement except two
 - Format, lint (0 warnings), typecheck, production build: clean.
 - Playwright, full suite on the final production build: **222 passed, 14 failed** (236 tests, chromium and mobile-chromium). All 14 are the 7 known older tests below, run in both projects; the 14 Compress tests pass.
 - Independent checks of every benchmark output: qpdf, pdfium SSIM, text comparison.
-- **Pre-existing failures in this container:** 7 older E2E tests (organize, extract/delete/rotate, split source-replacement; PDF to JPG) fail on untouched `main` (`9ca7c14`) too, so they are not caused by M5A. They report an encrypted PDF as "damaged" and PDF to JPG as "did not finish" in the preview module. CI (Node 24) should be checked; I did not change that code.
+- **Older E2E failures in this container only.** 7 older tests (organize, extract/delete/rotate, split source-replacement; PDF to JPG) fail locally, on untouched `main` (`9ca7c14`) too. They are environmental: in CI (Node 24, Chromium) the full `pnpm check`, including the whole browser suite and all 14 Compress tests, passes on this branch. The only red CI step was the dependency audit (new vite advisory GHSA-587h-7wmj-h5pm), fixed separately in PR #20.
 
 ## Security and privacy
 
