@@ -1,4 +1,4 @@
-import { Inflate } from "fflate";
+import type { Inflate } from "fflate";
 import type {
   PDFArray,
   PDFDocument,
@@ -51,6 +51,7 @@ export function repairFlateTrailer(
   data: Uint8Array,
   lost: 1 | 2,
   budget: { remaining: number },
+  InflateStream: typeof Inflate,
 ): Uint8Array | null {
   const keep = 4 - lost; // checksum bytes that survived
   if (data.length < 2 + keep) return null;
@@ -63,7 +64,7 @@ export function repairFlateTrailer(
   let b = 0;
   let produced = 0;
   try {
-    const inflate = new Inflate((chunk) => {
+    const inflate = new InflateStream((chunk) => {
       produced += chunk.length;
       if (produced > budget.remaining) throw new LimitSignal();
       let index = 0;
@@ -101,15 +102,18 @@ export function repairFlateTrailer(
 }
 
 /** Repairs trimmed Flate checksums in a freshly loaded document, in place.
- * Returns the number of streams restored. Never throws on odd input. */
-export function repairTruncatedFlateTrailers(
+ * Returns the number of streams restored. Never throws on odd input.
+ *
+ * The decoder (fflate) is imported only when a candidate stream exists, so
+ * ordinary files do not load it. This keeps fflate out of the single-output
+ * Split chunks, which must stay free of archive code. */
+export async function repairTruncatedFlateTrailers(
   document: PDFDocument,
   lib: StreamRepairLib,
-): number {
+): Promise<number> {
   const { PDFArray, PDFName, PDFNumber, PDFRawStream, PDFRef } = lib;
   const context = document.context;
-  const budget = { remaining: MAX_REPAIR_INFLATE_BYTES };
-  let repaired = 0;
+  const candidates: { stream: PDFRawStream; lost: 1 | 2 }[] = [];
   for (const [, object] of context.enumerateIndirectObjects()) {
     if (!(object instanceof PDFRawStream)) continue;
     let declared = object.dict.get(PDFName.of("Length"));
@@ -129,10 +133,27 @@ export function repairTruncatedFlateTrailers(
       (filter.asString() !== "/FlateDecode" && filter.asString() !== "/Fl")
     )
       continue;
+    candidates.push({ stream: object, lost });
+  }
+  if (candidates.length === 0) return 0;
 
-    const fixed = repairFlateTrailer(object.contents, lost, budget);
+  let InflateStream: typeof Inflate;
+  try {
+    InflateStream = (await import("fflate")).Inflate;
+  } catch {
+    return 0; // the chunk could not load: leave the document as pdf-lib read it
+  }
+  const budget = { remaining: MAX_REPAIR_INFLATE_BYTES };
+  let repaired = 0;
+  for (const { stream, lost } of candidates) {
+    const fixed = repairFlateTrailer(
+      stream.contents,
+      lost,
+      budget,
+      InflateStream,
+    );
     if (!fixed) continue;
-    (object as { contents: Uint8Array }).contents = fixed;
+    (stream as { contents: Uint8Array }).contents = fixed;
     repaired++;
   }
   return repaired;

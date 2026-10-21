@@ -7,7 +7,7 @@ import {
   PDFRawStream,
   PDFRef,
 } from "pdf-lib";
-import { zlibSync } from "fflate";
+import { Inflate, zlibSync } from "fflate";
 import {
   repairFlateTrailer,
   repairTruncatedFlateTrailers,
@@ -111,7 +111,7 @@ describe("pdf-lib trailing checksum bytes (ADR-026)", () => {
       // Characterisation of the library behaviour this repair works around.
       expect(stream(document).contents.length).toBeLessThan(packed.length);
 
-      expect(repairTruncatedFlateTrailers(document, lib)).toBe(1);
+      expect(await repairTruncatedFlateTrailers(document, lib)).toBe(1);
       expect(stream(document).contents).toEqual(packed);
 
       const reopened = await PDFDocument.load(await document.save());
@@ -127,7 +127,7 @@ describe("pdf-lib trailing checksum bytes (ADR-026)", () => {
     ]) {
       const document = await PDFDocument.load(craftPdf(packed, options));
       expect(stream(document).contents).toEqual(packed);
-      expect(repairTruncatedFlateTrailers(document, lib)).toBe(0);
+      expect(await repairTruncatedFlateTrailers(document, lib)).toBe(0);
       expect(stream(document).contents).toEqual(packed);
     }
   });
@@ -139,7 +139,7 @@ describe("pdf-lib trailing checksum bytes (ADR-026)", () => {
     const document = await PDFDocument.load(craftPdf(bad));
     const before = stream(document).contents.slice();
     expect(before.length).toBeLessThan(bad.length);
-    expect(repairTruncatedFlateTrailers(document, lib)).toBe(0);
+    expect(await repairTruncatedFlateTrailers(document, lib)).toBe(0);
     expect(stream(document).contents).toEqual(before);
   });
 
@@ -148,27 +148,41 @@ describe("pdf-lib trailing checksum bytes (ADR-026)", () => {
     const document = await PDFDocument.load(craftPdf(raw, { filter: "" }));
     const before = stream(document).contents.slice();
     expect(before.length).toBe(raw.length - 1); // the trimming is real here too
-    expect(repairTruncatedFlateTrailers(document, lib)).toBe(0);
+    expect(await repairTruncatedFlateTrailers(document, lib)).toBe(0);
     expect(stream(document).contents).toEqual(before);
   });
 
   it("refuses when the data is not a plain zlib stream or the budget is spent", () => {
     const { packed } = streamEnding("LF");
     const trimmed = packed.slice(0, -1);
-    expect(repairFlateTrailer(trimmed, 1, { remaining: 1 << 20 })).toEqual(
-      packed,
-    );
-    expect(repairFlateTrailer(trimmed, 1, { remaining: 0 })).toBeNull();
+    expect(
+      repairFlateTrailer(trimmed, 1, { remaining: 1 << 20 }, Inflate),
+    ).toEqual(packed);
+    expect(
+      repairFlateTrailer(trimmed, 1, { remaining: 0 }, Inflate),
+    ).toBeNull();
     const noHeader = trimmed.slice();
     noHeader[0] = 0x00;
-    expect(repairFlateTrailer(noHeader, 1, { remaining: 1 << 20 })).toBeNull();
     expect(
-      repairFlateTrailer(trimmed.slice(0, 5), 1, { remaining: 1 << 20 }),
+      repairFlateTrailer(noHeader, 1, { remaining: 1 << 20 }, Inflate),
+    ).toBeNull();
+    expect(
+      repairFlateTrailer(
+        trimmed.slice(0, 5),
+        1,
+        { remaining: 1 << 20 },
+        Inflate,
+      ),
     ).toBeNull();
     // Lost bytes that trimming could not have removed.
     const other = zlibSync(encoder.encode("hello hello hello"));
     expect(
-      repairFlateTrailer(other.slice(0, -1), 1, { remaining: 1 << 20 }),
+      repairFlateTrailer(
+        other.slice(0, -1),
+        1,
+        { remaining: 1 << 20 },
+        Inflate,
+      ),
     ).toBeNull();
   });
 });

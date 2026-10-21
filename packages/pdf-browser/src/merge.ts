@@ -56,7 +56,7 @@ export async function mergePdfs(
           input.id,
         );
       }
-      repairTruncatedFlateTrailers(source, {
+      await repairTruncatedFlateTrailers(source, {
         PDFArray,
         PDFName,
         PDFNumber,

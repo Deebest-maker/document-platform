@@ -95,7 +95,7 @@ export async function loadPageSource(
         : "INVALID_PDF",
     );
   }
-  repairTruncatedFlateTrailers(source, {
+  await repairTruncatedFlateTrailers(source, {
     PDFArray,
     PDFName,
     PDFNumber,

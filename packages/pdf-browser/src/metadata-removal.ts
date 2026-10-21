@@ -197,7 +197,7 @@ export async function removePdfMetadata(
     }
     cancelled();
     // The minimal interfaces above are structural views of the real classes.
-    repairTruncatedFlateTrailers(
+    await repairTruncatedFlateTrailers(
       source as unknown as PDFDocument,
       pdflib as unknown as StreamRepairLib,
     );

@@ -13,7 +13,7 @@ pdf-lib 1.17.1 can drop the last one or two bytes (the Flate checksum) of a stre
 - New `packages/pdf-browser/src/stream-repair.ts`. A stream is a candidate only if its declared length is exactly 1 or 2 bytes more than the loaded data and its first filter is Flate. The checksum is recomputed from the decompressed data (bounded, 256 MiB per document) and the stream is rewritten only if the surviving bytes match and the missing bytes are LF, CR or CR LF. Otherwise nothing changes.
 - Called after load in Merge, the shared page loader (organize, extract, delete, rotate, Split) and Remove metadata.
 - Images to PDF is not affected (it never loads an existing PDF). Compress keeps its own repair.
-- No new dependency.
+- No new dependency. The decoder (fflate) loads only when a damaged stream is found, so ordinary files and the single-output Split chunks do not load it. A first version loaded it always; the Split browser test "without loading archive code" caught that, and it is fixed.
 
 ## Verification
 

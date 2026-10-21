@@ -34,7 +34,7 @@ It runs in Merge, the shared page loader (organize, extract, delete, rotate, Spl
 
 ## Consequences
 
-- No new dependency (`fflate@0.8.3` is already a dependency; the streaming `Inflate` is added to the Merge, page and metadata worker chunks).
+- No new dependency. `fflate@0.8.3` is already a dependency; its streaming `Inflate` is imported dynamically **only when a candidate stream exists**. A first version imported it statically, and the Split browser test "one range group downloads a PDF without loading archive code" caught the archive chunk being requested for ordinary files.
 - The `adler32` loop is duplicated from the Compress engine (about ten lines); a later cleanup can make Compress use this module.
 - Not covered: a damaged object stream or cross-reference stream fails when pdf-lib opens the file, before any repair can run. Behaviour is unchanged.
 - Not measured: how often real-world PDFs hit this. The fix costs one length comparison per stream.
