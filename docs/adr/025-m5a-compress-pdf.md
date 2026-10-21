@@ -67,18 +67,18 @@ All values were measured on desktop Chromium on a shared 2-vCPU VM through the p
 
 | Limit                       | Value                             | Evidence                                                                                                                               |
 | --------------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Max input                   | **50 MiB**                        | 47.6 MB / 190 pages: 7.5 s, 358 MiB peak. 46.7 MB with a 31.5 MP raster: 3.9 s, 559 MiB peak.                                          |
-| Max pages                   | **1,000**                         | 1,000 text pages: 1.4 s, 164 MiB. 1,000 pages with 1,000 images: 1.3 s, 279 MiB.                                                       |
+| Max input                   | **50 MiB**                        | 47.6 MB / 190 pages: 6.9 s, 348 MiB peak. 46.7 MB with a 31.5 MP raster: 3.9 s, 558 MiB peak.                                          |
+| Max pages                   | **1,000**                         | 1,000 text pages: 1.4 s, 167 MiB. 1,000 pages with 1,000 images: 1.4 s, 251 MiB.                                                       |
 | Max output                  | **50 MiB**                        | A file is published only if smaller than its input, so output ≤ input ≤ 50 MiB; the cap is a safety valve.                             |
-| JPEG decode cap (per image) | **64 MP**                         | An 8000×8000 JPEG succeeded: 1.4 s, 637 MiB (largest memory measured). A 100 MP JPEG is skipped in 0.3 s.                              |
-| Raster (Flate) decode cap   | **32 MP**                         | A 31.5 MP image succeeded: 3.9 s, 559 MiB. A 40 MP image is skipped (3.4 s, 370 MiB, spent in the lossless pass).                      |
-| Images considered           | **1,000**, largest first          | 1,000 images measured at 1.3 s.                                                                                                        |
+| JPEG decode cap (per image) | **64 MP**                         | An 8000×8000 JPEG succeeded: 1.9 s, 636 MiB (largest memory measured). A 100 MP JPEG is skipped in 0.2 s.                              |
+| Raster (Flate) decode cap   | **32 MP**                         | A 31.5 MP image succeeded: 3.9 s, 558 MiB. A 40 MP image is skipped (2.9 s, 370 MiB, spent in the lossless pass).                      |
+| Images considered           | **1,000**, largest first          | 1,000 images measured at 1.4 s.                                                                                                        |
 | Image-pass time budget      | **60 s**                          | Largest measured image pass is about 7 s (190 images), so about 8× margin. Slower devices leave remaining images unchanged and say so. |
 | Inflate budget              | 128 MiB per stream, 768 MiB total | Decompression-bomb guard; the largest legitimate stream measured is 120 MB (40 MP RGB).                                                |
 | Content-scan budget         | 128 MiB                           | **Not independently stress-tested**; bounded by input size and the inflate budget.                                                     |
 | Output canvas               | 16 MP                             | Platform limit (Safari canvas), not a measurement.                                                                                     |
 
-**Not measured, and why it matters.** There was no phone, Safari or Firefox here. Peak memory of 559–637 MiB on a desktop does not show that a low-memory phone survives a 64 MP decode; a tab killed for memory cannot be caught by the engine. Browser decode failures that _can_ be caught are reported as "could not be read safely". Mobile and cross-browser validation is a launch gate (M7/M8). If the Product Owner prefers a conservative public cap before then, lowering the JPEG decode cap to 48 MP is a one-line registry change.
+**Not measured, and why it matters.** There was no phone, Safari or Firefox here. Peak memory of 558–636 MiB on a desktop does not show that a low-memory phone survives a 64 MP decode; a tab killed for memory cannot be caught by the engine. Browser decode failures that _can_ be caught are reported as "could not be read safely". Mobile and cross-browser validation is a launch gate (M7/M8). If the Product Owner prefers a conservative public cap before then, lowering the JPEG decode cap to 48 MP is a one-line registry change.
 
 ### 8. The UI says only what is true
 
