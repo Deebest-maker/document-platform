@@ -26,7 +26,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <div className="page-width">
             <strong>Product preview</strong>
             <span>
-              Ten tools are available on your device. Other tools are planned.
+              Eleven tools are available on your device. Other tools are
+              planned.
             </span>
           </div>
         </aside>

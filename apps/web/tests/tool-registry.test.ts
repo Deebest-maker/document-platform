@@ -60,7 +60,7 @@ describe("DEV-004: authoritative tool registry", () => {
       "pdf-to-jpg": "LOCAL",
       "remove-pdf-metadata": "LOCAL",
       "pdf-to-text": "LOCAL",
-      "compress-pdf": "HYBRID",
+      "compress-pdf": "LOCAL",
       "pdf-to-word": "SERVER",
       "word-to-pdf": "SERVER",
     };
@@ -69,13 +69,14 @@ describe("DEV-004: authoritative tool registry", () => {
     ).toEqual(expected);
   });
 
-  it("makes only the completed routes through M4C available", () => {
+  it("makes only the completed routes through M5A available", () => {
     expect(
       tools
         .filter((tool) => tool.availability === "available")
         .map((tool) => tool.slug),
     ).toEqual([
       "merge-pdf",
+      "compress-pdf",
       "split-pdf",
       "jpg-to-pdf",
       "pdf-to-jpg",
@@ -101,6 +102,7 @@ describe("DEV-004: authoritative tool registry", () => {
           "pdf-to-jpg",
           "remove-pdf-metadata",
           "pdf-to-text",
+          "compress-pdf",
           "word-to-pdf",
         ].includes(tool.slug)
           ? "/" + tool.slug
@@ -203,6 +205,20 @@ describe("DEV-004: authoritative tool registry", () => {
       maxCanvasBytes: 100000000,
       maxCombinedOutputBytes: 67108864,
       maxArchiveBytes: 67108864,
+    });
+    const compress = getTool("compress-pdf")!;
+    expect(compress.availability).toBe("available");
+    expect(
+      getPrivacyPresentation(compress.processingMode, compress.availability)
+        .label,
+    ).toBe("Processed on your device");
+    expect(compress.limits).toEqual({
+      maxFiles: 1,
+      maxFileBytes: 52428800,
+      maxTotalBytes: 52428800,
+      maxPages: 1000,
+      maxOutputBytes: 52428800,
+      maxPixelsPerImage: 64000000,
     });
     const wordToPdf = getTool("word-to-pdf")!;
     expect(wordToPdf.availability).toBe("available");
