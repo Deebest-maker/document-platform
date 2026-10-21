@@ -1,4 +1,9 @@
 import type { Metadata } from "next";
+import {
+  capitalise,
+  countWord,
+  getAvailabilitySummary,
+} from "../../lib/availability";
 import { seoMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = seoMetadata({
@@ -8,6 +13,7 @@ export const metadata: Metadata = seoMetadata({
 });
 
 export default function TermsPage() {
+  const summary = getAvailabilitySummary();
   return (
     <article className="reading-page">
       <p className="eyebrow">Terms</p>
@@ -16,8 +22,9 @@ export default function TermsPage() {
         Placeholder — final terms have not been approved.
       </p>
       <p className="intro">
-        This is an early product preview. Eleven tools are available for local
-        processing; other document tools are planned.
+        This is an early product preview. {capitalise(countWord(summary.local))}{" "}
+        tools process files locally in your browser, Word to PDF converts files
+        on our server, and other document tools are planned.
       </p>
       <p>
         The approved terms will be provided before public launch. This page does

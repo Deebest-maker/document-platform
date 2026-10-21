@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import {
+  availabilityBreakdown,
+  getAvailableTitles,
+  listTitles,
+  plannedRemainder,
+} from "../../lib/availability";
 import { seoMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = seoMetadata({
@@ -19,19 +25,18 @@ export default function AboutPage() {
         collection of document utilities.
       </p>
       <p className="notice">
-        Product preview. Eleven tools are available on your device. The
-        remaining tools are planned.
+        Product preview. {availabilityBreakdown()} {plannedRemainder()}
       </p>
       <h2>The intended approach</h2>
       <p>
         Use the browser for suitable document operations and explain clearly
-        when a future operation will require server processing.
+        when an operation requires server processing.
       </p>
       <p>
-        Merge, Split, Organize, Extract, Delete, Rotate, Images to PDF, PDF to
-        JPG, PDF to Text and Remove PDF Metadata create downloads locally in
-        your browser. The catalog also describes tools planned for future
-        releases.
+        {listTitles(getAvailableTitles("LOCAL"))} create downloads locally in
+        your browser. Word to PDF is the exception: it uploads your Word file to
+        our server to convert it, and says so before anything is uploaded. The
+        catalog also describes tools planned for future releases.
       </p>
       <Link className="text-link" href="/tools">
         Explore the tools

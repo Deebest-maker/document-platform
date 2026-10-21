@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { SiteHeader } from "../components/site-header";
 import { SiteFooter } from "../components/site-footer";
+import { availabilityStatus } from "../lib/availability";
 import { getSiteConfig } from "../lib/site";
 import {
   DEFAULT_DESCRIPTION,
@@ -35,10 +36,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <aside className="preview-strip" aria-label="Product preview status">
           <div className="page-width">
             <strong>Product preview</strong>
-            <span>
-              Eleven tools are available on your device. Other tools are
-              planned.
-            </span>
+            <span>{availabilityStatus()}</span>
           </div>
         </aside>
         <main

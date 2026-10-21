@@ -1,6 +1,7 @@
 import { PDFDocument, ParseSpeeds, rgb } from "pdf-lib";
 import { imagePlacement } from "./image-layout";
 import { stripJpegExif, validateImageInputs } from "./image-inspection";
+import { stripJpegMetadata } from "./jpeg-metadata";
 import {
   ImagePdfError,
   type ExifOrientation,
@@ -51,6 +52,15 @@ function canvasTransform(
       number,
     ]),
   );
+}
+
+/** The JPEG without its metadata, or undefined when its structure is not understood. */
+function tryStripJpegMetadata(bytes: Uint8Array) {
+  try {
+    return stripJpegMetadata(bytes);
+  } catch {
+    return undefined;
+  }
 }
 
 const browserRuntime: ImageRuntime = {
@@ -125,9 +135,19 @@ export async function createImagesPdf(
         if (!rawDimensions && !displayDimensions)
           throw new ImagePdfError("INVALID_IMAGE", input.id);
         const orientation = rawDimensions ? input.inspection.orientation : 1;
+        // Unrotated JPEGs keep their picture bytes but lose their metadata
+        // (EXIF, GPS, XMP, comments, trailing data; ADR-030). Rotated ones are
+        // redrawn by `normalize`, which writes a fresh file, and so is a JPEG
+        // the browser could decode but whose layout the stripper does not
+        // understand: a redrawn picture carries no metadata by construction,
+        // where embedding the original would. PNG pixels are re-encoded by
+        // pdf-lib, so PNG text and EXIF chunks do not carry over.
         const raw =
           input.inspection.orientation === 1
-            ? encoded
+            ? input.inspection.mime === "image/jpeg"
+              ? (tryStripJpegMetadata(encoded) ??
+                (await runtime.normalize(bitmap, 1, "image/jpeg")))
+              : encoded
             : await runtime.normalize(
                 bitmap,
                 orientation,

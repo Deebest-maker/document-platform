@@ -208,6 +208,20 @@ describe("M6B: claims stay honest and in step with the product", () => {
       expect(productSource, `${label} is not in the product`).toContain(label);
     }
   });
+
+  it("describes what Images to PDF does with photo details (ADR-030)", () => {
+    const text = guideText(getToolGuide("jpg-to-pdf")!).join(" ");
+    // Before M6B.1 the JPEG bytes were embedded as they were, EXIF and all.
+    expect(text).not.toMatch(/placed as they are|can remain inside the PDF/i);
+    expect(text).toMatch(
+      /camera details, location and other information[^.]*left out/i,
+    );
+  });
+
+  it("warns that Remove PDF Metadata does not change the photos inside a PDF", () => {
+    const text = guideText(getToolGuide("remove-pdf-metadata")!).join(" ");
+    expect(text).toMatch(/photo[^.]*camera details[^.]*not changed/i);
+  });
 });
 
 describe("M6B: the guide as rendered", () => {

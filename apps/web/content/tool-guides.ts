@@ -167,7 +167,7 @@ export const toolGuides: Readonly<Record<string, ToolGuideContent>> = {
       "Orientation can follow each image or be forced to portrait or landscape.",
       "Transparent areas of a PNG are placed on white, so they print white rather than black.",
       "Photos taken sideways are turned the right way up using the orientation the camera recorded.",
-      "JPEG photos are placed as they are, so details stored inside a photo, such as the camera model or location, can remain inside the PDF. Remove them first if that matters.",
+      "Only the picture itself goes into the PDF. Camera details, location and other information stored inside a JPEG or PNG file are left out.",
     ],
     faq: [
       {
@@ -425,6 +425,7 @@ export const toolGuides: Readonly<Record<string, ToolGuideContent>> = {
       "It checks its own work by reopening the cleaned file, and it says so plainly when something could not be removed, such as the file identifier in some PDFs.",
       "This is not redaction. Text and images on the pages are left as they are, and the tool makes no promise about other hidden content, such as embedded attachments or signature data.",
       "Names or details that appear on the pages themselves are not hidden.",
+      "A photo placed in a PDF can still carry its own camera details, such as where it was taken, because the images inside the pages are not changed.",
     ],
     faq: [
       {

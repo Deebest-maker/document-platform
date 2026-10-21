@@ -9,6 +9,12 @@ import {
 import { PrivacyIndicator } from "@document-platform/ui";
 import { ToolDiscovery } from "../components/tool-discovery";
 import { ToolList } from "../components/tool-list";
+import {
+  capitalise,
+  countWord,
+  getAvailabilitySummary,
+  getModeAvailability,
+} from "../lib/availability";
 import { DEFAULT_DESCRIPTION, seoMetadata } from "../lib/seo";
 
 export const metadata: Metadata = seoMetadata({
@@ -17,6 +23,7 @@ export const metadata: Metadata = seoMetadata({
 });
 
 export default function HomePage() {
+  const summary = getAvailabilitySummary();
   return (
     <>
       <section className="home-hero" aria-labelledby="home-heading">
@@ -96,9 +103,11 @@ export default function HomePage() {
             <br className="desktop-break" /> document would go.
           </h2>
           <p>
-            Eleven tools run in your browser without uploading your documents or
-            images. Other tools are planned; their labels explain the intended
-            processing location.
+            {capitalise(countWord(summary.local))} tools run in your browser
+            without uploading your documents or images. Word to PDF is the
+            exception: it uploads your file to our server to convert it, and
+            says so before you upload. Other tools are planned; their labels
+            explain the intended processing location.
           </p>
           <Link className="text-link" href="/privacy">
             Read about privacy <span aria-hidden="true">→</span>
@@ -106,7 +115,11 @@ export default function HomePage() {
         </div>
         <div className="privacy-explanations">
           {processingModes.map((mode) => (
-            <PrivacyIndicator key={mode} processingMode={mode} />
+            <PrivacyIndicator
+              key={mode}
+              processingMode={mode}
+              availability={getModeAvailability(mode)}
+            />
           ))}
         </div>
       </section>
