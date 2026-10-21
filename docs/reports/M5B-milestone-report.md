@@ -1,7 +1,7 @@
 # M5B Milestone Report: PDF to Word fidelity benchmark
 
 **Date:** 2026-10-21
-**Status:** Benchmark complete; decision **DEFER**; awaiting Product Owner acceptance. Not merged.
+**Status:** Benchmark complete; decision **DEFER**; accepted by the Product Owner and merged (`20ac497`).
 **Preceding milestone:** M5A — Compress PDF (accepted and merged, `d8bd7f9`).
 **Decision record:** [ADR-027](../adr/027-m5b-pdf-to-word-defer.md). **Criteria (fixed before measuring):** [`M5B-pdf-to-word-criteria.md`](../benchmarks/M5B-pdf-to-word-criteria.md). **Evidence:** [`M5B-pdf-to-word.md`](../benchmarks/M5B-pdf-to-word.md), [`M5B-pdf-to-word-results.json`](../benchmarks/M5B-pdf-to-word-results.json), [`M5B-pdf-to-word-evaluation.json`](../benchmarks/M5B-pdf-to-word-evaluation.json), plus the untouched first round (`*-round1.json`).
 
@@ -73,9 +73,9 @@ I tested whether PDF to Word can reach acceptable fidelity with tools our licenc
 
 ## Decisions needed from the Product Owner
 
-1. **Accept DEFER** (recommended): PDF to Word moves to V1.1; the tool stays `planned`; no MVP copy promises it. The architecture and roadmap `.docx` files should list it under V1.1. I have not edited them.
+1. **Accept DEFER** (recommended): PDF to Word moves to V1.1; the tool stays `planned`; no MVP copy promises it. **Accepted; the source `.docx` files were updated in a follow-up PR.**
 2. **Or authorise a V1.1 spike** with a re-baselined visual gate and a held-out real-world corpus, accepting that a first-party converter has a long-term maintenance cost. ADR-027 lists what a GO would need.
-3. **Still open from earlier:** the Compress retention default (A/B/C); Safari, Firefox and phone testing of Compress (a launch gate for M7/M8); and the architecture `.docx` still says Compress is HYBRID although ADR-025 made it LOCAL. Do you want me to prepare that edit?
+3. **Still open from earlier:** the server retention default for abandoned Word to PDF jobs (A 15 min / B 10 min / C 5 min; stays 15 min until you choose); Safari, Firefox and phone testing of Compress (a launch gate for M7/M8); and the architecture `.docx` said Compress is HYBRID although ADR-025 made it LOCAL (fixed in the follow-up PR).
 
 ## Files
 

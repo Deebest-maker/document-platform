@@ -1,6 +1,6 @@
 # ADR-027: PDF to Word is deferred to V1.1 (M5B fidelity benchmark)
 
-**Status:** Decision recorded under the approved M5 gate; Product Owner acceptance pending
+**Status:** Decision recorded under the approved M5 gate; accepted by the Product Owner and merged (`20ac497`)
 **Date:** 2026-10-21
 **Scope:** The M5B fidelity benchmark and its GO/DEFER decision. No product code, no tool page, no dependency and no infrastructure was added.
 **Relates to:** SRS FR-P2W-001..004; QA strategy ("benchmark-based fidelity threshold; move out of MVP if quality gate fails"); ADR-022 (LibreOffice adapter); ADR-024 (processor limits).
@@ -71,7 +71,7 @@ The rule had no third outcome and no thresholds were changed after measurement.
 ## Consequences
 
 - PDF to Word is out of the MVP. The tool page, registry mode (`SERVER`) and status (`planned`) are unchanged; no copy promises it.
-- The source documents (architecture and roadmap `.docx`) should list it under V1.1. They are yours to edit; I have not changed them.
+- The source documents were updated to match: architecture (Compress is LOCAL; PDF to Word deferred), PRD, master plan, QA strategy and roadmap. SRS requirements FR-P2W-001..004 are unchanged and apply to the V1.1 build.
 - If V1.1 revisits it, a first-party converter is the only candidate worth a spike, and it carries a long-term maintenance cost that LibreOffice does not.
 
 ## What it would take to reach GO later
