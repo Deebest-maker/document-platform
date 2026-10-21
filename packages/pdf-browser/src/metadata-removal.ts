@@ -1,3 +1,4 @@
+import type { PDFDocument } from "pdf-lib";
 import { PageError } from "./page-errors";
 import { readPageInput } from "./page-validation";
 import { pageLimits, type PageInput } from "./page-types";
@@ -10,6 +11,10 @@ import {
   type StandardInfoKey,
 } from "./metadata-removal-types";
 import { scanTrailerIdStructural } from "./metadata-removal-verify";
+import {
+  repairTruncatedFlateTrailers,
+  type StreamRepairLib,
+} from "./stream-repair";
 
 // Deliberately narrow boundary around the pdf-lib structures we touch so the
 // rest of the engine does not depend on pdf-lib internals and so React never
@@ -191,6 +196,11 @@ export async function removePdfMetadata(
       throw new PageError("INVALID_PDF");
     }
     cancelled();
+    // The minimal interfaces above are structural views of the real classes.
+    await repairTruncatedFlateTrailers(
+      source as unknown as PDFDocument,
+      pdflib as unknown as StreamRepairLib,
+    );
     if (source.getPageCount() < 1) throw new PageError("INVALID_PDF");
     if (source.getPageCount() > limits.maxPages)
       throw new PageError("PAGE_LIMIT");

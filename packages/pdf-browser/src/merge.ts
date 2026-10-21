@@ -1,5 +1,15 @@
-import { EncryptedPDFError, PDFDocument, ParseSpeeds } from "pdf-lib";
+import {
+  EncryptedPDFError,
+  PDFArray,
+  PDFDocument,
+  PDFName,
+  PDFNumber,
+  PDFRawStream,
+  PDFRef,
+  ParseSpeeds,
+} from "pdf-lib";
 import { PdfError } from "./errors";
+import { repairTruncatedFlateTrailers } from "./stream-repair";
 import { readPdfBytes, validateMergeInputs } from "./validation";
 import type { MergeLimits, MergeOptions, MergeResult, PdfInput } from "./types";
 
@@ -46,6 +56,13 @@ export async function mergePdfs(
           input.id,
         );
       }
+      await repairTruncatedFlateTrailers(source, {
+        PDFArray,
+        PDFName,
+        PDFNumber,
+        PDFRawStream,
+        PDFRef,
+      });
       checkCancelled();
       pageCount += source.getPageCount();
       if (pageCount > limits.maxPages)

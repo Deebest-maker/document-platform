@@ -3,6 +3,8 @@ import {
   PDFArray,
   PDFRawStream,
   PDFName,
+  PDFNumber,
+  PDFRef,
   EncryptedPDFError,
   ParseSpeeds,
   degrees,
@@ -15,6 +17,7 @@ import {
   type PagePlan,
 } from "./page-model";
 import { readPageInput, validatePageInput } from "./page-validation";
+import { repairTruncatedFlateTrailers } from "./stream-repair";
 import type {
   PageInput,
   PageLimits,
@@ -92,6 +95,13 @@ export async function loadPageSource(
         : "INVALID_PDF",
     );
   }
+  await repairTruncatedFlateTrailers(source, {
+    PDFArray,
+    PDFName,
+    PDFNumber,
+    PDFRawStream,
+    PDFRef,
+  });
   if (source.getPageCount() > limits.maxPages)
     throw new PageError("PAGE_LIMIT");
   if (source.getPageCount() !== plan.sourcePageCount)
