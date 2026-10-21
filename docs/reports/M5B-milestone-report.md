@@ -75,7 +75,7 @@ I tested whether PDF to Word can reach acceptable fidelity with tools our licenc
 
 1. **Accept DEFER** (recommended): PDF to Word moves to V1.1; the tool stays `planned`; no MVP copy promises it. **Accepted; the source `.docx` files were updated in a follow-up PR.**
 2. **Or authorise a V1.1 spike** with a re-baselined visual gate and a held-out real-world corpus, accepting that a first-party converter has a long-term maintenance cost. ADR-027 lists what a GO would need.
-3. **Still open from earlier:** the Compress retention default (A/B/C); Safari, Firefox and phone testing of Compress (a launch gate for M7/M8); and the architecture `.docx` said Compress is HYBRID although ADR-025 made it LOCAL (fixed in the follow-up PR).
+3. **Still open from earlier:** the server retention default for abandoned Word to PDF jobs (A 15 min / B 10 min / C 5 min; stays 15 min until you choose); Safari, Firefox and phone testing of Compress (a launch gate for M7/M8); and the architecture `.docx` said Compress is HYBRID although ADR-025 made it LOCAL (fixed in the follow-up PR).
 
 ## Files
 
