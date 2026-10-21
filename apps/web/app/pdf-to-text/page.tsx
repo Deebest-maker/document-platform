@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
 import type { PdfToTextLimits } from "@document-platform/pdf-browser/pdf-to-text";
-import {
-  getRelatedTools,
-  getTool,
-  getToolMetadata,
-} from "@document-platform/tool-registry";
+import { getRelatedTools, getTool } from "@document-platform/tool-registry";
 import { PdfToTextWorkspace } from "../../components/pdf-to-text/pdf-to-text-workspace";
 import { ToolList } from "../../components/tool-list";
+import { toolMetadata } from "../../lib/seo";
 
 const tool = getTool("pdf-to-text");
 const configured = tool?.limits;
@@ -24,10 +21,7 @@ const limits: PdfToTextLimits = {
   maxPreviewCharacters: configured.maxPreviewCharacters,
 };
 
-export const metadata: Metadata = {
-  ...getToolMetadata(tool),
-  robots: { index: false, follow: false },
-};
+export const metadata: Metadata = toolMetadata(tool);
 
 export default function PdfToTextPage() {
   return (

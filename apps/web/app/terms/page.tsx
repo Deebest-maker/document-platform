@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { seoMetadata } from "../../lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = seoMetadata({
   title: "Terms — placeholder",
   description: "Terms have not been finalized for this product preview.",
-};
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (

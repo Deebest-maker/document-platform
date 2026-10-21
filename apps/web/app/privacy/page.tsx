@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { processingModes } from "@document-platform/tool-registry";
 import { PrivacyIndicator } from "@document-platform/ui";
+import { seoMetadata } from "../../lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = seoMetadata({
   title: "Privacy — draft",
   description:
     "The planned processing model and the limits of this product preview. Privacy policy not finalized.",
-};
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

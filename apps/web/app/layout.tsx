@@ -2,16 +2,26 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { SiteHeader } from "../components/site-header";
 import { SiteFooter } from "../components/site-footer";
+import { getSiteConfig } from "../lib/site";
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_TITLE,
+  SITE_NAME,
+  siteRobots,
+} from "../lib/seo";
 import "./globals.css";
 
+const site = getSiteConfig();
+
+// No canonical here: a layout-level canonical would be inherited by every page.
 export const metadata: Metadata = {
+  metadataBase: site.origin ? new URL(site.origin) : undefined,
   title: {
-    default: "Document & File Platform — Preview",
-    template: "%s | Document & File Platform",
+    default: DEFAULT_TITLE,
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "Merge, split, or organize PDFs on your device and explore the planned document toolkit.",
-  robots: { index: false, follow: false },
+  description: DEFAULT_DESCRIPTION,
+  robots: siteRobots(site),
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

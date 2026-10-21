@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { tools } from "@document-platform/tool-registry";
 import { ToolDiscovery } from "../../components/tool-discovery";
+import { seoMetadata } from "../../lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = seoMetadata({
   title: "All tools",
   description:
     "Find document tools by task and category. Eleven tools are available on your device; other tools are planned.",
-};
+  path: "/tools",
+});
 
 export default function ToolsPage() {
   return (

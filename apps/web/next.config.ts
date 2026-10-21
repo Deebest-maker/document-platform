@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { getSiteConfig } from "./lib/site";
 
 const PROCESSOR_ORIGIN =
   process.env.PROCESSOR_ORIGIN ?? "http://localhost:8000";
@@ -27,6 +28,19 @@ const nextConfig: NextConfig = {
     "@document-platform/tool-registry",
     "@document-platform/ui",
   ],
+  // Defence in depth for ADR-028: when this build is not meant to be indexed,
+  // every response says so in the header as well as in the page metadata. The
+  // header also covers files that carry no HTML head. One build is one
+  // environment, so the decision is made once, here.
+  async headers() {
+    if (getSiteConfig().indexing) return [];
+    return [
+      {
+        source: "/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

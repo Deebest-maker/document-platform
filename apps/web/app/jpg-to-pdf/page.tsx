@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
 import type { ImageLimits } from "@document-platform/pdf-browser/image-types";
-import {
-  getRelatedTools,
-  getTool,
-  getToolMetadata,
-} from "@document-platform/tool-registry";
+import { getRelatedTools, getTool } from "@document-platform/tool-registry";
 import { ImagesToPdfWorkspace } from "../../components/images-to-pdf/images-to-pdf-workspace";
 import { ToolList } from "../../components/tool-list";
+import { toolMetadata } from "../../lib/seo";
 
 const tool = getTool("jpg-to-pdf");
 const configured = tool?.limits;
@@ -21,10 +18,7 @@ if (
 )
   throw new Error("Images to PDF requires registry-backed image limits.");
 
-export const metadata: Metadata = {
-  ...getToolMetadata(tool),
-  robots: { index: false, follow: false },
-};
+export const metadata: Metadata = toolMetadata(tool);
 
 export default function ImagesToPdfPage() {
   return (

@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
 import type { PdfToJpegLimits } from "@document-platform/pdf-browser/pdf-to-jpg";
-import {
-  getRelatedTools,
-  getTool,
-  getToolMetadata,
-} from "@document-platform/tool-registry";
+import { getRelatedTools, getTool } from "@document-platform/tool-registry";
 import { PdfToJpgWorkspace } from "../../components/pdf-to-jpg/pdf-to-jpg-workspace";
 import { ToolList } from "../../components/tool-list";
+import { toolMetadata } from "../../lib/seo";
 
 const tool = getTool("pdf-to-jpg");
 const configured = tool?.limits;
@@ -21,10 +18,7 @@ if (
 )
   throw new Error("PDF to JPG requires registry-backed raster limits.");
 
-export const metadata: Metadata = {
-  ...getToolMetadata(tool),
-  robots: { index: false, follow: false },
-};
+export const metadata: Metadata = toolMetadata(tool);
 
 export default function PdfToJpgPage() {
   return (

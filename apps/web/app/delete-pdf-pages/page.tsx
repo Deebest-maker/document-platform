@@ -1,20 +1,14 @@
 import type { Metadata } from "next";
-import {
-  getRelatedTools,
-  getTool,
-  getToolMetadata,
-} from "@document-platform/tool-registry";
+import { getRelatedTools, getTool } from "@document-platform/tool-registry";
 import { SelectionExportWorkspace } from "../../components/page-tools/selection-export-workspace";
 import { ToolList } from "../../components/tool-list";
+import { toolMetadata } from "../../lib/seo";
 
 const tool = getTool("delete-pdf-pages");
 if (!tool?.limits)
   throw new Error("Delete PDF Pages requires registry-backed limits.");
 
-export const metadata: Metadata = {
-  ...getToolMetadata(tool),
-  robots: { index: false, follow: false },
-};
+export const metadata: Metadata = toolMetadata(tool);
 
 export default function DeletePdfPagesPage() {
   return (
