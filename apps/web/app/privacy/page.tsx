@@ -17,7 +17,7 @@ export default function PrivacyPage() {
         Draft information — this is not a finalized privacy policy.
       </p>
       <p className="intro">
-        Ten available tools process documents and images entirely in your
+        Eleven available tools process documents and images entirely in your
         browser. Document bytes are never uploaded to our servers or third
         parties. Remove PDF Metadata removes supported fields only — it is not
         secure redaction and does not touch content inside the pages. Selected

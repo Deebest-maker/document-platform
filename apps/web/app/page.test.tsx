@@ -24,6 +24,9 @@ import ImagesToPdfPage, {
   metadata as imagesToPdfMetadata,
 } from "./jpg-to-pdf/page";
 import PdfToJpgPage, { metadata as pdfToJpgMetadata } from "./pdf-to-jpg/page";
+import CompressPage, {
+  metadata as compressMetadata,
+} from "./compress-pdf/page";
 
 describe("M1 registry integration", () => {
   it("renders homepage discovery from registry records", () => {
@@ -45,7 +48,7 @@ describe("M1 registry integration", () => {
       expect(html).toContain(tool.title);
       expect(html).toContain(tool.description);
     }
-    expect(html).toContain("Ten tools are available.");
+    expect(html).toContain("Eleven tools are available.");
   });
 
   it("DEV-004 / FR-GEN-004: connects Merge record to metadata, shell and privacy", () => {
@@ -126,5 +129,22 @@ describe("M1 registry integration", () => {
     expect(html).toContain("Choose a PDF to turn into JPG images");
     expect(html).toContain('type="file"');
     expect(html).not.toContain('multiple=""');
+  });
+  it("FR-CMP-001..004: connects Compress to registry metadata, honest copy and a local picker", () => {
+    const tool = getTool("compress-pdf")!;
+    expect(compressMetadata).toMatchObject(getToolMetadata(tool));
+    expect(compressMetadata.robots).toEqual({ index: false, follow: false });
+    const html = renderToStaticMarkup(<CompressPage />);
+    expect(html).toContain(`<h1>${tool.title}</h1>`);
+    expect(html).toContain("Processed on your device");
+    expect(html).toContain("Choose a PDF to compress");
+    expect(html).toContain("images only");
+    expect(html).toContain("some PDFs cannot be reduced");
+    expect(html).toContain('type="file"');
+    expect(html).not.toContain('multiple=""');
+    expect(html).not.toMatch(/<progress|download=/);
+    // Only the tool's own copy: related tools carry their own wording.
+    const own = html.slice(0, html.indexOf("<aside"));
+    expect(own).not.toMatch(/lossless|guarantee|up to \d+%/i);
   });
 });

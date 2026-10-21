@@ -99,13 +99,22 @@ export const tools: readonly ToolDefinition[] = [
     slug: "compress-pdf",
     title: "Compress PDF",
     description:
-      "Explore ways to reduce PDF file size. Results will depend on the document.",
+      "Reduce PDF file size on your device. Results depend on what the document contains.",
     category: "optimize",
     acceptedTypes: pdf,
-    processingMode: "HYBRID",
+    processingMode: "LOCAL",
     relatedSlugs: ["remove-pdf-metadata", "merge-pdf"],
     featured: true,
-    availability: "planned",
+    availability: "available",
+    // M5A engineering caps; evidence and caveats: ADR-025.
+    limits: {
+      maxFiles: 1,
+      maxFileBytes: 50 * 1024 * 1024,
+      maxTotalBytes: 50 * 1024 * 1024,
+      maxPages: 1000,
+      maxOutputBytes: 50 * 1024 * 1024,
+      maxPixelsPerImage: 64_000_000,
+    },
   },
   {
     slug: "split-pdf",

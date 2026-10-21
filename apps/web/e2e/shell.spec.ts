@@ -91,7 +91,7 @@ for (const route of routes) {
 test("unpublished tools return 404 rather than bulk placeholders", async ({
   request,
 }) => {
-  for (const route of ["/compress-pdf", "/pdf-to-word", "/not-a-tool"]) {
+  for (const route of ["/pdf-to-word", "/not-a-tool"]) {
     const response = await request.get(route);
     expect(response.status()).toBe(404);
   }

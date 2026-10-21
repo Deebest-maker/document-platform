@@ -17,8 +17,8 @@ export default function AboutPage() {
         collection of document utilities.
       </p>
       <p className="notice">
-        Product preview. Ten tools are available on your device. The remaining
-        tools are planned.
+        Product preview. Eleven tools are available on your device. The
+        remaining tools are planned.
       </p>
       <h2>The intended approach</h2>
       <p>

@@ -18,6 +18,7 @@
     "./image-types": "./src/image-types.ts",
     "./pdf-to-text": "./src/pdf-to-text.ts",
     "./metadata-removal": "./src/metadata-removal.ts",
+    "./compress": "./src/compress-client.ts",
     "./preview": "./src/preview/index.ts"
   },
   "scripts": {

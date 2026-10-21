@@ -1,5 +1,9 @@
 # Dependency review
 
+## M5A Compress PDF
+
+Reviewed on 21 October 2026. M5A adds **no production or development dependency** and does not change either lockfile. The on-device engine reuses the reviewed `pdf-lib@1.17.1` and `fflate@0.8.3` (its streaming `Inflate` and `zlibSync`) plus the browser's `createImageBitmap`, `OffscreenCanvas` and Blob APIs. Ghostscript, PyMuPDF and every other AGPL engine remain excluded. The engine is a dedicated worker chunk requested only when the Compress workflow starts. The benchmark tooling (`pikepdf`, Pillow, NumPy, scikit-image, fontTools, python-docx, pypdfium2, qpdf) is installed on demand with `uv run --with` for benchmarking only; it is not part of the product, the web build or either lockfile.
+
 ## vite advisory override (GHSA-587h-7wmj-h5pm)
 
 Reviewed on 21 October 2026. The CI step `pnpm audit --audit-level=high` began failing on every branch, including `main`, because of a new high-severity advisory on `vite` 8.3.0–8.3.2 (the `launch-editor` existence check can be bypassed on Windows). `vite` is a transitive **development** dependency, reached only through `vitest@5.0.1` and `@vitest/mocker@5.0.1`; it is not part of any production bundle or runtime. A pnpm override pins `vite` to **8.3.4** (patched from 8.3.3; MIT; inside vitest's accepted `^6.4 || ^7 || ^8` range), published 8 October 2026, so it satisfies the repository's minimum release age without an exclusion (8.3.5 was under a day old). The lockfile also moves `rolldown`, its native bindings and `@oxc-project/types` to the versions vite 8.3.4 requires. No application code changes. After the change `pnpm audit --audit-level=high` reports no known vulnerabilities, and format, lint, typecheck and all unit tests pass. Remove the override when `vitest` ships a release that resolves a patched `vite` by itself.
