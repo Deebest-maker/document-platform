@@ -21,5 +21,6 @@ The architecture baseline in `../04_System_Architecture_Technical_Design.docx`, 
 | [ADR-022](022-m4b-libreoffice-adapter.md)     | Implemented under the approved M4B gate; owner acceptance pending              | LibreOffice adapter, DOCX/PDF validators and hardened processor container                                                        |
 | [ADR-023](023-m4c-product-slice-retention.md) | Implemented under the approved M4C gate; accepted and merged                   | Word-to-PDF product slice, server privacy disclosure and client-side cleanup                                                     |
 | [ADR-024](024-m4d-verification-limits.md)     | Implemented under the approved M4D gate; owner acceptance pending              | Benchmark-derived limits, enforced single-conversion gate, janitor expiry of abandoned jobs, client error contract, proxy limits |
+| [ADR-026](026-pdf-lib-trailer-repair.md)      | Implemented as a small follow-up to M5A; owner acceptance pending              | Repair Flate checksum bytes that pdf-lib trims when it loads a PDF                                                               |
 
 Use the next available identifier for a new decision. Later proposals must state whether they refine or supersede an existing decision and update affected source documents after approval.
