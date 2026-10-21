@@ -1,6 +1,6 @@
 # ADR-026: Repair Flate checksum bytes trimmed by pdf-lib
 
-**Status:** Implemented as a small follow-up to M5A; Product Owner acceptance pending
+**Status:** Implemented as a small follow-up to M5A; accepted and merged
 **Date:** 2026-10-21
 **Scope:** `packages/pdf-browser/src/stream-repair.ts`; call sites in `merge.ts`, `page-operations.ts` (page tools and Split) and `metadata-removal.ts`; `packages/pdf-browser/tests/stream-repair.test.ts`.
 **Relates to:** ADR-025 (found there, section 5; the Compress engine has its own repair).

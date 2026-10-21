@@ -1,6 +1,6 @@
 # ADR-025: M5A Compress PDF — On-Device Engine, Truthful Profiles, Benchmark-Derived Limits
 
-**Status:** Implemented under the approved M5 gate; Product Owner acceptance pending
+**Status:** Implemented under the approved M5 gate; accepted and merged
 **Date:** 2026-10-21
 **Milestone:** M5A — Compress PDF
 **Scope:** `packages/pdf-browser/src/compress-*.ts`, `compress.worker.ts`, `compress-client.ts`; `packages/tool-registry/src/catalog.ts`; `apps/web/components/compress-pdf/`, `apps/web/app/compress-pdf/`; matching tests; `apps/web/benchmarks/run-compress-pdf.mjs`; `tests/fixtures/{generate,evaluate}_compress_benchmark.py`; `docs/benchmarks/M5A-*`.
