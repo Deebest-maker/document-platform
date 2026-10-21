@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   categories,
@@ -8,6 +9,12 @@ import {
 import { PrivacyIndicator } from "@document-platform/ui";
 import { ToolDiscovery } from "../components/tool-discovery";
 import { ToolList } from "../components/tool-list";
+import { DEFAULT_DESCRIPTION, seoMetadata } from "../lib/seo";
+
+export const metadata: Metadata = seoMetadata({
+  description: DEFAULT_DESCRIPTION,
+  path: "/",
+});
 
 export default function HomePage() {
   return (

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { seoMetadata } from "../../lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = seoMetadata({
   title: "About this preview",
   description:
     "The purpose and current scope of the Document & File Platform preview.",
-};
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (

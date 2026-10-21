@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { seoMetadata } from "../../lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = seoMetadata({
   title: "Contact — placeholder",
   description:
     "A contact channel has not yet been published for this product preview.",
-};
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (

@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
 import type { CompressLimits } from "@document-platform/pdf-browser/compress";
 import { DEFAULT_COMPRESS_LIMITS } from "@document-platform/pdf-browser/compress";
-import {
-  getRelatedTools,
-  getTool,
-  getToolMetadata,
-} from "@document-platform/tool-registry";
+import { getRelatedTools, getTool } from "@document-platform/tool-registry";
 import { CompressPdfWorkspace } from "../../components/compress-pdf/compress-pdf-workspace";
 import { ToolList } from "../../components/tool-list";
+import { toolMetadata } from "../../lib/seo";
 
 const tool = getTool("compress-pdf");
 const configured = tool?.limits;
@@ -30,10 +27,7 @@ const limits: CompressLimits = {
   maxJpegPixels: configured.maxPixelsPerImage,
 };
 
-export const metadata: Metadata = {
-  ...getToolMetadata(tool),
-  robots: { index: false, follow: false },
-};
+export const metadata: Metadata = toolMetadata(tool);
 
 export default function CompressPdfPage() {
   return (
