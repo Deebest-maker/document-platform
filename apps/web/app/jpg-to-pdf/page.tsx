@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import type { ImageLimits } from "@document-platform/pdf-browser/image-types";
-import { getRelatedTools, getTool } from "@document-platform/tool-registry";
+import { getTool } from "@document-platform/tool-registry";
 import { ImagesToPdfWorkspace } from "../../components/images-to-pdf/images-to-pdf-workspace";
-import { ToolList } from "../../components/tool-list";
+import { ToolGuide } from "../../components/tool-guide";
 import { toolMetadata } from "../../lib/seo";
 
 const tool = getTool("jpg-to-pdf");
@@ -25,12 +25,7 @@ export default function ImagesToPdfPage() {
     <ImagesToPdfWorkspace
       tool={tool!}
       limits={configured as ImageLimits}
-      related={
-        <>
-          <h2>Related tools</h2>
-          <ToolList records={getRelatedTools(tool!)} />
-        </>
-      }
+      related={<ToolGuide tool={tool!} />}
     />
   );
 }

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import type { PdfToJpegLimits } from "@document-platform/pdf-browser/pdf-to-jpg";
-import { getRelatedTools, getTool } from "@document-platform/tool-registry";
+import { getTool } from "@document-platform/tool-registry";
 import { PdfToJpgWorkspace } from "../../components/pdf-to-jpg/pdf-to-jpg-workspace";
-import { ToolList } from "../../components/tool-list";
+import { ToolGuide } from "../../components/tool-guide";
 import { toolMetadata } from "../../lib/seo";
 
 const tool = getTool("pdf-to-jpg");
@@ -25,12 +25,7 @@ export default function PdfToJpgPage() {
     <PdfToJpgWorkspace
       tool={tool!}
       limits={configured as PdfToJpegLimits}
-      related={
-        <>
-          <h2>Related tools</h2>
-          <ToolList records={getRelatedTools(tool!)} />
-        </>
-      }
+      related={<ToolGuide tool={tool!} />}
     />
   );
 }

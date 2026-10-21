@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { getRelatedTools, getTool } from "@document-platform/tool-registry";
+import { getTool } from "@document-platform/tool-registry";
 import { SplitWorkspace } from "../../components/split/split-workspace";
-import { ToolList } from "../../components/tool-list";
+import { ToolGuide } from "../../components/tool-guide";
 import { toolMetadata } from "../../lib/seo";
 
 const tool = getTool("split-pdf");
@@ -15,15 +15,5 @@ if (
 export const metadata: Metadata = toolMetadata(tool);
 
 export default function SplitPdfPage() {
-  return (
-    <SplitWorkspace
-      tool={tool!}
-      related={
-        <>
-          <h2>Related tools</h2>
-          <ToolList records={getRelatedTools(tool!)} />
-        </>
-      }
-    />
-  );
+  return <SplitWorkspace tool={tool!} related={<ToolGuide tool={tool!} />} />;
 }

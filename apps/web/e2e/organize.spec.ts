@@ -15,7 +15,7 @@ test("FR-ORG-001/002: keyboard reorder exports the exact displayed order", async
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/organize-pdf");
   await expect(
-    page.getByRole("heading", { name: "Organize PDF" }),
+    page.getByRole("heading", { level: 1, name: "Organize PDF" }),
   ).toBeVisible();
   await expect(
     page

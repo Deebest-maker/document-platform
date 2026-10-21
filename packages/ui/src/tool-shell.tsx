@@ -45,11 +45,7 @@ export function ToolShell({
         {state === "result" && <section aria-label="Result">{result}</section>}
         {state === "error" && <div role="alert">{error}</div>}
       </section>
-      {related && (
-        <aside className="related-tools" aria-label="Related tools">
-          {related}
-        </aside>
-      )}
+      {related && <div className="tool-extras">{related}</div>}
     </article>
   );
 }

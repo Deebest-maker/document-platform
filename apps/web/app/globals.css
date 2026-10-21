@@ -1254,3 +1254,40 @@ nav a {
     width: 100%;
   }
 }
+
+/* Tool guide (M6B): readable measure, restored list markers, clear section rhythm. */
+.tool-guide {
+  margin-top: var(--space-12);
+  max-width: 44rem;
+}
+.tool-guide section + section {
+  margin-top: var(--space-8);
+}
+.tool-guide h2 {
+  margin-bottom: var(--space-4);
+}
+.tool-guide ol,
+.tool-guide ul {
+  margin: 0;
+  padding-left: var(--space-6);
+}
+.tool-guide ol {
+  list-style: decimal;
+}
+.tool-guide ul {
+  list-style: disc;
+}
+.tool-guide li {
+  margin-bottom: var(--space-3);
+  padding-left: var(--space-1);
+}
+.tool-guide-question + .tool-guide-question {
+  margin-top: var(--space-6);
+}
+.tool-guide-question h3 {
+  margin-bottom: var(--space-2);
+}
+.tool-guide-question p {
+  margin: 0;
+  color: var(--color-muted);
+}

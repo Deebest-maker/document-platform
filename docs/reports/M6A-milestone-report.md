@@ -1,7 +1,7 @@
 # M6A Milestone Report: Technical SEO foundation
 
 **Date:** 2026-10-21
-**Status:** Implemented; pull request open; owner acceptance pending.
+**Status:** Accepted and merged (`54b2252`).
 **Preceding milestone:** M5 — Hard Tools / Spikes (complete; M5B accepted and merged at `20ac497`, source-document sync at `3464b92`).
 **Decision record:** [ADR-028](../adr/028-m6a-technical-seo.md).
 
