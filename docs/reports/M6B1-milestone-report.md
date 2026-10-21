@@ -27,7 +27,7 @@ I did **not** change the server retention period, because you have not chosen be
 
 - **Library tests:** 303 pass (was 275): 21 for the stripper, 7 at PDF level.
 - **Web tests:** 210 pass (was 194): 14 for the site wording, 2 for the guides.
-- **Browser tests:** a new test adds a photo carrying EXIF, XMP, IPTC, a comment and trailing data on the real page; the downloaded PDF contains none of it. Images to PDF, tool guides, shell, discovery, SEO and accessibility specs pass in both browser projects (174 tests). The remaining specs were run for regressions; see the result line below.
+- **Browser tests:** a new test adds a photo carrying EXIF, XMP, IPTC, a comment and trailing data on the real page; the downloaded PDF contains none of it. Images to PDF, tool guides, shell, discovery, SEO and accessibility specs pass in both browser projects (174 tests). The other browser specs: 92 pass and 14 fail. The 14 are the same 7 PDF recovery and image-export tests in two browser projects that also fail on unmodified main in this sandbox (Node 22 here, Node 24 required), so CI is the check that counts.
 - **Independent check:** two camera-style JPEGs were stripped and read back with Pillow (pixels identical; EXIF, GPS, ICC, comment, XMP gone; progressive file still progressive). PDFs built from the originals contain all six marker strings, PDFs built from the stripped files contain none, and Poppler renders each pair identically.
 - **The tests can fail:** a plain embed leaks the markers (control test); putting the old "Eleven tools are available" text back fails two wording tests.
 - **Format, lint, types, production build:** pass.
