@@ -52,19 +52,23 @@ describe("bounded zlib inflation", () => {
     expect(result.ok && result.bytes.length).toBe(3_000_000);
   });
 
-  it("stops at the byte limit (decompression bomb)", () => {
-    const bomb = zlibSync(new Uint8Array(50_000_000));
-    expect(bomb.length).toBeLessThan(100_000);
-    expect(inflateZlibBounded(bomb, 1_000_000)).toEqual({
-      ok: false,
-      reason: "limit",
-    });
-    expect(inflateZlibBounded(bomb, 49_999_999)).toEqual({
-      ok: false,
-      reason: "limit",
-    });
-    expect(inflateZlibBounded(bomb, 50_000_000)).toMatchObject({ ok: true });
-  });
+  it(
+    "stops at the byte limit (decompression bomb)",
+    { timeout: 30_000 },
+    () => {
+      const bomb = zlibSync(new Uint8Array(50_000_000));
+      expect(bomb.length).toBeLessThan(100_000);
+      expect(inflateZlibBounded(bomb, 1_000_000)).toEqual({
+        ok: false,
+        reason: "limit",
+      });
+      expect(inflateZlibBounded(bomb, 49_999_999)).toEqual({
+        ok: false,
+        reason: "limit",
+      });
+      expect(inflateZlibBounded(bomb, 50_000_000)).toMatchObject({ ok: true });
+    },
+  );
 
   it("recognises a trailer shortened by one line-ending byte", () => {
     const data = payloadWithChecksum(

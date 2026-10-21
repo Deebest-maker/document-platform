@@ -657,8 +657,11 @@ describe("lossless structure pass", () => {
     expect((out.context.lookup(ref) as PDFRawStream).contents).toEqual(bad);
   });
 
-  it("does not expand decompression bombs", async () => {
-    const bomb = zlibSync(new Uint8Array(300 * 1024 * 1024), { level: 1 });
+  it("does not expand decompression bombs", { timeout: 30_000 }, async () => {
+    // 40 MiB of zeros packs to a few dozen KiB and is five times the 8 MiB
+    // per-stream cap below. (A 300 MiB bomb took 3.5 s just to build and
+    // timed out the default 5 s test limit on a slower CI runner.)
+    const bomb = zlibSync(new Uint8Array(40 * 1024 * 1024), { level: 1 });
     expect(bomb.length).toBeLessThan(2_000_000);
     const { bytes, ref } = await pdfWithStream(bomb, { Filter: "FlateDecode" });
     let candidate: Uint8Array = new Uint8Array();
