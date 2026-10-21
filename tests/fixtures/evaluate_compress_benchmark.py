@@ -17,6 +17,7 @@ from pathlib import Path
 
 import numpy as np
 import pypdfium2 as pdfium
+import pypdfium2.raw as pdfium_c
 from skimage.metrics import structural_similarity as ssim
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -36,8 +37,34 @@ def render(document, index, dpi):
     return np.asarray(bitmap)
 
 
-def sample_indices(count):
-    return sorted({0, count // 2, count - 1})
+def image_pages(document):
+    """Indices of pages that contain at least one image object."""
+    found = []
+    for index in range(len(document)):
+        page = document[index]
+        try:
+            if any(True for _ in page.get_objects(filter=[pdfium_c.FPDF_PAGEOBJ_IMAGE], max_depth=4)):
+                found.append(index)
+        finally:
+            page.close()
+    return found
+
+
+def sample_indices(document):
+    """First, middle and last pages plus up to four pages that carry images.
+
+    Sampling only the first/middle/last page can miss every image in a document
+    whose images are sparse, which would make a fidelity score meaningless.
+    """
+    count = len(document)
+    chosen = {0, count // 2, count - 1}
+    if count <= 400:
+        pages = image_pages(document)
+        if pages:
+            step = max(1, len(pages) // 4)
+            chosen.update(pages[::step][:4])
+            chosen.add(pages[-1])
+    return sorted(chosen)
 
 
 def fidelity(source, output):
@@ -45,7 +72,7 @@ def fidelity(source, output):
     try:
         if len(a) != len(b):
             return {"pagesEqual": False}
-        indices = sample_indices(len(a))
+        indices = sample_indices(a)
         result = {"pagesEqual": True, "sampledPages": len(indices)}
         for dpi in SAMPLE_DPIS:
             scores = []

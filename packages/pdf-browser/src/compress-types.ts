@@ -128,8 +128,8 @@ export const IMAGE_SKIP_CATEGORY: Readonly<
   Record<ImageSkipReason, ImageSkipCategory>
 > = Object.freeze({
   at_target: "efficient",
-  flat_graphic: "efficient",
   not_smaller: "efficient",
+  flat_graphic: "protected",
   image_mask: "protected",
   has_mask: "protected",
   decode_array: "protected",

@@ -140,7 +140,7 @@ function rendererRssMiB() {
 }
 const headings = {
   reduced: "Compressed PDF ready",
-  "no-reduction": "This PDF is already well compressed",
+  "no-reduction": "This PDF could not be made smaller",
   error: "This PDF could not be compressed",
 };
 
@@ -248,6 +248,9 @@ async function runOne(testCase, profile, repeat) {
     row.shownWarnings = await warnings.allInnerTexts();
   } else if (outcome === "no-reduction") {
     row.outputBytes = null;
+    row.shownUnchanged = await page
+      .locator(".compress-unchanged li")
+      .allInnerTexts();
     row.hasDownloadLink =
       (await page
         .getByRole("link", { name: "Download compressed PDF" })
@@ -303,6 +306,29 @@ const version = browser.version();
 await browser.close();
 server.kill();
 
+// --merge keeps earlier runs for cases that were not repeated now, so a subset
+// can be re-measured without discarding the rest.
+let allRuns = runs;
+if (args.merge) {
+  let previous = [];
+  try {
+    previous = JSON.parse(await readFile(resultPath, "utf8")).runs ?? [];
+  } catch {
+    /* first run */
+  }
+  const replaced = new Set(runs.map((r) => `${r.id}|${r.profile}`));
+  const order = cases.map((c) => c.id);
+  allRuns = [
+    ...previous.filter((r) => !replaced.has(`${r.id}|${r.profile}`)),
+    ...runs,
+  ].sort(
+    (a, b) =>
+      order.indexOf(a.id) - order.indexOf(b.id) ||
+      ["light", "balanced", "strong"].indexOf(a.profile) -
+        ["light", "balanced", "strong"].indexOf(b.profile),
+  );
+}
+
 const cpus = os.cpus();
 await writeFile(
   resultPath,
@@ -320,10 +346,12 @@ await writeFile(
         note: "Single cold run per case unless repeat > 1; desktop Chromium on a shared cloud VM. Not a public performance or memory guarantee.",
       },
       privacyAudit: audit,
-      runs,
+      runs: allRuns,
     },
     null,
     1,
   ) + "\n",
 );
-console.log(`wrote ${path.relative(root, resultPath)} (${runs.length} runs)`);
+console.log(
+  `wrote ${path.relative(root, resultPath)} (${allRuns.length} runs)`,
+);

@@ -287,7 +287,9 @@ test("images with transparency are kept unchanged and the result says so", async
   expect(images.some((image) => !image.hasSMask && image.width < 1000)).toBe(
     true,
   );
-  await expect(page.getByText(/kept as they are because/)).toBeVisible();
+  await expect(
+    page.getByText(/kept unchanged to protect quality/),
+  ).toBeVisible();
 });
 
 test("says so and creates no file when the PDF cannot be made smaller", async ({
@@ -298,7 +300,7 @@ test("says so and creates no file when the PDF cannot be made smaller", async ({
   await choose(page, await buildPdf([small]));
   await page.getByRole("button", { name: "Compress PDF", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "This PDF is already well compressed" }),
+    page.getByRole("heading", { name: "This PDF could not be made smaller" }),
   ).toBeVisible({ timeout: 60_000 });
   await expect(page.getByText(/no compressed file was created/)).toBeVisible();
   await expect(

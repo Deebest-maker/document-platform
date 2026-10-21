@@ -249,10 +249,31 @@ def libreoffice_documents(out, workdir):
     make("E03-lo-text-only", text_only)
 
 
+def near_limit_stress(stress, report):
+    # G07: 190 pages with one 1200x900 JPEG each (about 47 MB, near the 50 MiB cap).
+    specs = [dict(text=4, text_y=820, images=[(photo(1200, 900, seed=i % 11, base=BASES[i % 4]), "jpeg", 85, 30, 300, 535)]) for i in range(190)]
+    report("G07 190 pages x image", build(stress / "G07-190pages-images.pdf", specs))
+    # G09: 31.5 MP Flate RGB photo (just under the 32 MP raster decode cap), compressible.
+    width, height = 7000, 4500
+    rng = np.random.default_rng(9)
+    array = np.zeros((height, width, 3), np.uint8)
+    array[:, :, 0] = np.linspace(20, 235, width, dtype=np.uint8)[None, :]
+    array[:, :, 1] = np.linspace(20, 235, height, dtype=np.uint8)[:, None]
+    array[:, :, 2] = 90
+    array += rng.integers(0, 4, (height, width, 3), dtype=np.uint8)
+    report("G09 31.5 MP Flate RGB", build(
+        stress / "G09-flate-31MP.pdf", [dict(images=[(Image.fromarray(array), "flate", 0, 20, 300, 555)])]))
+    # G08: 1000 pages with one small JPEG each (1000 images, the per-document image cap).
+    small = [photo(400, 300, seed=i % 13, base=BASES[i % 4]) for i in range(13)]
+    specs = [dict(text=3, text_y=820, images=[(small[i % 13], "jpeg", 80, 30, 300, 535)]) for i in range(1000)]
+    report("G08 1000 pages x small image", build(stress / "G08-1000pages-images.pdf", specs))
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--skip-soffice", action="store_true")
     parser.add_argument("--skip-stress", action="store_true")
+    parser.add_argument("--near-limit-only", action="store_true", help="only G07 and G08")
     args = parser.parse_args()
     corpus, stress = ROOT / "corpus", ROOT / "stress"
     corpus.mkdir(parents=True, exist_ok=True)
@@ -260,6 +281,10 @@ def main():
 
     def report(name, path):
         print(f"{name:34s} {path.stat().st_size / 1e6:8.2f} MB", flush=True)
+
+    if args.near_limit_only:
+        near_limit_stress(stress, report)
+        return
 
     pages = [dict(text=62) for _ in range(40)]
     report("A01 text, unoptimized", build(corpus / "A01-text-unoptimized.pdf", pages))
@@ -318,6 +343,7 @@ def main():
     # G04: 150 pages with one 1200x900 JPEG each (about 37 MB).
     specs = [dict(text=4, text_y=820, images=[(photo(1200, 900, seed=i % 7, base=BASES[i % 4]), "jpeg", 85, 30, 300, 535)]) for i in range(150)]
     report("G04 150 pages x image", build(stress / "G04-150pages-images.pdf", specs))
+    near_limit_stress(stress, report)
     # G06: 8000 x 8000 (64 MP) JPEG, exactly the planned per-image decode cap.
     width = height = 8000
     array = np.zeros((height, width, 3), np.uint8)

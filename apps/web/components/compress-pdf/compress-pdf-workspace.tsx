@@ -75,7 +75,7 @@ function unchangedLines(outcome: CompressOutcome): string[] {
     lines.push(`${plural(efficient, "image")} already small enough`);
   if (kept)
     lines.push(
-      `${plural(kept, "image")} kept as they are because they could not be changed safely (for example transparency, colour or layout)`,
+      `${plural(kept, "image")} kept unchanged to protect quality (for example screenshots, diagrams, transparency or colour formats that cannot be changed safely)`,
     );
   if (limits)
     lines.push(
@@ -340,13 +340,28 @@ export function CompressPdfWorkspace({
         <div className="compress-result">
           <p className="eyebrow">No file created</p>
           <h2 tabIndex={-1} data-state-heading>
-            This PDF is already well compressed
+            This PDF could not be made smaller
           </h2>
           <p>
             At {profileLabel} strength this PDF could not be made meaningfully
             smaller than its original {formatBytes(outcome.inputBytes)}, so no
             compressed file was created. Your original is unchanged.
           </p>
+          {lines.length > 0 ? (
+            <>
+              <p className="small-copy">Left unchanged:</p>
+              <ul className="compress-unchanged">
+                {lines.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p className="small-copy">
+              It may already be well optimized, or it may contain mostly text
+              and vector content.
+            </p>
+          )}
           {snapshot.profile !== "strong" && (
             <p className="small-copy">
               A stronger setting may save more, at the cost of image detail.

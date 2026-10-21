@@ -402,9 +402,10 @@ describe("compress copy helpers", () => {
         not_smaller: 1,
         has_mask: 1,
         image_mask: 2,
+        flat_graphic: 1,
         time_budget: 3,
       }),
-    ).toEqual({ efficient: 2, protected: 3, limits: 3, unreadable: 0 });
+    ).toEqual({ efficient: 2, protected: 4, limits: 3, unreadable: 0 });
     expect(summarizeSkips({})).toEqual({
       efficient: 0,
       protected: 0,
