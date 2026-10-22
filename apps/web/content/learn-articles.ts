@@ -16,6 +16,11 @@
  * byline yet (M6D), and inventing one would be a false claim.
  */
 
+import {
+  ABANDONED_JOB_IDLE_MINUTES,
+  ABANDONED_JOB_MAX_MINUTES,
+} from "../lib/retention";
+
 export type LearnBlock =
   | string
   | { readonly list: readonly string[] }
@@ -630,14 +635,14 @@ export const learnArticles: readonly LearnArticle[] = [
         heading: "The tool that uploads",
         blocks: [
           "{tool:word-to-pdf} is the one exception. Converting a Word document faithfully needs a full word-processing engine, and ours is LibreOffice running on our server, so the file goes there to be converted.",
-          "Word to PDF tells you about the upload before anything is sent. Your file is encrypted on its way to our server, converted there and deleted once the PDF has reached your browser. An abandoned conversion, for instance one left behind when the tab is closed, is cleared out by an automatic cleanup after a short time. The file is not shared with third parties.",
+          `Word to PDF tells you about the upload before anything is sent. Your file is encrypted on its way to our server, converted there and deleted once the PDF has reached your browser. If a conversion is abandoned, say because the tab is closed before the PDF arrives, an automatic cleanup removes the file after ${ABANDONED_JOB_IDLE_MINUTES} idle minutes. The cleanup runs every minute, so the file should be gone within about ${ABANDONED_JOB_MAX_MINUTES} minutes. The file is not shared with third parties.`,
           "Word to PDF deserves the same care as any other upload, so if a document is too sensitive to send anywhere, convert it on a computer you control instead.",
         ],
       },
       {
         heading: "What this guide is not",
         blocks: [
-          "This is an explanation and not a legal policy. The {page:/privacy|Privacy page} states our current position, including the details that are still undecided, such as the exact retention period for abandoned conversions.",
+          "This is an explanation and not a legal policy. The {page:/privacy|Privacy page} states our current position, including the details that are still undecided, such as the final deletion wording and the operating limits.",
         ],
       },
     ],

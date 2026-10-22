@@ -9,6 +9,11 @@ import ToolsPage, { metadata as toolsMetadata } from "../app/tools/page";
 import RootLayout from "../app/layout";
 import { SiteFooter } from "../components/site-footer";
 import {
+  ABANDONED_JOB_IDLE_MINUTES,
+  ABANDONED_JOB_MAX_MINUTES,
+  abandonedJobSentence,
+} from "../lib/retention";
+import {
   availabilityBreakdown,
   availabilityStatus,
   capitalise,
@@ -191,9 +196,19 @@ describe("site copy follows the registry", () => {
       "For those tools, document bytes are never uploaded",
     );
     expect(text).toContain("Word to PDF uploads your Word file");
-    expect(text).toMatch(/deleted automatically after a short time/);
-    // Retention periods are an open Product Owner decision: no number here.
-    expect(text).not.toMatch(/\b\d+\s*(minutes?|min|hours?|seconds?)\b/i);
+    // The retention period is the Product Owner's decision (ADR-032) and comes
+    // from one shared value; the page says nothing vaguer or longer.
+    expect(text).toContain(abandonedJobSentence);
+    expect(text).not.toMatch(/after a short time/);
+    expect(text).not.toMatch(/\b\d+\s*(min|hours?|seconds?)\b/i);
+    const minutes = [...text.matchAll(/\b(\d+)\s+minutes?\b/gi)].map((m) =>
+      Number(m[1]),
+    );
+    expect(minutes.length).toBeGreaterThan(0);
+    for (const value of minutes)
+      expect([ABANDONED_JOB_IDLE_MINUTES, ABANDONED_JOB_MAX_MINUTES]).toContain(
+        value,
+      );
     // It must not say server tools are still to come.
     expect(text).not.toMatch(/before server tools become available/i);
   });
