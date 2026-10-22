@@ -1,7 +1,7 @@
 # M6B.1 Milestone Report: Photo metadata and copy accuracy
 
 **Date:** 2026-10-22
-**Status:** Implemented; pull request open; owner acceptance pending.
+**Status:** Accepted and merged (`3a51a25`).
 **Preceding milestone:** M6B — Tool-page guides (accepted and merged, `b760cb3`).
 **Decision record:** [ADR-030](../adr/030-m6b1-photo-metadata.md).
 

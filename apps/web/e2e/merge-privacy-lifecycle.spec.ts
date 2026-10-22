@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect } from "./fixtures";
+import { learnArticles } from "../content/learn-articles";
 
 const fixture = (name: string) =>
   fileURLToPath(
@@ -53,6 +54,8 @@ test("FR-PRV-001/005: full LOCAL flow, errors and offline re-merge never send do
         "/privacy",
         "/terms",
         "/contact",
+        "/learn",
+        ...learnArticles.map((article) => `/learn/${article.slug}`),
         "/favicon.ico",
       ].includes(url.pathname) || url.pathname.startsWith("/_next/static/");
     if (

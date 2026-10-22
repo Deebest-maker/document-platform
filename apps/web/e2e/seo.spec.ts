@@ -24,7 +24,15 @@ test("sitemap.xml is valid and empty by default", async ({ request }) => {
   expect(body).not.toContain("<loc>");
 });
 
-for (const route of ["/", "/tools", "/merge-pdf", "/privacy", "/robots.txt"]) {
+for (const route of [
+  "/",
+  "/tools",
+  "/merge-pdf",
+  "/privacy",
+  "/learn",
+  "/learn/merge-pdfs-without-uploading",
+  "/robots.txt",
+]) {
   test(`${route} is sent with a noindex header`, async ({ request }) => {
     const response = await request.get(route);
     expect(response.status()).toBe(200);
@@ -41,7 +49,7 @@ test("a missing page is a real 404 and also noindex", async ({ request }) => {
 test("pages carry no canonical link or Open Graph tags without a site address", async ({
   page,
 }) => {
-  for (const route of ["/", "/merge-pdf"]) {
+  for (const route of ["/", "/merge-pdf", "/learn/make-a-pdf-smaller"]) {
     await page.goto(route);
     await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
     await expect(page.locator('meta[property="og:url"]')).toHaveCount(0);

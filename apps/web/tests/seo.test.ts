@@ -18,6 +18,7 @@ import {
   siteRobots,
   toolMetadata,
 } from "../lib/seo";
+import { learnArticles } from "../content/learn-articles";
 import type { SiteConfig } from "../lib/site";
 
 const ORIGIN = "https://example.com";
@@ -120,7 +121,7 @@ describe("M6A sitemap", () => {
       expect(urls).toContain(`${ORIGIN}/${tool.slug}`);
     }
     for (const url of urls) {
-      expect(url).toMatch(/^https:\/\/example\.com(\/[a-z0-9-]+)?$/);
+      expect(url).toMatch(/^https:\/\/example\.com(\/[a-z0-9-]+){0,2}$/);
     }
   });
 
@@ -130,6 +131,15 @@ describe("M6A sitemap", () => {
     const urls = buildSitemap(on).map((entry) => entry.url);
     for (const tool of planned) {
       expect(urls).not.toContain(`${ORIGIN}/${tool.slug}`);
+    }
+  });
+
+  it("lists the Learn hub and every guide", () => {
+    const urls = buildSitemap(on).map((entry) => entry.url);
+    expect(urls).toContain(`${ORIGIN}/learn`);
+    expect(learnArticles.length).toBeGreaterThan(0);
+    for (const article of learnArticles) {
+      expect(urls).toContain(`${ORIGIN}/learn/${article.slug}`);
     }
   });
 
@@ -145,10 +155,10 @@ describe("M6A sitemap", () => {
   it("follows the registry when a tool changes state", () => {
     const planned: ToolDefinition = { ...merge, availability: "planned" };
     const preview: ToolDefinition = { ...wordToPdf, availability: "preview" };
-    expect(getIndexablePaths([planned, preview])).toEqual([
+    expect(getIndexablePaths([planned, preview], [])).toEqual([
       ...STATIC_INDEXABLE_PATHS,
     ]);
-    expect(getIndexablePaths([merge, merge])).toEqual([
+    expect(getIndexablePaths([merge, merge], [])).toEqual([
       ...STATIC_INDEXABLE_PATHS,
       "/merge-pdf",
     ]);
