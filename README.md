@@ -103,7 +103,7 @@ pnpm test:foundation
 pnpm --filter @document-platform/web exec playwright install firefox webkit
 ```
 
-For the expanded suite, set `PDF_BROWSER_MATRIX=full` in the terminal environment and run `pnpm test:e2e` and `pnpm test:foundation`. In PowerShell use `$env:PDF_BROWSER_MATRIX='full'`; on POSIX shells use `export PDF_BROWSER_MATRIX=full`. Main/tag/manual CI runs exercise Chromium, Firefox, WebKit, Pixel 7 and iPhone 13 emulation within the existing web job. Ordinary PRs exercise desktop/mobile Chromium. Physical-mobile performance is not inferred from emulation.
+For the expanded suite, set `PDF_BROWSER_MATRIX=full` in the terminal environment and run `pnpm test:e2e` and `pnpm test:foundation`. In PowerShell use `$env:PDF_BROWSER_MATRIX='full'`; on POSIX shells use `export PDF_BROWSER_MATRIX=full`. Main/tag/manual CI runs exercise Chromium, Firefox, WebKit, Pixel 7 and iPhone 13 emulation, each browser in its own `web-e2e` job; the job named `web` is the single required check and passes only when `web-quality` and every `web-e2e` job passed. Ordinary PRs exercise desktop/mobile Chromium. Physical-mobile performance is not inferred from emulation.
 
 The separate Next.js test consumer lives under `apps/web/tests/page-foundation`, outside the product app route tree. The foundation command builds it and starts test/default configurations on ports 3101/3102. Without `PDF_FOUNDATION_TEST=1` it returns 404, and it remains noindex without navigation/sitemap/canonical discovery when enabled. Do not deploy this test application.
 

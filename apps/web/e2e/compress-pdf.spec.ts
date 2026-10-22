@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import type { BrowserContext, Page } from "@playwright/test";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "./fixtures";
@@ -120,12 +120,24 @@ async function imagesOf(bytes: Uint8Array): Promise<PdfImage[]> {
   return found;
 }
 
+// Playwright refuses an in-memory upload above 50 MB, and Firefox encodes the
+// noise images in these tests larger than Chromium does. Larger inputs are
+// written to a file and passed by path, which has no such limit.
+const MAX_IN_MEMORY_UPLOAD = 40 * 1024 * 1024;
+
 async function choose(page: Page, bytes: Uint8Array, name = "local.pdf") {
-  await page.getByLabel("Choose a PDF to compress").setInputFiles({
-    name,
-    mimeType: "application/pdf",
-    buffer: Buffer.from(bytes),
-  });
+  const input = page.getByLabel("Choose a PDF to compress");
+  if (bytes.length > MAX_IN_MEMORY_UPLOAD) {
+    const path = test.info().outputPath(name);
+    await writeFile(path, bytes);
+    await input.setInputFiles(path);
+  } else {
+    await input.setInputFiles({
+      name,
+      mimeType: "application/pdf",
+      buffer: Buffer.from(bytes),
+    });
+  }
   await expect(
     page.getByRole("heading", { name: "Choose how much to compress" }),
   ).toBeVisible();
