@@ -168,6 +168,16 @@ test("FR-P2I-003: one page downloads directly and honors the exact 96 DPI geomet
 test("generation cancellation is atomic and leaves the page selection reusable", async ({
   page,
 }) => {
+  // The fixture is 50 blank pages, which a fast browser renders and encodes in a
+  // few milliseconds, so the export could finish before Cancel is ever clicked.
+  // Encoding each page is held back a little so that Cancel always lands while
+  // the export is still running.
+  await page.addInitScript(() => {
+    const encode = HTMLCanvasElement.prototype.toBlob;
+    HTMLCanvasElement.prototype.toBlob = function (callback, type, quality) {
+      setTimeout(() => encode.call(this, callback, type, quality), 150);
+    };
+  });
   await page.goto("/pdf-to-jpg");
   await page.getByLabel("Choose PDF").setInputFiles({
     name: "cancellation-boundary.pdf",
@@ -192,9 +202,17 @@ test("generation cancellation is atomic and leaves the page selection reusable",
   await expect(
     page.getByRole("heading", { name: "Choose pages and resolution" }),
   ).toBeVisible({ timeout: 20_000 });
-  await expect(page.locator(".organize-error")).toContainText("cancelled", {
-    timeout: 20_000,
-  });
+  try {
+    await expect(page.locator(".organize-error")).toContainText("cancelled", {
+      timeout: 20_000,
+    });
+  } catch (error) {
+    // Say what the page showed instead; a bare timeout is unreadable in CI.
+    const shown = (await page.getByRole("main").innerText())
+      .replace(/\s+/g, " ")
+      .slice(0, 300);
+    throw new Error(`${(error as Error).message}\nThe page said: ${shown}`);
+  }
   await expect(page.locator("[download]")).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: "Create JPG images" }),
