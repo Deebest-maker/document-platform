@@ -1,7 +1,9 @@
 import { createHash } from "node:crypto";
 import { readdirSync } from "node:fs";
+import { createServer } from "node:http";
+import type { AddressInfo } from "node:net";
 import path from "node:path";
-import { test as plain } from "@playwright/test";
+import { test as plain, type BrowserContext } from "@playwright/test";
 import { expect, test } from "./fixtures";
 
 // M7C (ADR-034): what the server really sends. These tests read the built
@@ -150,31 +152,75 @@ test("data files carry the plain headers", async ({ request }) => {
 });
 
 // Not under the request audit: the test itself visits a second origin.
+//
+// A real second site is needed. A page that Playwright makes up for a made-up
+// address is treated by Chromium as public, and Chromium then refuses to let it
+// reach a server on this machine for an unrelated reason, so such a test passes
+// whether or not the headers work. Here the framing page is a small server of
+// its own on `localhost`, a different site from the app's 127.0.0.1.
+//
+// What shows a refused frame also differs by engine (Firefox swaps in a browser
+// page the test cannot look into), so the test does not look inside the frame.
+// A document that is shown loads its own scripts and styles; one the browser
+// refuses to show loads nothing. The control runs the same frame with the
+// framing headers removed on the way in: it must load the files, which proves
+// both that the frame works and that the test would notice.
 plain(
   "a page cannot be shown inside another site",
-  async ({ page, context }) => {
-    // The headers say so; this checks a browser obeys. A frame on another origin
-    // that points at the page must stay empty, while a frame that points at
-    // something harmless on that origin loads, which shows the frames work.
-    await context.route("http://framer.test/**", (route) =>
-      route.fulfill({
-        contentType: "text/html",
-        body: route.request().url().endsWith("/ok")
-          ? "<p>harmless frame</p>"
-          : '<iframe id="ok" src="/ok"></iframe>' +
-            '<iframe id="blocked" src="http://127.0.0.1:3100/about"></iframe>',
-      }),
-    );
-    await page.goto("http://framer.test/");
-    await expect(page.frameLocator("#ok").locator("p")).toHaveText(
-      "harmless frame",
-    );
-    await page.waitForTimeout(1000);
-    await expect(page.frameLocator("#blocked").locator("h1")).toHaveCount(0);
-    for (const frame of page.frames())
-      if (frame.url().includes("127.0.0.1:3100"))
-        await expect(frame.locator("body")).not.toContainText(
-          "A toolkit in progress",
-        );
+  async ({ browser, context, baseURL }) => {
+    const app = new URL(baseURL!);
+    const appFiles = (requests: string[]) =>
+      requests.filter((url) => {
+        const { origin, pathname } = new URL(url);
+        return origin === app.origin && /^\/(_next|vendor)\//.test(pathname);
+      });
+
+    const framer = createServer((_request, response) => {
+      response.writeHead(200, { "content-type": "text/html" });
+      response.end(`<iframe src="${app.origin}/about"></iframe>`);
+    });
+    await new Promise<void>((resolve) => framer.listen(0, resolve));
+    const framerUrl = `http://localhost:${(framer.address() as AddressInfo).port}/`;
+
+    try {
+      const show = async (target: BrowserContext) => {
+        const requested: string[] = [];
+        target.on("request", (request) => requested.push(request.url()));
+        const page = await target.newPage();
+        await page.goto(framerUrl);
+        // Long enough for a frame that was shown to fetch its scripts and styles.
+        await page.waitForTimeout(2000);
+        return requested;
+      };
+
+      // Control: the same page with the headers that forbid framing removed.
+      const control = await browser.newContext();
+      await control.route(`${app.origin}/about`, async (route) => {
+        const response = await route.fetch();
+        const headers = { ...response.headers() };
+        delete headers["x-frame-options"];
+        headers["content-security-policy"] = (
+          headers["content-security-policy"] ?? ""
+        ).replace(/;?\s*frame-ancestors[^;]*/i, "");
+        await route.fulfill({ response, headers });
+      });
+      const unprotected = await show(control);
+      await control.close();
+      expect(
+        appFiles(unprotected).length,
+        "without the headers the page is shown and loads its files",
+      ).toBeGreaterThan(0);
+
+      // The real thing.
+      const protectedRun = await show(context);
+      expect(protectedRun, "the browser asked for the page").toContain(
+        `${app.origin}/about`,
+      );
+      expect(appFiles(protectedRun), "a refused frame loads nothing").toEqual(
+        [],
+      );
+    } finally {
+      framer.close();
+    }
   },
 );

@@ -1,5 +1,9 @@
 import { isCancelledPrefetch } from "./benign-page-errors";
 import {
+  noAllowanceSpent,
+  withoutScreenshotArtefacts,
+} from "./screenshot-artefacts";
+import {
   test as base,
   expect,
   type Locator,
@@ -18,12 +22,28 @@ export interface CspViolations {
 
 const CONSOLE_REFUSAL = /Content[ -]Security[ -]Policy|^Refused to /i;
 
+// Screenshots taken in this test, per page. WebKit's screenshot code adds a
+// style element of its own, which the policy refuses; see screenshot-artefacts.ts.
+// Take screenshots with pageScreenshot() or evidenceScreenshot() so they count.
+const screenshotsTaken = new WeakMap<Page, number>();
+const countScreenshot = (page: Page) =>
+  screenshotsTaken.set(page, (screenshotsTaken.get(page) ?? 0) + 1);
+
+export async function pageScreenshot(
+  page: Page,
+  options: Parameters<Page["screenshot"]>[0],
+): Promise<void> {
+  countScreenshot(page);
+  await page.screenshot(options);
+}
+
 // The watch on its own, for tests that attack the policy on purpose and so
 // cannot also run under the request audit below.
 export const withCspWatch = base.extend<{ cspViolations: CspViolations }>({
   cspViolations: [
-    async ({ page, context }, use) => {
+    async ({ page, context, browserName }, use) => {
       const seen: string[] = [];
+      const spent = noAllowanceSpent();
       await context.exposeBinding("__reportCspViolation", (_source, line) => {
         seen.push(String(line).slice(0, 300));
       });
@@ -43,7 +63,15 @@ export const withCspWatch = base.extend<{ cspViolations: CspViolations }>({
         if (CONSOLE_REFUSAL.test(message.text()))
           seen.push(`console: ${message.text()}`.slice(0, 300));
       });
-      await use({ take: () => seen.splice(0) });
+      await use({
+        take: () =>
+          withoutScreenshotArtefacts(
+            seen.splice(0),
+            screenshotsTaken.get(page) ?? 0,
+            spent,
+            browserName,
+          ),
+      });
     },
     { scope: "test" },
   ],
@@ -118,6 +146,7 @@ export async function evidenceScreenshot(
   const devicePixels = await page.evaluate(
     () => document.documentElement.scrollHeight * window.devicePixelRatio,
   );
+  countScreenshot(page);
   if (devicePixels <= MAX_EVIDENCE_PIXELS) {
     await page.screenshot({ path, fullPage: true });
   } else if (region) {

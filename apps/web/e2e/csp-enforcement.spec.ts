@@ -109,7 +109,13 @@ test("the page refuses what an injected script or markup would try", async ({
     form.action = "/about";
     document.body.append(form);
     const before = location.href;
-    form.submit();
+    try {
+      form.submit();
+    } catch {
+      // Firefox reports a form the policy forbids by throwing; other engines
+      // ignore it silently. Either is a refusal. What the test checks is that
+      // the page did not navigate and that the browser reported the violation.
+    }
 
     // 5. Rewriting where relative addresses point.
     document.head.insertAdjacentHTML("beforeend", `<base href="${offsite}/">`);
