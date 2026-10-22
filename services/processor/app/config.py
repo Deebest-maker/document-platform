@@ -27,6 +27,14 @@ _DEFAULT_RUNNER_TIMEOUT_SECONDS: Final[int] = 120  # 2 minutes
 _DEFAULT_JANITOR_INTERVAL_SECONDS: Final[int] = 60
 _DEFAULT_MAX_INFLIGHT_JOBS: Final[int] = 32
 _DEFAULT_CONVERT_QUEUE_WAIT_SECONDS: Final[int] = 20
+# Abuse controls (M7B, ADR-033). Numbers are conservative starting points: a
+# person converts one document at a time and a conversion takes seconds, so
+# these never get in the way of normal use. Revisit with real traffic in M8.
+_DEFAULT_CREATED_JOB_IDLE_SECONDS: Final[int] = 120
+_DEFAULT_JOB_CREATE_BURST: Final[int] = 6
+_DEFAULT_JOB_CREATE_REFILL_SECONDS: Final[int] = 10
+_DEFAULT_MAX_ACTIVE_JOBS_PER_CLIENT: Final[int] = 3
+_DEFAULT_RATE_LIMIT_MAX_CLIENTS: Final[int] = 10_000
 
 
 class Settings(BaseModel):
@@ -63,6 +71,35 @@ class Settings(BaseModel):
     """Longest a /convert call waits for the single conversion slot before it
     gets a 503. Conversions run one at a time (governance §9.3)."""
 
+    created_job_idle_seconds: int = Field(
+        default=_DEFAULT_CREATED_JOB_IDLE_SECONDS, ge=30
+    )
+    """A job that has received no upload bytes for this long is expired. It holds
+    an in-flight slot while it waits, so an abandoned or hostile `create` should
+    not hold it for the full job lifetime. Progress during an upload resets it."""
+
+    job_create_burst: int = Field(default=_DEFAULT_JOB_CREATE_BURST, ge=1)
+    job_create_refill_seconds: int = Field(
+        default=_DEFAULT_JOB_CREATE_REFILL_SECONDS, ge=1
+    )
+    """Per client: up to `job_create_burst` jobs may be created at once, then one
+    more every `job_create_refill_seconds`."""
+
+    max_active_jobs_per_client: int = Field(
+        default=_DEFAULT_MAX_ACTIVE_JOBS_PER_CLIENT, ge=1
+    )
+    """Per client: jobs that are created, uploading or converting at one time."""
+
+    rate_limit_max_clients: int = Field(default=_DEFAULT_RATE_LIMIT_MAX_CLIENTS, ge=100)
+    """Upper bound on remembered clients, so the limiter cannot grow without bound."""
+
+    trusted_proxy_hops: int = Field(default=0, ge=0, le=5)
+    """How many reverse proxies sit in front of the processor and append to
+    `X-Forwarded-For`. 0 means the header is ignored and the TCP peer is the
+    client. Must match the real deployment: too low and a client can spoof its
+    address; too high (or 0 behind a proxy) and every client looks like the proxy.
+    """
+
     dev_cors_origins: tuple[str, ...] = Field(default=())
     """Only honoured when `environment == "development"`."""
 
@@ -76,6 +113,9 @@ class Settings(BaseModel):
                 "job_lifetime_seconds must exceed runner_timeout_seconds + "
                 f"convert_queue_wait_seconds ({busy}s)"
             )
+            raise ValueError(msg)
+        if self.created_job_idle_seconds >= self.job_lifetime_seconds:
+            msg = "created_job_idle_seconds must be shorter than job_lifetime_seconds"
             raise ValueError(msg)
         return self
 
@@ -131,6 +171,23 @@ def load_settings() -> Settings:
             "PROCESSOR_CONVERT_QUEUE_WAIT_SECONDS",
             _DEFAULT_CONVERT_QUEUE_WAIT_SECONDS,
         ),
+        created_job_idle_seconds=_get_env_int(
+            "PROCESSOR_CREATED_JOB_IDLE_SECONDS", _DEFAULT_CREATED_JOB_IDLE_SECONDS
+        ),
+        job_create_burst=_get_env_int(
+            "PROCESSOR_JOB_CREATE_BURST", _DEFAULT_JOB_CREATE_BURST
+        ),
+        job_create_refill_seconds=_get_env_int(
+            "PROCESSOR_JOB_CREATE_REFILL_SECONDS", _DEFAULT_JOB_CREATE_REFILL_SECONDS
+        ),
+        max_active_jobs_per_client=_get_env_int(
+            "PROCESSOR_MAX_ACTIVE_JOBS_PER_CLIENT",
+            _DEFAULT_MAX_ACTIVE_JOBS_PER_CLIENT,
+        ),
+        rate_limit_max_clients=_get_env_int(
+            "PROCESSOR_RATE_LIMIT_MAX_CLIENTS", _DEFAULT_RATE_LIMIT_MAX_CLIENTS
+        ),
+        trusted_proxy_hops=_get_env_int("PROCESSOR_TRUSTED_PROXY_HOPS", 0),
         dev_cors_origins=os.environ.get("PROCESSOR_DEV_CORS_ORIGINS", ""),  # type: ignore[arg-type]
     )
 

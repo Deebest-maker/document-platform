@@ -30,6 +30,7 @@ export type ConversionErrorCode =
   | "CONVERSION_FAILED"
   | "DOWNLOAD_FAILED"
   | "SERVER_UNAVAILABLE"
+  | "RATE_LIMITED"
   | "CANCELLED";
 
 export const errorCopy: Record<ConversionErrorCode, string> = {
@@ -44,6 +45,8 @@ export const errorCopy: Record<ConversionErrorCode, string> = {
   DOWNLOAD_FAILED: "The converted PDF could not be downloaded. Try again.",
   SERVER_UNAVAILABLE:
     "The processing server is not available right now. Try again in a moment.",
+  RATE_LIMITED:
+    "Too many conversions were started from this connection. Wait a minute, then try again.",
   CANCELLED: "Conversion cancelled.",
 };
 
@@ -220,14 +223,16 @@ export class WordToPdfSession {
     let jobCreds: { id: string; token: string };
     try {
       jobCreds = await this.deps.createJob();
-    } catch {
+    } catch (err) {
       if (token !== this.generation) return;
       this.abort = undefined;
+      // Being asked to slow down is not the server being down.
+      const code = mapProcessorError(err, "SERVER_UNAVAILABLE");
       this.publish({
         state: "error",
         file,
-        error: "SERVER_UNAVAILABLE",
-        announcement: errorCopy.SERVER_UNAVAILABLE,
+        error: code,
+        announcement: errorCopy[code],
       });
       return;
     }
@@ -380,6 +385,8 @@ function mapProcessorError(
   fallback: ConversionErrorCode,
 ): ConversionErrorCode {
   if (err instanceof ProcessorClientError) {
+    if (err.code === "RATE_LIMITED" || err.status === 429)
+      return "RATE_LIMITED";
     if (err.code === "LIMIT_EXCEEDED") return "FILE_TOO_LARGE";
     if (err.code === "INVALID_INPUT") return "UNSUPPORTED_TYPE";
     if (err.status === 0 || err.status >= 500) return "SERVER_UNAVAILABLE";

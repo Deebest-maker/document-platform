@@ -1,7 +1,7 @@
 # M7A Milestone Report: CI truth
 
 **Date:** 2026-10-22
-**Status:** Implemented; owner acceptance pending
+**Status:** Accepted and merged (`2110313`)
 **Preceding milestone:** M6C Learn hub and the retention follow-up (ADR-032), accepted and merged (`d599784`).
 **Part of:** M7 QA and hardening (governance §14.3), slice A of seven.
 
