@@ -6,7 +6,15 @@ export default defineConfig({
   workers: process.env.CI ? 2 : 1,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
-  reporter: [["list"], ["html", { open: "never" }]],
+  // In CI the JSON report feeds scripts/ci-playwright-annotations.mjs, which
+  // puts the failing tests on the check run itself (M7A).
+  reporter: process.env.CI
+    ? [
+        ["list"],
+        ["html", { open: "never" }],
+        ["json", { outputFile: "test-results/results.json" }],
+      ]
+    : [["list"], ["html", { open: "never" }]],
   use: {
     baseURL: "http://127.0.0.1:3100",
     trace: "retain-on-failure",

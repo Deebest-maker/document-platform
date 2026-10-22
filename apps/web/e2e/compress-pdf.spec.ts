@@ -338,8 +338,16 @@ test("password-protected and damaged PDFs fail with clear messages", async ({
 test("cancelling returns to the strength choice and publishes nothing", async ({
   page,
 }) => {
-  const photo = await makeImage(page, "jpg", 3000, 2000, 13);
+  // Six 6-megapixel photos keep the engine busy long enough to cancel. The
+  // JPEG quality is lowered because Firefox encodes this noise at about twice
+  // the size Chromium does: at 0.95 the file passed the tool's own 50 MiB input
+  // limit in Firefox and was refused before it could be cancelled.
+  const photo = await makeImage(page, "jpg", 3000, 2000, 13, false, 0.7);
   const input = await buildPdf(Array.from({ length: 6 }, () => photo));
+  expect(
+    input.length,
+    "test input must stay well under the 50 MiB limit",
+  ).toBeLessThan(35 * 1024 * 1024);
   await choose(page, input);
   await page.getByRole("button", { name: "Compress PDF", exact: true }).click();
   await expect(
