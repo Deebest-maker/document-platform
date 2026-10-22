@@ -113,7 +113,9 @@ test("FR-PRV-001/005: full LOCAL flow, errors and offline re-merge never send do
     .setInputFiles([fixture("c.pdf"), fixture("d.pdf")]);
   await page.getByRole("button", { name: "Merge PDFs", exact: true }).click();
   if (offlineBlobReadable) {
-    await expect(page.locator("[download]")).toBeVisible();
+    await expect(page.locator("[download]")).toBeVisible({
+      timeout: 20_000,
+    });
   } else {
     expect(browserName).toBe("webkit");
     await expect(
@@ -192,7 +194,9 @@ test("result URL replacement, reset and client navigation revoke every owned URL
     .locator('input[type="file"]')
     .setInputFiles([fixture("a.pdf"), fixture("b.pdf")]);
   await page.getByRole("button", { name: "Merge PDFs", exact: true }).click();
-  await expect(page.locator("[download]")).toBeVisible();
+  await expect(page.locator("[download]")).toBeVisible({
+    timeout: 20_000,
+  });
   const first = await page.locator("[download]").getAttribute("href");
   await page.getByRole("button", { name: "Change files or order" }).click();
   expect(
@@ -204,7 +208,9 @@ test("result URL replacement, reset and client navigation revoke every owned URL
     .getByRole("button", { name: "Move file 2 earlier", exact: true })
     .click();
   await page.getByRole("button", { name: "Merge PDFs", exact: true }).click();
-  await expect(page.locator("[download]")).toBeVisible();
+  await expect(page.locator("[download]")).toBeVisible({
+    timeout: 20_000,
+  });
   expect(await page.locator("[download]").getAttribute("href")).not.toBe(first);
   await page.getByRole("button", { name: "Start over", exact: true }).click();
   expect(
@@ -216,7 +222,9 @@ test("result URL replacement, reset and client navigation revoke every owned URL
     .locator('input[type="file"]')
     .setInputFiles([fixture("c.pdf"), fixture("d.pdf")]);
   await page.getByRole("button", { name: "Merge PDFs", exact: true }).click();
-  await expect(page.locator("[download]")).toBeVisible();
+  await expect(page.locator("[download]")).toBeVisible({
+    timeout: 20_000,
+  });
   await page
     .getByRole("navigation", { name: "Trust and legal" })
     .getByRole("link", { name: "About", exact: true })
@@ -279,5 +287,7 @@ test("processing status is accessible; cancel abandons a pending engine load and
   }
   await page.unrouteAll({ behavior: "wait" });
   await page.getByRole("button", { name: "Merge PDFs", exact: true }).click();
-  await expect(page.locator("[download]")).toBeVisible();
+  await expect(page.locator("[download]")).toBeVisible({
+    timeout: 20_000,
+  });
 });

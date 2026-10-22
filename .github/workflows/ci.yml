@@ -15,13 +15,16 @@ concurrency:
 env:
   NEXT_TELEMETRY_DISABLED: "1"
 
+# Every job runs on a pinned runner image, so CI changes only when we choose.
+# (The `ubuntu-latest` label began moving to Ubuntu 26 on 19 October 2026; move
+# to a newer image once Playwright documents support for it.)
 jobs:
   # The web checks are split so that each browser runs in its own job (the
   # single job had grown to within a minute of its 15 minute limit) and so a
   # failure names the browser. The job called `web` stays as the one required
   # status check on main: it passes only if every job it depends on passed.
   web-quality:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -44,7 +47,7 @@ jobs:
 
   web-e2e:
     name: web-e2e (${{ matrix.project }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     strategy:
       fail-fast: false
@@ -54,6 +57,7 @@ jobs:
         project: ${{ fromJSON((github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch') && '["chromium","mobile-chromium","firefox","webkit","mobile-webkit"]' || '["chromium","mobile-chromium"]') }}
     env:
       PDF_BROWSER_MATRIX: ${{ contains(fromJSON('["firefox","webkit","mobile-webkit"]'), matrix.project) && 'full' || 'smoke' }}
+      BROWSER: ${{ contains(matrix.project, 'webkit') && 'webkit' || (contains(matrix.project, 'firefox') && 'firefox' || 'chromium') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -66,7 +70,12 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @document-platform/web exec playwright install --with-deps ${{ contains(matrix.project, 'webkit') && 'webkit' || (contains(matrix.project, 'firefox') && 'firefox' || 'chromium') }}
+      # The browser install failed repeatedly on 22 October with no code at
+      # fault, because Ubuntu package mirrors stalled or refused. The script
+      # tries up to three times, alternating mirrors, and prints what went wrong
+      # as warnings on the check run (see the comments in the script).
+      - name: Install the browser
+        run: bash scripts/ci-install-browser.sh "$BROWSER"
       - run: pnpm build
       - run: pnpm test:e2e --project=${{ matrix.project }}
       - name: Report failing browser tests on the check run
@@ -88,7 +97,7 @@ jobs:
   web:
     needs: [web-quality, web-e2e]
     if: ${{ always() }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Every web job must have passed
@@ -101,7 +110,7 @@ jobs:
           test "$QUALITY" = "success" && test "$E2E" = "success"
 
   processor:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     defaults:
       run:
@@ -126,7 +135,7 @@ jobs:
       - run: uv audit --locked
 
   processor-container:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
