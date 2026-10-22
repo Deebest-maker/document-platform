@@ -33,6 +33,11 @@ def processor_settings(tmp_path: Path) -> Settings:
         runner_timeout_seconds=5,
         janitor_interval_seconds=3600,
         max_inflight_jobs=8,
+        # The abuse limits are relaxed here so tests of other behaviour can make
+        # many jobs from the one test client. tests/jobs/test_abuse_controls.py sets
+        # the real, small limits it wants to exercise.
+        job_create_burst=1_000,
+        max_active_jobs_per_client=1_000,
         dev_cors_origins=(),
     )
 

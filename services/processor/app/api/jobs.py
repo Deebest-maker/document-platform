@@ -21,20 +21,24 @@ touching this file.
 
 from __future__ import annotations
 
+import asyncio
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final, NoReturn
 
 from fastapi import APIRouter, Header, HTTPException, Request, Response
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
+from starlette.requests import ClientDisconnect
 
 from app.config import Settings
 from app.errors import MESSAGES, STATUS, ErrorCode, ProcessorError
 from app.jobs.auth import extract_bearer_token, issue
+from app.jobs.client import client_key
 from app.jobs.engines.base import ConversionEngine
 from app.jobs.gate import ConversionGate
+from app.jobs.limits import TokenBucketLimiter
 from app.jobs.state import Job, JobState
 from app.jobs.store import InMemoryJobStore
 from app.jobs.validators.docx import validate_docx
@@ -61,6 +65,11 @@ class JobsContext:
     engine: ConversionEngine
     jobs_root: Path
     gate: ConversionGate
+    limiter: TokenBucketLimiter
+    client_salt: bytes
+    # Jobs whose upload body is arriving right now. A second upload for the same
+    # job is refused instead of racing the first for the same workspace.
+    uploading: set[str] = field(default_factory=set)
 
 
 class CreateJobRequest(BaseModel):
@@ -100,10 +109,11 @@ def _ctx(request: Request) -> JobsContext:
     return ctx
 
 
-def _raise(code: ErrorCode) -> NoReturn:
+def _raise(code: ErrorCode, retry_after: int | None = None) -> NoReturn:
     raise HTTPException(
         status_code=STATUS[code],
         detail={"code": code.value, "message": MESSAGES[code]},
+        headers={"Retry-After": str(retry_after)} if retry_after else None,
     )
 
 
@@ -117,11 +127,38 @@ async def create_job(payload: CreateJobRequest, request: Request) -> CreateJobRe
     ctx = _ctx(request)
     if payload.tool != "word-to-pdf":
         _raise(ErrorCode.INVALID_INPUT)
+    caller = client_key(
+        request,
+        trusted_hops=ctx.settings.trusted_proxy_hops,
+        salt=ctx.client_salt,
+    )
+    wait = ctx.limiter.try_acquire(caller)
+    if wait is not None:
+        safe_log(
+            logging.getLogger("processor.jobs"),
+            logging.INFO,
+            "job_rate_limited",
+            code=ErrorCode.RATE_LIMITED.value,
+        )
+        _raise(ErrorCode.RATE_LIMITED, wait)
     credential = issue()
     try:
-        await ctx.store.create(credential.job_id, credential.token_hash, payload.tool)
+        await ctx.store.create(
+            credential.job_id,
+            credential.token_hash,
+            payload.tool,
+            client_key=caller,
+            max_active_per_client=ctx.settings.max_active_jobs_per_client,
+        )
     except ProcessorError as err:
-        _raise(err.code)
+        if err.code == ErrorCode.RATE_LIMITED:
+            safe_log(
+                logging.getLogger("processor.jobs"),
+                logging.INFO,
+                "job_rate_limited",
+                code=err.code.value,
+            )
+        _raise(err.code, err.retry_after)
     safe_log(
         logging.getLogger("processor.jobs"),
         logging.INFO,
@@ -137,6 +174,52 @@ async def create_job(payload: CreateJobRequest, request: Request) -> CreateJobRe
     )
 
 
+async def _receive_input(
+    ctx: JobsContext,
+    job_id: str,
+    request: Request,
+    input_path: Path,
+    *,
+    idle_seconds: float | None = None,
+) -> int:
+    """Stream the request body to ``input_path`` and return its size.
+
+    Nothing is buffered beyond one chunk. The size limit is enforced while the
+    bytes arrive, so a body of any length costs at most ``max_input_bytes`` of
+    disk before it is refused. Every chunk counts as progress for the janitor,
+    and a client that stops sending for ``created_job_idle_seconds`` is cut off.
+    Raises ProcessorError for every failure; the caller removes the workspace.
+    """
+    max_bytes = ctx.settings.max_input_bytes
+    idle = (
+        float(ctx.settings.created_job_idle_seconds)
+        if idle_seconds is None
+        else idle_seconds
+    )
+    written = 0
+    chunks = request.stream().__aiter__()
+    with input_path.open("wb") as handle:
+        while True:
+            try:
+                chunk = await asyncio.wait_for(chunks.__anext__(), timeout=idle)
+            except StopAsyncIteration:
+                break
+            except TimeoutError:
+                raise ProcessorError(ErrorCode.UPLOAD_STALLED) from None
+            except ClientDisconnect:
+                raise ProcessorError(ErrorCode.INVALID_INPUT) from None
+            if not chunk:
+                continue
+            written += len(chunk)
+            if written > max_bytes:
+                raise ProcessorError(ErrorCode.LIMIT_EXCEEDED)
+            # The job may have been deleted or expired while we were waiting.
+            if not ctx.store.touch(job_id):
+                raise ProcessorError(ErrorCode.INVALID_JOB)
+            await asyncio.to_thread(handle.write, chunk)
+    return written
+
+
 @router.put("/{job_id}/input")
 async def upload_input(
     job_id: str,
@@ -148,34 +231,46 @@ async def upload_input(
         job = _authorize(ctx, job_id, authorization)
     except ProcessorError as err:
         _raise(err.code)
-    if job.state != JobState.CREATED:
+    if job.state != JobState.CREATED or job_id in ctx.uploading:
         _raise(ErrorCode.CONFLICT)
     max_bytes = ctx.settings.max_input_bytes
-    body = await request.body()
-    size = len(body)
-    if size == 0:
-        _raise(ErrorCode.INVALID_INPUT)
-    if size > max_bytes:
-        _raise(ErrorCode.LIMIT_EXCEEDED)
+    declared = request.headers.get("content-length")
+    if declared is not None:
+        # Refuse an oversize body before reading any of it.
+        if not declared.isdigit():
+            _raise(ErrorCode.INVALID_INPUT)
+        if int(declared) > max_bytes:
+            _raise(ErrorCode.LIMIT_EXCEEDED)
+    ctx.uploading.add(job_id)
+    workspace: Path | None = None
     try:
-        workspace = create_workspace(ctx.jobs_root, job_id)
-    except Exception:  # noqa: BLE001
-        await ctx.store.mark_failed(job_id, ErrorCode.INTERNAL)
-        _raise(ErrorCode.INTERNAL)
-    input_path = workspace / _INPUT_FILENAME
-    try:
-        input_path.write_bytes(body)
-        await ctx.store.set_workspace(job_id, str(workspace))
-        await ctx.store.record_input_bytes(job_id, size)
-        await ctx.store.transition(job_id, JobState.UPLOADING)
-    except ProcessorError as err:
-        # The job expired or was deleted while its body was still arriving.
-        remove_workspace(ctx.jobs_root, workspace)
-        _raise(err.code)
-    except Exception:  # noqa: BLE001
-        remove_workspace(ctx.jobs_root, workspace)
-        await ctx.store.mark_failed(job_id, ErrorCode.INTERNAL)
-        _raise(ErrorCode.INTERNAL)
+        try:
+            workspace = create_workspace(ctx.jobs_root, job_id)
+            await ctx.store.set_workspace(job_id, str(workspace))
+        except ProcessorError as err:
+            # The job expired or was deleted while we were starting.
+            if workspace is not None:
+                remove_workspace(ctx.jobs_root, workspace)
+            _raise(err.code)
+        except Exception:  # noqa: BLE001
+            await ctx.store.mark_failed(job_id, ErrorCode.INTERNAL)
+            _raise(ErrorCode.INTERNAL)
+        input_path = workspace / _INPUT_FILENAME
+        try:
+            size = await _receive_input(ctx, job_id, request, input_path)
+            if size == 0:
+                raise ProcessorError(ErrorCode.INVALID_INPUT)
+            await ctx.store.record_input_bytes(job_id, size)
+            await ctx.store.transition(job_id, JobState.UPLOADING)
+        except ProcessorError as err:
+            remove_workspace(ctx.jobs_root, workspace)
+            _raise(err.code)
+        except Exception:  # noqa: BLE001
+            remove_workspace(ctx.jobs_root, workspace)
+            await ctx.store.mark_failed(job_id, ErrorCode.INTERNAL)
+            _raise(ErrorCode.INTERNAL)
+    finally:
+        ctx.uploading.discard(job_id)
     safe_log(
         logging.getLogger("processor.jobs"),
         logging.INFO,

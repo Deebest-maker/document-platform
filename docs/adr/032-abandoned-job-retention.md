@@ -1,6 +1,6 @@
 # ADR-032: Abandoned Word to PDF jobs are kept for 10 minutes
 
-**Status:** Decided by the Product Owner (delegated: "use the best for the platform regardless of the minutes"); implemented; owner review pending
+**Status:** Decided by the Product Owner (delegated: "use the best for the platform regardless of the minutes"); implemented; accepted and merged (`d599784`)
 **Date:** 2026-10-22
 **Scope:** The idle period after which the server deletes an abandoned Word to PDF job, and the public wording that states it. No change to normal flow, limits, endpoints or storage.
 **Relates to:** ADR-023 (retention policy, 15 minutes as a placeholder), ADR-024 (the three options A, B and C), ADR-030 and ADR-031 (copy that said the period was undecided), governance §9, AGENTS.md (retention changes need a recorded decision).

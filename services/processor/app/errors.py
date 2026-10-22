@@ -21,6 +21,8 @@ class ErrorCode(StrEnum):
     CANCELLED = "cancelled"
     CONFLICT = "conflict"
     NOT_READY = "not_ready"
+    RATE_LIMITED = "rate_limited"
+    UPLOAD_STALLED = "upload_stalled"
     INTERNAL = "internal"
 
 
@@ -34,6 +36,11 @@ MESSAGES: Final[dict[ErrorCode, str]] = {
     ErrorCode.CANCELLED: "The job was cancelled before it could complete.",
     ErrorCode.CONFLICT: "The job is not in a state that permits this operation.",
     ErrorCode.NOT_READY: "The service is not ready to accept new jobs.",
+    ErrorCode.RATE_LIMITED: (
+        "Too many conversions were started from this connection. "
+        "Wait a moment and try again."
+    ),
+    ErrorCode.UPLOAD_STALLED: "The upload stopped arriving and was closed.",
     ErrorCode.INTERNAL: "The job could not be processed. Try again later.",
 }
 
@@ -41,9 +48,11 @@ MESSAGES: Final[dict[ErrorCode, str]] = {
 class ProcessorError(Exception):
     """Raised internally; mapped to an HTTP response by the API layer."""
 
-    def __init__(self, code: ErrorCode) -> None:
+    def __init__(self, code: ErrorCode, retry_after: int | None = None) -> None:
         super().__init__(code.value)
         self.code: Final[ErrorCode] = code
+        # Whole seconds a client should wait before retrying (Retry-After).
+        self.retry_after: Final[int | None] = retry_after
 
     @property
     def message(self) -> str:
@@ -61,5 +70,7 @@ STATUS: Final[dict[ErrorCode, int]] = {
     ErrorCode.CANCELLED: 409,
     ErrorCode.CONFLICT: 409,
     ErrorCode.NOT_READY: 503,
+    ErrorCode.RATE_LIMITED: 429,
+    ErrorCode.UPLOAD_STALLED: 408,
     ErrorCode.INTERNAL: 500,
 }

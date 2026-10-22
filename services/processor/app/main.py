@@ -23,13 +23,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import health as health_api
 from app.api import jobs as jobs_api
 from app.config import Settings, load_settings
+from app.jobs.client import new_salt
 from app.jobs.engines.fake import FakeEngine
 from app.jobs.engines.libreoffice import LibreOfficeEngine
 from app.jobs.gate import ConversionGate
 from app.jobs.janitor import Janitor
+from app.jobs.limits import TokenBucketLimiter
 from app.jobs.store import InMemoryJobStore
 from app.jobs.workspace import validate_jobs_root
 from app.logging import configure_logging
+from app.security_headers import SecurityHeadersMiddleware
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -71,6 +74,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             sentinel=settings.jobs_root_sentinel,
             job_lifetime_seconds=settings.job_lifetime_seconds,
             interval_seconds=settings.janitor_interval_seconds,
+            created_idle_seconds=settings.created_job_idle_seconds,
         )
         app.state.jobs = jobs_api.JobsContext(
             settings=settings,
@@ -81,6 +85,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 max_waiting=settings.max_inflight_jobs,
                 wait_timeout_seconds=float(settings.convert_queue_wait_seconds),
             ),
+            limiter=TokenBucketLimiter(
+                burst=settings.job_create_burst,
+                refill_seconds=settings.job_create_refill_seconds,
+                max_clients=settings.rate_limit_max_clients,
+            ),
+            client_salt=new_salt(),
+        )
+        log.info(
+            "client identity: %s",
+            "peer address"
+            if settings.trusted_proxy_hops == 0
+            else f"X-Forwarded-For, {settings.trusted_proxy_hops} trusted proxy hop(s)",
         )
         app.state.processor = {"ready": True, "janitor": janitor}
         await janitor.start()
@@ -108,6 +124,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             max_age=600,
         )
 
+    app.add_middleware(SecurityHeadersMiddleware)
     app.include_router(health_api.router)
     app.include_router(jobs_api.router)
     return app
