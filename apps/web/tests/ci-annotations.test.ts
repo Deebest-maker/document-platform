@@ -1,18 +1,9 @@
 import { describe, expect, it } from "vitest";
-// @ts-expect-error -- plain ES module in scripts/, no type declarations
 import {
   collectFailures,
   formatAnnotations,
+  type PlaywrightFailure,
 } from "../../../scripts/ci-playwright-annotations.mjs";
-
-type Failure = {
-  project: string;
-  kind: string;
-  file: string;
-  line: number;
-  title: string;
-  message: string;
-};
 
 const report = {
   stats: { expected: 2, unexpected: 2, flaky: 1, skipped: 0 },
@@ -74,7 +65,7 @@ const report = {
 
 describe("Playwright failure annotations", () => {
   it("collects failed and flaky tests from nested suites and ignores passes", () => {
-    const failures: Failure[] = collectFailures(report);
+    const failures: PlaywrightFailure[] = collectFailures(report);
     expect(failures.map((f) => [f.project, f.kind, f.title])).toEqual([
       ["firefox", "failed", "breaks in firefox"],
       ["webkit", "flaky", "breaks in firefox"],
@@ -82,12 +73,12 @@ describe("Playwright failure annotations", () => {
   });
 
   it("strips colour codes and keeps only the first lines of the error", () => {
-    const [first] = collectFailures(report) as Failure[];
+    const [first] = collectFailures(report);
     expect(first.message).toBe("Expected 1 | Received 0");
   });
 
   it("writes one error command per browser project with the file and line", () => {
-    const commands: string[] = formatAnnotations(collectFailures(report));
+    const commands = formatAnnotations(collectFailures(report));
     expect(commands).toHaveLength(2);
     expect(commands[0]).toMatch(
       /^::error title=Playwright firefox%3A 1 not passing::/,
@@ -106,7 +97,7 @@ describe("Playwright failure annotations", () => {
         title: "100% broken\nsecond line",
         message: "x",
       },
-    ]) as string[];
+    ]);
     expect(command).not.toContain("\n");
     expect(command).toContain("100%25 broken%0Asecond line");
   });
