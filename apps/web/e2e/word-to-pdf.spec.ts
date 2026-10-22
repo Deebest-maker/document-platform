@@ -174,6 +174,42 @@ test.describe("with mocked processor", () => {
     ).toBeVisible();
   });
 
+  test("being rate limited says to wait, not that the server is down", async ({
+    page,
+  }) => {
+    await mockProcessorApi(page);
+    // Registered after the helper's routes, so it answers first.
+    await page.route("**/api/processor/jobs", async (route) => {
+      if (route.request().method() !== "POST") {
+        await route.fallback();
+        return;
+      }
+      await route.fulfill({
+        status: 429,
+        contentType: "application/json",
+        headers: { "Retry-After": "20" },
+        body: JSON.stringify({
+          detail: {
+            code: "rate_limited",
+            message: "Too many conversions were started from this connection.",
+          },
+        }),
+      });
+    });
+    await page.goto("/word-to-pdf");
+    await page.locator('input[type="file"]').setInputFiles({
+      name: "test.docx",
+      mimeType:
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      buffer: Buffer.alloc(256),
+    });
+    await page.getByRole("button", { name: "Convert to PDF" }).click();
+    await expect(page.locator(".merge-error")).toContainText("Wait a minute");
+    await expect(page.locator(".merge-error")).not.toContainText(
+      "not available",
+    );
+  });
+
   test("start over resets the session", async ({ page }) => {
     await mockProcessorApi(page);
     await page.goto("/word-to-pdf");

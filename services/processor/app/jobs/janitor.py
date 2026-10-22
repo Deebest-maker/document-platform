@@ -14,6 +14,7 @@ import logging
 import time
 from pathlib import Path
 
+from app.jobs.state import JobState
 from app.jobs.store import InMemoryJobStore
 from app.jobs.workspace import direct_children, remove_workspace
 
@@ -27,11 +28,15 @@ class Janitor:
         job_lifetime_seconds: float,
         interval_seconds: float,
         logger: logging.Logger | None = None,
+        created_idle_seconds: float | None = None,
     ) -> None:
         self._store = store
         self._jobs_root = jobs_root
         self._sentinel = sentinel
         self._lifetime = job_lifetime_seconds
+        # A job still in `created` (no upload bytes yet) expires sooner: it holds
+        # an in-flight slot and nothing else. None keeps the single lifetime.
+        self._created_idle = created_idle_seconds
         self._interval = interval_seconds
         self._log = logger or logging.getLogger("processor.janitor")
         self._task: asyncio.Task[None] | None = None
@@ -72,7 +77,9 @@ class Janitor:
         """Expire old jobs and clean up orphans. Returns workspaces removed.
 
         A job expires once ``job_lifetime_seconds`` have passed since its last
-        state change, whatever state it is in. That covers abandoned uploads
+        state change, whatever state it is in (a job that never received an
+        upload byte, still ``created``, expires after ``created_idle_seconds``;
+        upload progress counts as a change). That covers abandoned uploads
         (``created`` / ``uploading``), which the browser's own cleanup cannot
         guarantee, as well as finished jobs nobody downloaded. Expiry removes
         the workspace and drops the registry entry, which also frees the
@@ -82,7 +89,10 @@ class Janitor:
         now = time.monotonic()
         removed = 0
         for job in self._store.iter_jobs():
-            if (now - job.updated_at) < self._lifetime:
+            limit = self._lifetime
+            if self._created_idle is not None and job.state == JobState.CREATED:
+                limit = min(limit, self._created_idle)
+            if (now - job.updated_at) < limit:
                 continue
             if remove_workspace(self._jobs_root, self._jobs_root / job.id):
                 removed += 1

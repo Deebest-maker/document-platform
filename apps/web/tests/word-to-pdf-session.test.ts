@@ -5,7 +5,11 @@ import {
   displayName,
   formatBytes,
 } from "../components/word-to-pdf/session";
-import type { JobCredentials, JobState } from "../components/word-to-pdf/api";
+import {
+  ProcessorClientError,
+  type JobCredentials,
+  type JobState,
+} from "../components/word-to-pdf/api";
 
 const tool = getTool("word-to-pdf")!;
 
@@ -185,6 +189,40 @@ describe("WordToPdfSession", () => {
     const snap = session.getSnapshot();
     expect(snap.state).toBe("error");
     expect(snap.error).toBe("SERVER_UNAVAILABLE");
+  });
+
+  it("tells a rate-limited caller to wait, not that the server is down", async () => {
+    deps.createJob.mockRejectedValue(
+      new ProcessorClientError("RATE_LIMITED", "Too many", 429),
+    );
+    session.select([makeFile("test.docx", 100)]);
+    await session.run();
+
+    const snap = session.getSnapshot();
+    expect(snap.state).toBe("error");
+    expect(snap.error).toBe("RATE_LIMITED");
+    expect(snap.announcement).toContain("Wait a minute");
+    expect(deps.uploadInput).not.toHaveBeenCalled();
+    // No job was created, so there is nothing to delete.
+    expect(deps.deleteJob).not.toHaveBeenCalled();
+  });
+
+  it("treats any HTTP 429, even from a proxy without our error body, as rate limiting", async () => {
+    deps.createJob.mockRejectedValue(
+      new ProcessorClientError("UNKNOWN", "HTTP 429", 429),
+    );
+    session.select([makeFile("test.docx", 100)]);
+    await session.run();
+    expect(session.getSnapshot().error).toBe("RATE_LIMITED");
+  });
+
+  it("keeps a full service (503) as SERVER_UNAVAILABLE", async () => {
+    deps.createJob.mockRejectedValue(
+      new ProcessorClientError("NOT_READY", "not ready", 503),
+    );
+    session.select([makeFile("test.docx", 100)]);
+    await session.run();
+    expect(session.getSnapshot().error).toBe("SERVER_UNAVAILABLE");
   });
 
   it("handles upload failure as UPLOAD_FAILED", async () => {

@@ -44,3 +44,39 @@ def test_default_retention_is_ten_minutes_with_a_one_minute_sweep() -> None:
     settings = _settings()
     assert settings.job_lifetime_seconds == 10 * 60
     assert settings.janitor_interval_seconds == 60
+
+
+def test_abuse_control_defaults_are_pinned() -> None:
+    """These are the numbers ADR-033 gives to the public. Change them together."""
+    settings = _settings()
+    assert settings.job_create_burst == 6
+    assert settings.job_create_refill_seconds == 10
+    assert settings.max_active_jobs_per_client == 3
+    assert settings.created_job_idle_seconds == 120
+    assert settings.trusted_proxy_hops == 0
+
+
+def test_a_never_uploaded_job_must_expire_before_the_full_lifetime() -> None:
+    with pytest.raises(ValidationError, match="created_job_idle_seconds"):
+        _settings(job_lifetime_seconds=600, created_job_idle_seconds=600)
+
+
+def test_the_idle_period_cannot_be_set_so_short_that_a_real_upload_trips_it() -> None:
+    with pytest.raises(ValidationError):
+        _settings(created_job_idle_seconds=5)
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"job_create_burst": 0},
+        {"job_create_refill_seconds": 0},
+        {"max_active_jobs_per_client": 0},
+        {"rate_limit_max_clients": 10},
+        {"trusted_proxy_hops": -1},
+        {"trusted_proxy_hops": 9},
+    ],
+)
+def test_abuse_control_settings_reject_nonsense(overrides: dict[str, int]) -> None:
+    with pytest.raises(ValidationError):
+        _settings(**overrides)

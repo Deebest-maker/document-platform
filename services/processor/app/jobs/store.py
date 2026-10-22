@@ -57,10 +57,28 @@ class InMemoryJobStore:
     # Creation / lookup
     # ------------------------------------------------------------------
 
-    async def create(self, job_id: str, token_hash: str, tool: str) -> Job:
+    async def create(
+        self,
+        job_id: str,
+        token_hash: str,
+        tool: str,
+        *,
+        client_key: str = "",
+        max_active_per_client: int | None = None,
+        retry_after: int = 30,
+    ) -> Job:
         async with self._lock:
-            inflight = sum(1 for j in self._jobs.values() if j.state in ACTIVE_STATES)
-            if inflight >= self._max_inflight:
+            active = [j for j in self._jobs.values() if j.state in ACTIVE_STATES]
+            # The per-client cap is checked first so one caller who is over its
+            # share is told so (429) rather than blamed on the service (503).
+            if (
+                client_key
+                and max_active_per_client is not None
+                and sum(1 for j in active if j.client_key == client_key)
+                >= max_active_per_client
+            ):
+                raise ProcessorError(ErrorCode.RATE_LIMITED, retry_after=retry_after)
+            if len(active) >= self._max_inflight:
                 raise ProcessorError(ErrorCode.NOT_READY)
             if job_id in self._jobs:
                 raise ProcessorError(ErrorCode.CONFLICT)
@@ -72,6 +90,7 @@ class InMemoryJobStore:
                 state=JobState.CREATED,
                 created_at=now,
                 updated_at=now,
+                client_key=client_key,
             )
             self._jobs[job_id] = job
             self._cancel_events[job_id] = asyncio.Event()
@@ -107,6 +126,18 @@ class InMemoryJobStore:
             job.state = target
             job.updated_at = time.monotonic()
             return job
+
+    def touch(self, job_id: str) -> bool:
+        """Record progress on a job (an upload chunk arrived). False if gone.
+
+        No await, so on the event loop it cannot interleave with another
+        coroutine and does not need the lock.
+        """
+        job = self._jobs.get(job_id)
+        if job is None:
+            return False
+        job.updated_at = time.monotonic()
+        return True
 
     async def set_workspace(self, job_id: str, path: str) -> None:
         async with self._lock:

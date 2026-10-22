@@ -78,6 +78,10 @@ class Job:
     input_bytes: int = 0
     output_bytes: int = 0
     error_code: str | None = None
+    # Keyed hash of the caller's network address (see jobs/client.py). Held in
+    # memory only so the per-client active-job cap can be applied; never logged,
+    # never returned.
+    client_key: str = ""
     # The disk directory for this job, or None if not materialised yet.
     workspace: str | None = None
     # Fields the API layer sets on failure (safe code only).
