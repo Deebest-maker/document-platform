@@ -1,7 +1,7 @@
 # M7B Milestone Report: Processor abuse controls
 
 **Date:** 2026-10-22
-**Status:** Implemented; owner acceptance pending
+**Status:** Accepted and merged (`39d954d`)
 **Preceding slice:** M7A — CI truth (accepted and merged, `2110313`).
 **Decision record:** [ADR-033](../adr/033-m7b-processor-abuse-controls.md).
 

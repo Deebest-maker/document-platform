@@ -1,3 +1,4 @@
+import { isCancelledPrefetch } from "./benign-page-errors";
 import {
   test as base,
   expect,
@@ -35,9 +36,10 @@ export const test = base.extend<{
           unexpected.push(describe(request));
         }
       });
-      page.on("pageerror", (error) =>
-        errors.push(`${page.url()} -> ${error.message}`.slice(0, 300)),
-      );
+      page.on("pageerror", (error) => {
+        if (isCancelledPrefetch(error.message)) return;
+        errors.push(`${page.url()} -> ${error.message}`.slice(0, 300));
+      });
       page.on("websocket", (socket) => unexpected.push(`WS ${socket.url()}`));
       await use();
       expect(

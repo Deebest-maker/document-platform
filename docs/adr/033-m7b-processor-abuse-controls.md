@@ -1,6 +1,6 @@
 # ADR-033: Word to PDF processor abuse controls
 
-**Status:** Implemented under the approved M7 gate; owner acceptance pending
+**Status:** Implemented under the approved M7 gate; accepted and merged (`39d954d`)
 **Date:** 2026-10-22
 **Scope:** What the Word to PDF processor does when one caller creates jobs too fast, holds slots it does not use, or sends an upload that is too large, too slow or never ends. Also the headers on the processor's own responses and the one new message the web page shows. No change to the conversion pipeline, validators, limits on file size, endpoints or storage.
 **Relates to:** ADR-021 (job core, capability tokens), ADR-024 (limits, single conversion slot, janitor), ADR-032 (10-minute idle retention), governance §9 and §14.3, document 05 §11 (rate limiting) and §19 (launch gates).
