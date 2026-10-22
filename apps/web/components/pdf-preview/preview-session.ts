@@ -475,7 +475,12 @@ export class PreviewSession {
             this.publish({ ...this.snapshot, phase });
         },
       });
-      if (controller.signal.aborted || generation !== this.generation) return;
+      // A new session replaced this one: its state is not ours to publish.
+      if (generation !== this.generation) return;
+      // Cancel was pressed while the engine was finishing and it returned a
+      // result anyway. Report the cancellation; returning silently would leave
+      // the page in "exporting" with a Cancel button that does nothing.
+      if (controller.signal.aborted) throw new PageError("CANCELLED");
       const url = this.services.createUrl(result.blob);
       this.publish({
         ...this.snapshot,
@@ -552,7 +557,12 @@ export class PreviewSession {
         },
         splitLimits,
       );
-      if (controller.signal.aborted || generation !== this.generation) return;
+      // A new session replaced this one: its state is not ours to publish.
+      if (generation !== this.generation) return;
+      // Cancel was pressed while the engine was finishing and it returned a
+      // result anyway. Report the cancellation; returning silently would leave
+      // the page in "exporting" with a Cancel button that does nothing.
+      if (controller.signal.aborted) throw new PageError("CANCELLED");
       const url = this.services.createUrl(result.blob);
       this.publish({
         ...this.snapshot,
@@ -637,7 +647,12 @@ export class PreviewSession {
           },
         },
       );
-      if (controller.signal.aborted || generation !== this.generation) return;
+      // A new session replaced this one: its state is not ours to publish.
+      if (generation !== this.generation) return;
+      // Cancel was pressed while the engine was finishing and it returned a
+      // result anyway. Report the cancellation; returning silently would leave
+      // the page in "exporting" with a Cancel button that does nothing.
+      if (controller.signal.aborted) throw new PageError("CANCELLED");
       const url = this.services.createUrl(result.blob);
       this.publish({
         ...this.snapshot,
