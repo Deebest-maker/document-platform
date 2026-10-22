@@ -187,31 +187,32 @@ test("generation cancellation is atomic and leaves the page selection reusable",
   await expect(page.locator("li[data-page-id]")).toHaveCount(50, {
     timeout: 30_000,
   });
-  await page.evaluate(() => {
-    const observer = new MutationObserver(() => {
-      const cancelButton = [...document.querySelectorAll("button")].find(
-        (button) => button.textContent?.trim() === "Cancel generation",
-      );
-      if (!cancelButton) return;
-      observer.disconnect();
-      cancelButton.click();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-  });
   await page.getByRole("button", { name: "Create JPG images" }).click();
-  await expect(
-    page.getByRole("heading", { name: "Choose pages and resolution" }),
-  ).toBeVisible({ timeout: 20_000 });
   try {
+    // Encoding is held back (above), so the export runs for several seconds and
+    // a normal click on Cancel lands while it is still going. Playwright waits
+    // for the button to be attached, stable and clickable first.
+    await page
+      .getByRole("button", { name: "Cancel generation" })
+      .click({ timeout: 20_000 });
+    await expect(
+      page.getByRole("heading", { name: "Choose pages and resolution" }),
+    ).toBeVisible({ timeout: 20_000 });
     await expect(page.locator(".organize-error")).toContainText("cancelled", {
       timeout: 20_000,
     });
   } catch (error) {
-    // Say what the page showed instead; a bare timeout is unreadable in CI.
+    // Say what the page showed instead, first, so it survives a short CI
+    // annotation; a bare timeout is unreadable there.
     const shown = (await page.getByRole("main").innerText())
       .replace(/\s+/g, " ")
       .slice(0, 300);
-    throw new Error(`${(error as Error).message}\nThe page said: ${shown}`);
+    const said = (await page.getByRole("status").first().innerText())
+      .replace(/\s+/g, " ")
+      .slice(0, 160);
+    throw new Error(
+      `The page said: ${shown} | Status line: ${said}\n${(error as Error).message}`,
+    );
   }
   await expect(page.locator("[download]")).toHaveCount(0);
   await expect(
