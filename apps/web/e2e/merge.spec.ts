@@ -249,6 +249,7 @@ test("selected and result states reflow at 320px, 200% text and reduced motion",
     await evidenceScreenshot(
       page,
       info.outputPath(`merge-reflow-${state}.png`),
+      page.getByRole("region", { name: "Tool workspace" }),
     );
   }
 });

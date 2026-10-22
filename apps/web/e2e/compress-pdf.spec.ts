@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import type { BrowserContext, Page } from "@playwright/test";
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "./fixtures";
@@ -120,24 +120,12 @@ async function imagesOf(bytes: Uint8Array): Promise<PdfImage[]> {
   return found;
 }
 
-// Playwright refuses an in-memory upload above 50 MB, and Firefox encodes the
-// noise images in these tests larger than Chromium does. Larger inputs are
-// written to a file and passed by path, which has no such limit.
-const MAX_IN_MEMORY_UPLOAD = 40 * 1024 * 1024;
-
 async function choose(page: Page, bytes: Uint8Array, name = "local.pdf") {
-  const input = page.getByLabel("Choose a PDF to compress");
-  if (bytes.length > MAX_IN_MEMORY_UPLOAD) {
-    const path = test.info().outputPath(name);
-    await writeFile(path, bytes);
-    await input.setInputFiles(path);
-  } else {
-    await input.setInputFiles({
-      name,
-      mimeType: "application/pdf",
-      buffer: Buffer.from(bytes),
-    });
-  }
+  await page.getByLabel("Choose a PDF to compress").setInputFiles({
+    name,
+    mimeType: "application/pdf",
+    buffer: Buffer.from(bytes),
+  });
   await expect(
     page.getByRole("heading", { name: "Choose how much to compress" }),
   ).toBeVisible();
@@ -350,8 +338,16 @@ test("password-protected and damaged PDFs fail with clear messages", async ({
 test("cancelling returns to the strength choice and publishes nothing", async ({
   page,
 }) => {
-  const photo = await makeImage(page, "jpg", 3000, 2000, 13);
+  // Six 6-megapixel photos keep the engine busy long enough to cancel. The
+  // JPEG quality is lowered because Firefox encodes this noise at about twice
+  // the size Chromium does: at 0.95 the file passed the tool's own 50 MiB input
+  // limit in Firefox and was refused before it could be cancelled.
+  const photo = await makeImage(page, "jpg", 3000, 2000, 13, false, 0.7);
   const input = await buildPdf(Array.from({ length: 6 }, () => photo));
+  expect(
+    input.length,
+    "test input must stay well under the 50 MiB limit",
+  ).toBeLessThan(35 * 1024 * 1024);
   await choose(page, input);
   await page.getByRole("button", { name: "Compress PDF", exact: true }).click();
   await expect(

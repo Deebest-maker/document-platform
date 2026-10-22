@@ -9,7 +9,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const MAX_MESSAGE_CHARS = 30_000;
-const MAX_LINE_CHARS = 260;
+const MAX_LINE_CHARS = 900;
+const ERROR_LINES = 8;
 // eslint-disable-next-line no-control-regex
 const ANSI = /\u001b\[[0-9;]*m/g;
 
@@ -38,7 +39,7 @@ export function collectFailures(report) {
           file: spec.file ?? suite.file ?? "",
           line: spec.line ?? 0,
           title: spec.title,
-          message: firstLines(error?.message, 2),
+          message: firstLines(error?.message, ERROR_LINES),
         });
       }
     }

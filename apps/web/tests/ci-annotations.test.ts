@@ -72,9 +72,9 @@ describe("Playwright failure annotations", () => {
     ]);
   });
 
-  it("strips colour codes and keeps only the first lines of the error", () => {
+  it("strips colour codes and keeps the first lines of the error", () => {
     const [first] = collectFailures(report);
-    expect(first.message).toBe("Expected 1 | Received 0");
+    expect(first.message).toBe("Expected 1 | Received 0 | more");
   });
 
   it("writes one error command per browser project with the file and line", () => {
