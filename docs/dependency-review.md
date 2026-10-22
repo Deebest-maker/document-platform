@@ -20,6 +20,10 @@ Reviewed on 11 October 2026. M3B.3 adds no production or development dependency 
 
 Reviewed on 10 October 2026. M3B.2 adds no production or development dependency and does not change the lockfile. The local route reuses the reviewed `pdfjs-dist@6.3.289` preview document, first-party PDF.js/OFL assets and existing dynamically loaded `fflate@0.8.3`. JPEG encoding uses the browser canvas API. No image codec package, alternate PDF engine, server document engine, AGPL package, persistence or analytics integration is introduced. Existing notices, asset verification and locked JavaScript/Python audits remain applicable. ADR-018 records the rendering, output-validation, archive, lifecycle and measured-limit decisions.
 
+## M7 security refresh: Next.js 16.4.2
+
+Reviewed on 22 October 2026 after new GitHub Advisory Database entries made the required audit reject `next@16.3.8`: two critical (`GHSA-2464-fhr4-w9xw`, unauthenticated remote code execution in the Image Optimization API when SVG files are used; `GHSA-673q-mjm6-r5xr`, unauthenticated remote code execution in `use cache` functions returning typed arrays) and one high (`GHSA-p3m5-59mp-jv5r`, denial of service in the App Router using Server Actions). All three affect Next.js 16.0.0 through 16.4.0 and name 16.4.1 as patched. The web runtime and matching lint configuration now use exact `next@16.4.2` and `eslint-config-next@16.4.2`, the latest 16.4 patch release (its published notes list bug fixes and backports only). The lockfile changes only the Next.js family of packages (`next`, `@next/env`, the platform SWC packages, `eslint-config-next`, `@next/eslint-plugin-next`). The site does not use `use cache`, Server Actions or `next/image`, so these advisories did not describe a path in this product; the update is made because the required audit and good practice demand it. It adds no route, product capability, document-processing path, infrastructure or license category. The locked audit at the `high` level reports no known vulnerabilities. Two moderate Vitest advisories remain (fixed in Vitest 5.0.3, a development-only tool); they do not fail the gate and are left for a separate update.
+
 ## M3B.1 post-acceptance CI security closeout
 
 Reviewed on 8 October 2026 after GitHub Advisory Database update `GHSA-cjq9-62q9-8jv4` caused the required audit to reject `next@16.3.6`. The advisory affects Next.js versions from 16.0.0 through 16.3.7 and identifies 16.3.8 as patched. The web runtime and matching lint configuration now use exact `next@16.3.8` and `eslint-config-next@16.3.8`; the lockfile records the registry integrity values and matching platform SWC packages. The update adds no route, product capability, document-processing path, infrastructure or license category. The locked audit reports no known vulnerabilities.
@@ -92,10 +96,10 @@ Reviewed on 24 September 2026 against `pnpm-lock.yaml`, `services/processor/uv.l
 
 | Area              | Selected tools                                                         | Declared licenses |
 | ----------------- | ---------------------------------------------------------------------- | ----------------- |
-| Web runtime       | Next.js 16.3.8, React/React DOM 19.3.0, cross-env 10.1.0               | MIT               |
+| Web runtime       | Next.js 16.4.2, React/React DOM 19.3.0, cross-env 10.1.0               | MIT               |
 | Styling           | Tailwind CSS/PostCSS integration 4.3.3, PostCSS 8.5.28                 | MIT               |
 | Type checking     | TypeScript 5.9.3                                                       | Apache-2.0        |
-| Web quality       | ESLint 9.39.5, Next ESLint config 16.3.8, Prettier 3.9.9, Vitest 5.0.1 | MIT               |
+| Web quality       | ESLint 9.39.5, Next ESLint config 16.4.2, Prettier 3.9.9, Vitest 5.0.1 | MIT               |
 | Browser checks    | Playwright 1.63.0                                                      | Apache-2.0        |
 | Processor runtime | FastAPI 0.141.1, Pydantic 2.13.5; Uvicorn 0.53.0                       | MIT; BSD-3-Clause |
 | Python quality    | Ruff 0.16.8, mypy 1.20.2, pytest 9.1.1; HTTPX2 2.13.1                  | MIT; BSD-3-Clause |
