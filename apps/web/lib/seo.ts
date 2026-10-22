@@ -13,6 +13,7 @@ import {
   tools,
   type ToolDefinition,
 } from "@document-platform/tool-registry";
+import { learnArticles, type LearnArticle } from "../content/learn-articles";
 import { getSiteConfig, type SiteConfig } from "./site";
 
 export const SITE_NAME = "Document & File Platform";
@@ -24,6 +25,7 @@ export const DEFAULT_DESCRIPTION =
 export const STATIC_INDEXABLE_PATHS = [
   "/",
   "/tools",
+  "/learn",
   "/about",
   "/privacy",
   "/terms",
@@ -79,14 +81,19 @@ export function toolMetadata(
   return seoMetadata({ title, description, path: getToolPath(tool) }, config);
 }
 
-/** Paths that are published for search: finished tools only, no fragments. */
+/**
+ * Paths that are published for search: static pages, finished tools and every
+ * Learn guide, no fragments.
+ */
 export function getIndexablePaths(
   records: readonly ToolDefinition[] = tools,
+  articles: readonly Pick<LearnArticle, "slug">[] = learnArticles,
 ): readonly string[] {
   const toolPaths = records
     .filter((tool) => tool.availability === "available")
     .map(getToolPath);
-  return [...new Set([...STATIC_INDEXABLE_PATHS, ...toolPaths])];
+  const learnPaths = articles.map((article) => `/learn/${article.slug}`);
+  return [...new Set([...STATIC_INDEXABLE_PATHS, ...toolPaths, ...learnPaths])];
 }
 
 export function buildRobots(
@@ -106,12 +113,13 @@ export function buildRobots(
 export function buildSitemap(
   config: SiteConfig = getSiteConfig(),
   records: readonly ToolDefinition[] = tools,
+  articles: readonly Pick<LearnArticle, "slug">[] = learnArticles,
 ): MetadataRoute.Sitemap {
   if (!config.indexing || !config.origin) return [];
   const origin = config.origin;
   // The home page is the bare origin: Next renders its canonical link without
   // a trailing slash, and the sitemap must list exactly the canonical address.
-  return getIndexablePaths(records).map((path) => ({
+  return getIndexablePaths(records, articles).map((path) => ({
     url: path === "/" ? origin : `${origin}${path}`,
   }));
 }

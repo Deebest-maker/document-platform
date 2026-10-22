@@ -1,6 +1,6 @@
 # ADR-030: Photo metadata in Images to PDF, and availability copy taken from the registry (M6B.1)
 
-**Status:** Implemented as a follow-up to M6B, on the owner's instruction to fix what needed fixing; owner acceptance pending
+**Status:** Implemented as a follow-up to M6B, on the owner's instruction to fix what needed fixing; accepted and merged (`3a51a25`)
 **Date:** 2026-10-22
 **Scope:** (1) Images to PDF no longer copies the metadata stored inside a JPEG into the PDF. (2) Site copy about how many tools are available and where they process files is read from the tool registry, and the wrong statements found are corrected. No new dependency, route, endpoint, storage or analytics. Server retention is not changed.
 **Relates to:** ADR-017 (Images to PDF), ADR-020 (Remove PDF Metadata), ADR-023 and ADR-024 (Word to PDF retention), ADR-029 (the finding that led here), AGENTS.md ("processing-mode labels must match actual behavior").

@@ -7,6 +7,8 @@ import {
   tools,
 } from "@document-platform/tool-registry";
 import { PrivacyIndicator } from "@document-platform/ui";
+import { learnArticles } from "../content/learn-articles";
+import { LearnList } from "../components/learn-list";
 import { ToolDiscovery } from "../components/tool-discovery";
 import { ToolList } from "../components/tool-list";
 import {
@@ -58,6 +60,18 @@ export default function HomePage() {
           </Link>
         </div>
         <ToolList records={tools.filter((tool) => tool.featured)} />
+      </section>
+      <section className="home-section" aria-labelledby="learn-heading">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Learn</p>
+            <h2 id="learn-heading">From the guides</h2>
+          </div>
+          <Link className="text-link" href="/learn">
+            All guides <span aria-hidden="true">→</span>
+          </Link>
+        </div>
+        <LearnList articles={learnArticles.filter((a) => a.featured)} />
       </section>
       <section className="home-section" aria-labelledby="categories-heading">
         <div className="section-heading">

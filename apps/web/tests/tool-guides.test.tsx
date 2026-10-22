@@ -240,6 +240,7 @@ describe("M6B: the guide as rendered", () => {
         `How to use ${tool.title.replace("&", "&amp;")}`,
         "Good to know",
         "Common questions",
+        "Learn more",
         "Related tools",
       ]);
 

@@ -13,6 +13,7 @@ export function SiteHeader() {
         </Link>
         <nav aria-label="Main navigation">
           <Link href="/tools">All tools</Link>
+          <Link href="/learn">Learn</Link>
           <Link href="/privacy">Privacy</Link>
         </nav>
       </div>

@@ -30,6 +30,7 @@ for (const [slug, title] of tools) {
       `How to use ${title}`,
       "Good to know",
       "Common questions",
+      "Learn more",
       "Related tools",
     ]) {
       await expect(
