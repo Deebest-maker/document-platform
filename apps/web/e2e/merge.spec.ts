@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import AxeBuilder from "@axe-core/playwright";
-import { test, expect } from "./fixtures";
+import { test, expect, evidenceScreenshot } from "./fixtures";
 import { inspectPages } from "../../../packages/pdf-browser/tests/helpers/pdf-assertions";
 
 const fixture = (name: string) =>
@@ -80,10 +80,7 @@ test("FR-MRG-001/004: choose, keyboard reorder three PDFs, download exact order 
   await page
     .getByRole("button", { name: "Move file 2 earlier", exact: true })
     .focus();
-  await page.screenshot({
-    path: info.outputPath("merge-selected.png"),
-    fullPage: true,
-  });
+  await evidenceScreenshot(page, info.outputPath("merge-selected.png"));
   await page.getByRole("button", { name: "Merge PDFs", exact: true }).click();
   const downloadLink = page.getByRole("link", { name: "Download merged PDF" });
   await expect(downloadLink).toBeVisible();
@@ -112,10 +109,7 @@ test("FR-MRG-001/004: choose, keyboard reorder three PDFs, download exact order 
     (await new AxeBuilder({ page }).withTags(tags).analyze()).violations,
   ).toEqual([]);
   await downloadLink.focus();
-  await page.screenshot({
-    path: info.outputPath("merge-result.png"),
-    fullPage: true,
-  });
+  await evidenceScreenshot(page, info.outputPath("merge-result.png"));
   await page.getByRole("button", { name: "Start over", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Bring your PDFs together" }),
@@ -252,9 +246,10 @@ test("selected and result states reflow at 320px, 200% text and reduced motion",
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
-    await page.screenshot({
-      path: info.outputPath(`merge-reflow-${state}.png`),
-      fullPage: true,
-    });
+    await evidenceScreenshot(
+      page,
+      info.outputPath(`merge-reflow-${state}.png`),
+      page.getByRole("region", { name: "Tool workspace" }),
+    );
   }
 });

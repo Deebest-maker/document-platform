@@ -1,4 +1,4 @@
-import { test, expect } from "./fixtures";
+import { test, expect, evidenceScreenshot } from "./fixtures";
 
 const routes = [
   "/",
@@ -64,12 +64,10 @@ for (const route of routes) {
         "/word-to-pdf",
       ].includes(route)
     ) {
-      await page.screenshot({
-        path: testInfo.outputPath(
-          `${route === "/" ? "home" : route.slice(1)}.png`,
-        ),
-        fullPage: true,
-      });
+      await evidenceScreenshot(
+        page,
+        testInfo.outputPath(`${route === "/" ? "home" : route.slice(1)}.png`),
+      );
     }
 
     const skip = page.getByRole("link", { name: "Skip to content" });

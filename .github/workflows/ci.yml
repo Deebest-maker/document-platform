@@ -16,11 +16,13 @@ env:
   NEXT_TELEMETRY_DISABLED: "1"
 
 jobs:
-  web:
+  # The web checks are split so that each browser runs in its own job (the
+  # single job had grown to within a minute of its 15 minute limit) and so a
+  # failure names the browser. The job called `web` stays as the one required
+  # status check on main: it passes only if every job it depends on passed.
+  web-quality:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      PDF_BROWSER_MATRIX: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch') && 'full' || 'smoke' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -33,22 +35,70 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @document-platform/web exec playwright install --with-deps chromium
-      - if: env.PDF_BROWSER_MATRIX == 'full'
-        run: pnpm --filter @document-platform/web exec playwright install --with-deps firefox webkit
-      - run: pnpm check
-      - run: pnpm test:foundation
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
       - run: pnpm audit --audit-level=high
+
+  web-e2e:
+    name: web-e2e (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        # Pull requests run desktop and phone-width Chromium. Main, tags and
+        # manual runs add Firefox and the two WebKit (Safari engine) projects.
+        project: ${{ fromJSON((github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch') && '["chromium","mobile-chromium","firefox","webkit","mobile-webkit"]' || '["chromium","mobile-chromium"]') }}
+    env:
+      PDF_BROWSER_MATRIX: ${{ contains(fromJSON('["firefox","webkit","mobile-webkit"]'), matrix.project) && 'full' || 'smoke' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: 11.23.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @document-platform/web exec playwright install --with-deps ${{ contains(matrix.project, 'webkit') && 'webkit' || (contains(matrix.project, 'firefox') && 'firefox' || 'chromium') }}
+      - run: pnpm build
+      - run: pnpm test:e2e --project=${{ matrix.project }}
+      - name: Report failing browser tests on the check run
+        if: ${{ !cancelled() }}
+        run: node scripts/ci-playwright-annotations.mjs apps/web/test-results/results.json
+      - run: pnpm test:foundation --project=${{ matrix.project }}
+        if: ${{ !cancelled() }}
       - name: Preserve browser failure evidence
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: browser-failures
+          name: browser-failures-${{ matrix.project }}
           path: |
             apps/web/playwright-report/
             apps/web/test-results/
           if-no-files-found: ignore
           retention-days: 7
+
+  web:
+    needs: [web-quality, web-e2e]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Every web job must have passed
+        env:
+          QUALITY: ${{ needs.web-quality.result }}
+          E2E: ${{ needs.web-e2e.result }}
+        run: |
+          echo "web-quality: $QUALITY"
+          echo "web-e2e: $E2E"
+          test "$QUALITY" = "success" && test "$E2E" = "success"
 
   processor:
     runs-on: ubuntu-latest
