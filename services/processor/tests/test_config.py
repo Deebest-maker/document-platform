@@ -36,3 +36,11 @@ def test_lifetime_just_above_the_conversion_window_is_accepted() -> None:
         convert_queue_wait_seconds=20,
     )
     assert settings.job_lifetime_seconds == 141
+
+
+def test_default_retention_is_ten_minutes_with_a_one_minute_sweep() -> None:
+    """These two defaults are what the public privacy wording says (ADR-032).
+    apps/web/lib/retention.ts must change together with them."""
+    settings = _settings()
+    assert settings.job_lifetime_seconds == 10 * 60
+    assert settings.janitor_interval_seconds == 60

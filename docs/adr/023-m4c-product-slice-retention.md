@@ -93,7 +93,7 @@ This satisfies FR-PRV-003 (automatic deletion), FR-PRV-004 (immediate cleanup af
 ## Non-goals of M4C
 
 - **No benchmark results.** The benchmark harness methodology was documented in M4B. Actual numbers and tuned limits come from a dedicated benchmark run before any public rollout.
-- **No retention-time change.** The 15-minute janitor default stands; the Product Owner can adjust it after benchmark evidence.
+- **No retention-time change.** The 15-minute janitor default stands; the Product Owner can adjust it after benchmark evidence. _Update 2026-10-22: changed to 10 minutes by [ADR-032](032-abandoned-job-retention.md)._
 - **No concurrent conversion limits in the UI.** The processor's `max_inflight_jobs` (32) enforces server-side; the UI is single-file-at-a-time by design.
 - **No PDF-to-Word activation.** That remains planned.
 

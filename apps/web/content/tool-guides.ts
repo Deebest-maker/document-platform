@@ -15,6 +15,8 @@
  * registry knows about, and a test fails if an available tool has no guide.
  */
 
+import { ABANDONED_JOB_IDLE_MINUTES } from "../lib/retention";
+
 export interface ToolFaq {
   readonly question: string;
   readonly answer: string;
@@ -245,7 +247,7 @@ export const toolGuides: Readonly<Record<string, ToolGuideContent>> = {
     ],
     goodToKnow: [
       "Converting Word documents needs a full word-processing engine, so this tool uses LibreOffice on our server.",
-      "Your file is removed from the server as soon as your PDF has been downloaded. If a conversion is abandoned, for example because the tab was closed, a cleanup process deletes the leftover file automatically after a short time.",
+      `Your file is removed from the server as soon as your PDF has been downloaded. If a conversion is abandoned, for example because the tab was closed, a cleanup process deletes the leftover file automatically once it has been idle for ${ABANDONED_JOB_IDLE_MINUTES} minutes.`,
       "Only .docx files are accepted. Older .doc files, macro-enabled files and password-protected documents are not supported.",
       "The PDF may not match Word exactly. Fonts that are not available on the server may be replaced with similar ones, and unusual features can shift the layout.",
       "If the service is busy or unavailable you will see a message and can try again in a moment.",

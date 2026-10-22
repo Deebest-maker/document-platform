@@ -151,7 +151,7 @@ ToolShell owns presentation states, not processing logic. Route-owned sessions m
 
 |M5 — Hard Tools / Spikes|COMPLETE|M5A Compress PDF implemented on device with benchmark-derived limits (ADR-025, ADR-026), accepted and merged. M5B PDF→Word fidelity benchmark complete: DEFER to V1.1 (ADR-027), accepted and merged.|
 
-|M6 — Content/SEO|IN PROGRESS|M6A technical SEO foundation (ADR-028), accepted and merged. M6B tool-page guides for the 12 available tools (ADR-029), accepted and merged (`b760cb3`). M6B.1 follow-up (ADR-030: photo metadata removed from JPEGs in Images to PDF; availability and server-processing copy derived from the registry), accepted and merged (`3a51a25`). M6C Learn hub (ADR-031: eight original guides at `/learn`) implemented; owner acceptance pending. M6D structured data not started; it needs the production domain and brand or author name.|
+|M6 — Content/SEO|IN PROGRESS|M6A technical SEO foundation (ADR-028), accepted and merged. M6B tool-page guides for the 12 available tools (ADR-029), accepted and merged (`b760cb3`). M6B.1 follow-up (ADR-030: photo metadata removed from JPEGs in Images to PDF; availability and server-processing copy derived from the registry), accepted and merged (`3a51a25`). M6C Learn hub (ADR-031: eight original guides at `/learn`), accepted and merged (`a5a26c9`). Abandoned-job retention decided at 10 minutes (ADR-032). M6D structured data not started; it needs the production domain, brand name and author or publisher line.|
 
 |M7 — QA/Hardening|FUTURE|Expanded fixture/browser/accessibility/security/performance hardening.|
 

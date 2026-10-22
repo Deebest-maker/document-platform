@@ -1,7 +1,7 @@
 # M6C Milestone Report: Learn hub
 
 **Date:** 2026-10-22
-**Status:** Implemented; pull request open; owner acceptance pending.
+**Status:** Accepted and merged (`a5a26c9`). Retention follow-up: [ADR-032](../adr/032-abandoned-job-retention.md).
 **Preceding milestone:** M6B.1 — Photo metadata and copy accuracy (accepted and merged, `3a51a25`).
 **Decision record:** [ADR-031](../adr/031-m6c-learn-hub.md).
 

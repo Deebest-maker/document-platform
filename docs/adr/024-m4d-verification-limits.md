@@ -68,7 +68,7 @@ Normal flow deletes the job a few seconds after download. The janitor lifetime o
 | B. 10 min               | about 11 min         | Shorter exposure; still far above the slowest measured conversion (15.5 s). Slightly more risk for a user returning to download after a long pause. |
 | C. 5 min                | about 6 min          | Strongest privacy story; the user must download promptly. Still above the config floor (140 s) and above any measured conversion.                   |
 
-Hard floor enforced by config: more than runner timeout + queue wait (140 s). Engineering recommendation: **A or B**; either is defensible. This ADR keeps A until the Product Owner chooses. A job whose upload takes longer than the lifetime (a 20 MiB file on a link below roughly 0.2 Mbit/s for A) is expired mid-upload and the user simply retries.
+Hard floor enforced by config: more than runner timeout + queue wait (140 s). Engineering recommendation: **A or B**; either is defensible. This ADR keeps A until the Product Owner chooses. **Decided 2026-10-22: B, 10 minutes (see [ADR-032](032-abandoned-job-retention.md)).** A job whose upload takes longer than the lifetime (a 20 MiB file on a link below roughly 0.2 Mbit/s for A) is expired mid-upload and the user simply retries.
 
 ## Deployment requirements recorded for M8 (not enforced here)
 

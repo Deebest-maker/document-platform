@@ -1,6 +1,6 @@
 # ADR-031: Learn hub (M6C)
 
-**Status:** Implemented under the approved M6 gate; owner acceptance pending
+**Status:** Implemented under the approved M6 gate; accepted and merged (`a5a26c9`)
 **Date:** 2026-10-22
 **Scope:** A Learn hub at `/learn` and eight original guides at `/learn/<slug>`, the component that shows them, links between guides, tool pages, the home page and the header, sitemap entries, and the tests that keep the guides true. No new tool, dependency, endpoint, storage or analytics. No author name, publication date or structured data (M6D). Server retention is not changed.
 **Relates to:** SEO strategy (useful original content, no scaled keyword filler, content must match what the tools really do); governance §14.2 (M6); ADR-028 (technical SEO, sitemap); ADR-029 (the tool-page guides this builds on, and their rules); ADR-012 to ADR-030 (the behaviour the guides describe).
@@ -36,7 +36,7 @@ The rules of ADR-029 apply, and the tests below enforce them:
 - **No numbers that live in the registry**: file counts, sizes and page caps are not copied into prose. The pixel sizes for A4 at 96, 150 and 300 DPI are arithmetic, not limits, and a test recomputes them.
 - **No savings, speed, quality or guarantee claims.** Compress is never called lossless. The benchmark finding behind ADR-025 is stated only qualitatively.
 - **No author, date, reviewer or endorsement.** There is no approved byline or brand yet (M6D), and inventing one would be a false statement on a trust-sensitive site. A test rejects the common forms.
-- **No retention period** for abandoned Word to PDF jobs: the privacy guide says the period is not yet decided and points to the Privacy page.
+- **No retention period** for abandoned Word to PDF jobs while it was undecided. _Update: the Product Owner has since decided 10 minutes ([ADR-032](032-abandoned-job-retention.md)); the privacy guide now states it from one shared value._
 - **No offline promise.** Some engines load when a tool is first used, so the guides do not say the tools work without a connection.
 - **Honest about limits.** The text guide says this site does not do OCR; the metadata guide lists what removal does not touch; the merge guide says signatures stop validating.
 - **Originality.** No sentence repeats within the guides or against the tool guides, and no run of nine words is shared between a guide and any other text.
@@ -77,7 +77,7 @@ The rules of ADR-029 apply, and the tests below enforce them:
 4. **Reading level is not measured.** I wrote in plain sentences and capped paragraph length, but I did not run a readability formula.
 5. **Browser instructions are untested.** The merge guide tells readers how to open the Network tab (F12, or Cmd+Option+I on a Mac, and that Safari needs its Develop menu switched on). That is general browser knowledge and I did not try it in Safari, Firefox or Edge; do it in M7 device testing.
 6. **Examples are illustrative.** Page-range examples and the A4 pixel sizes are correct arithmetic, but I did not time or size real files for the guides.
-7. **The Privacy page is still a draft.** The privacy guide defers to it for the retention period. When retention is chosen, the Privacy page changes and the guide's existing sentence stays true.
+7. **The Privacy page is still a draft.** The privacy guide defers to it for the retention period. Retention has since been chosen (ADR-032) and the guide was updated with it.
 8. **Search performance is unknown.** Nothing here claims a ranking or traffic result, and the site remains `noindex` until launch settings are chosen.
 
 ## Consequences

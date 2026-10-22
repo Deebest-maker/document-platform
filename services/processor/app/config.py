@@ -22,7 +22,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 # values are determined by M4B/M4D benchmarks before any public rollout.
 _DEFAULT_MAX_INPUT_BYTES: Final[int] = 20 * 1024 * 1024  # 20 MiB
 _DEFAULT_MAX_OUTPUT_BYTES: Final[int] = 32 * 1024 * 1024  # 32 MiB
-_DEFAULT_JOB_LIFETIME_SECONDS: Final[int] = 15 * 60  # 15 minutes
+_DEFAULT_JOB_LIFETIME_SECONDS: Final[int] = 10 * 60  # 10 minutes (ADR-032)
 _DEFAULT_RUNNER_TIMEOUT_SECONDS: Final[int] = 120  # 2 minutes
 _DEFAULT_JANITOR_INTERVAL_SECONDS: Final[int] = 60
 _DEFAULT_MAX_INFLIGHT_JOBS: Final[int] = 32

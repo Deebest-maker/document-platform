@@ -15,6 +15,10 @@ import {
   type LearnBlock,
 } from "../content/learn-articles";
 import { toolGuides } from "../content/tool-guides";
+import {
+  ABANDONED_JOB_IDLE_MINUTES,
+  ABANDONED_JOB_MAX_MINUTES,
+} from "../lib/retention";
 import { getIndexablePaths } from "../lib/seo";
 import {
   plainText,
@@ -470,11 +474,30 @@ describe("M6C: claims stay honest and in step with the product", () => {
     }
   });
 
-  it("states no retention period and no offline promise", () => {
+  it("states retention only through the shared constants, and no offline promise", () => {
     for (const [slug, text] of everything) {
-      expect(text, slug).not.toMatch(
-        /\b\d+\s*(seconds?|minutes?|hours?|days?)\b/i,
-      );
+      const periods = [
+        ...text.matchAll(
+          /\b(\d+)\s+(?:idle\s+)?(seconds?|minutes?|hours?|days?)\b/gi,
+        ),
+      ];
+      if (slug === "what-processed-on-your-device-means") {
+        expect(periods.length, slug).toBeGreaterThan(0);
+        for (const [, value, unit] of periods) {
+          expect(unit.toLowerCase(), `${slug}: ${value} ${unit}`).toBe(
+            "minutes",
+          );
+          expect(
+            [ABANDONED_JOB_IDLE_MINUTES, ABANDONED_JOB_MAX_MINUTES],
+            `${slug}: ${value} minutes`,
+          ).toContain(Number(value));
+        }
+      } else {
+        expect(
+          periods.map((match) => match[0]),
+          slug,
+        ).toEqual([]);
+      }
       expect(text, slug).not.toMatch(/\boffline\b|without (an )?internet/i);
     }
   });
@@ -599,13 +622,23 @@ describe("M6C: claims stay honest and in step with the product", () => {
     expect(text).toContain("Word to PDF");
     expect(text).toMatch(/encrypted on its way to our server/);
     expect(text).toMatch(/deleted once the PDF has reached your browser/);
-    expect(text).toMatch(/abandoned[^.]*automatic cleanup after a short time/);
+    expect(text).toMatch(
+      new RegExp(
+        `abandoned[^.]*an automatic cleanup removes the file after ${ABANDONED_JOB_IDLE_MINUTES} idle minutes`,
+      ),
+    );
+    expect(text).toMatch(
+      new RegExp(
+        `cleanup runs every minute[^.]*within about ${ABANDONED_JOB_MAX_MINUTES} minutes`,
+      ),
+    );
     expect(text).toMatch(/not shared with third parties/);
     expect(text).toContain("Processed on your device");
     expect(text).toContain("Secure server processing");
-    // The privacy page still says retention is undecided; the guide defers to it.
+    // The Privacy page is still a draft; the guide defers to it for what is open.
     expect(text).toMatch(/still undecided/);
-    expect(text).toMatch(/retention period/);
+    expect(text).toMatch(/final deletion wording/);
+    expect(text).toMatch(/operating limits/);
   });
 
   it("is honest that OCR is not available, and that PDF to Word is not", () => {

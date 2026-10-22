@@ -7,6 +7,7 @@ import {
   getAvailabilitySummary,
   getModeAvailability,
 } from "../../lib/availability";
+import { abandonedJobSentence } from "../../lib/retention";
 import { seoMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = seoMetadata({
@@ -40,8 +41,7 @@ export default function PrivacyPage() {
         Word to PDF uploads your Word file to our conversion server over an
         encrypted connection and converts it there. The tool tells you this
         before anything is uploaded. The server copy is deleted as soon as the
-        PDF has reached your browser, and files left behind by an abandoned
-        conversion are deleted automatically after a short time. Files are never
+        PDF has reached your browser. {abandonedJobSentence} Files are never
         shared with third parties.
       </p>
       <h2>Three processing modes</h2>
@@ -61,10 +61,10 @@ export default function PrivacyPage() {
       </div>
       <h2>What remains undecided</h2>
       <p>
-        For Word to PDF, the exact retention period for abandoned conversions,
-        the remaining deletion details and the operating limits have not been
-        finalized. Those details must be reviewed and disclosed before public
-        launch.
+        For Word to PDF, the retention period above is the current setting. The
+        remaining deletion details and the operating limits have not been
+        finalized, and the final wording must be reviewed and disclosed before
+        public launch.
       </p>
       <p>
         A future change to a tool’s processing location requires review and an
