@@ -6,6 +6,7 @@ import {
   getToolMetadata,
   tools,
 } from "@document-platform/tool-registry";
+import { availabilityBreakdown } from "../lib/availability";
 import HomePage from "./page";
 import ToolsPage from "./tools/page";
 import MergePreviewPage, { metadata as mergeMetadata } from "./merge-pdf/page";
@@ -48,7 +49,7 @@ describe("M1 registry integration", () => {
       expect(html).toContain(tool.title);
       expect(html).toContain(tool.description);
     }
-    expect(html).toContain("Eleven tools are available.");
+    expect(html).toContain(availabilityBreakdown());
   });
 
   it("DEV-004 / FR-GEN-004: connects Merge record to metadata, shell and privacy", () => {

@@ -89,6 +89,50 @@ function withExifOrientation(jpeg: Buffer, orientation: number) {
   return Buffer.concat([jpeg.subarray(0, 2), app1, jpeg.subarray(2)]);
 }
 
+function jpegSegment(marker: number, payload: Buffer) {
+  const length = payload.length + 2;
+  return Buffer.concat([
+    Buffer.from([0xff, marker, length >> 8, length & 0xff]),
+    payload,
+  ]);
+}
+
+const PHOTO_SECRETS = [
+  "SecretE2EExifModel",
+  "SecretE2EXmpAuthor",
+  "SecretE2EIptcCaption",
+  "SecretE2EComment",
+  "SecretE2ETrailer",
+];
+
+/** A photo carrying camera, XMP, IPTC and comment data plus bytes after the picture. */
+function withPhotoDetails(jpeg: Buffer) {
+  const details = Buffer.concat([
+    jpegSegment(
+      0xe1,
+      Buffer.concat([
+        Buffer.from("Exif\0\0MM\0*\0\0\0\x08\0\0\0\0\0\0", "latin1"),
+        Buffer.from(PHOTO_SECRETS[0]),
+      ]),
+    ),
+    jpegSegment(
+      0xe1,
+      Buffer.from(
+        `http://ns.adobe.com/xap/1.0/\0<x:xmpmeta>${PHOTO_SECRETS[1]}</x:xmpmeta>`,
+        "latin1",
+      ),
+    ),
+    jpegSegment(0xed, Buffer.from(`Photoshop 3.0\0${PHOTO_SECRETS[2]}`)),
+    jpegSegment(0xfe, Buffer.from(PHOTO_SECRETS[3])),
+  ]);
+  return Buffer.concat([
+    jpeg.subarray(0, 2),
+    details,
+    jpeg.subarray(2),
+    Buffer.from(PHOTO_SECRETS[4]),
+  ]);
+}
+
 async function downloadPdf(page: Page) {
   const pending = page.waitForEvent("download");
   await page.getByRole("link", { name: "Download PDF" }).click();
@@ -336,4 +380,32 @@ test("image validation rejects wrong declarations and malformed signatures with 
   await expect(
     page.getByRole("region", { name: "Tool workspace" }).getByRole("alert"),
   ).toContainText("does not contain the JPEG or PNG data");
+});
+
+test("ADR-030: camera, location and comment data in a JPEG never reach the PDF", async ({
+  page,
+}) => {
+  await page.goto("/jpg-to-pdf");
+  const photo = withPhotoDetails(
+    await raster(page, 120, 80, "#dc2626", "image/jpeg"),
+  );
+  for (const secret of PHOTO_SECRETS)
+    expect(photo.includes(secret), `${secret} is in the test photo`).toBe(true);
+
+  await page.getByLabel("Choose images").setInputFiles({
+    name: "holiday.jpg",
+    mimeType: "image/jpeg",
+    buffer: photo,
+  });
+  await expect(page.locator(".image-card img")).toHaveCount(1);
+  await page.getByRole("button", { name: "Create PDF" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Your image PDF is ready" }),
+  ).toBeVisible();
+
+  const bytes = await downloadPdf(page);
+  expect(await inspectPages(bytes)).toMatchObject([{ width: 90, height: 60 }]);
+  const pdf = Buffer.from(bytes);
+  for (const secret of PHOTO_SECRETS)
+    expect(pdf.includes(secret), `${secret} leaked into the PDF`).toBe(false);
 });

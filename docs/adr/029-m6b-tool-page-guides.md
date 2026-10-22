@@ -1,6 +1,6 @@
 # ADR-029: Tool-page guides (M6B)
 
-**Status:** Implemented under the approved M6 gate; owner acceptance pending
+**Status:** Implemented under the approved M6 gate; accepted and merged (`b760cb3`)
 **Date:** 2026-10-22
 **Scope:** Original written guidance under each of the 12 available tools, the component that shows it, and the tests that keep it true. No new tool, dependency, route or analytics. No structured data (M6D).
 **Relates to:** SEO strategy (useful original content on tool pages, no scaled keyword filler, content must match what the tool really does); governance §14.2 (M6); ADR-028 (technical SEO); ADR-012 to ADR-025 (the behaviour the guides describe).
@@ -54,9 +54,9 @@ The heading text is built as one string so it reaches the HTML as a single text 
 
 I confirmed the tests can fail by injecting three defects (a wrong file name, a reused sentence, an upload claim on a local tool); each was caught.
 
-## Finding recorded, not changed
+## Finding recorded, then fixed in ADR-030
 
-**Images to PDF keeps photo metadata inside the PDF.** JPEG photos that need no rotation are embedded with their original bytes (ADR-017), and the PDF library embeds the whole JPEG, including the EXIF block. I confirmed this with a test image carrying a marker string: the string is present in the generated PDF. So camera details or GPS position stored in a photo can remain in the PDF, and Remove PDF Metadata does not clear them because they sit inside the image. The Images to PDF guide now says so in plain words. Whether the tool should strip EXIF is a product decision for the owner; it is not part of this slice.
+**Images to PDF kept photo metadata inside the PDF.** JPEG photos that need no rotation were embedded with their original bytes (ADR-017), and the PDF library embeds the whole JPEG, including the EXIF block. I confirmed this with a test image carrying a marker string: the string was present in the generated PDF. So camera details or GPS position stored in a photo could remain in the PDF, and Remove PDF Metadata does not clear them because they sit inside the image. This slice only made the guide say so in plain words. The owner then asked for everything that needed fixing to be fixed, and [ADR-030](030-m6b1-photo-metadata.md) removes the metadata from JPEGs before they are embedded; the guide wording was updated with it.
 
 ## Consequences
 

@@ -1,7 +1,7 @@
 # M6B Milestone Report: Tool-page guides
 
 **Date:** 2026-10-22
-**Status:** Implemented; pull request open; owner acceptance pending.
+**Status:** Accepted and merged (`b760cb3`). Follow-up fixes are in [M6B.1](M6B1-milestone-report.md).
 **Preceding milestone:** M6A — Technical SEO foundation (accepted and merged, `54b2252`).
 **Decision record:** [ADR-029](../adr/029-m6b-tool-page-guides.md).
 
@@ -24,9 +24,9 @@ Each of the 12 available tools now explains itself under the tool: what it does,
 - **One regression found and fixed:** the new "About Organize PDF" and "How to use Organize PDF" headings made an existing Organize test ambiguous (it matched headings by part of the name). I tightened that one locator to the page's main heading. No product code was involved.
 - **Not verified:** how the pages read to someone who has not seen the code, and Safari or Firefox rendering of the new section (it is plain text and lists).
 
-## Finding for your decision
+## Finding (since fixed in M6B.1)
 
-**Images to PDF keeps photo metadata inside the PDF.** A JPEG that needs no rotation is embedded unchanged, including its camera details and any GPS position. I confirmed this with a test photo. Remove PDF Metadata would not remove it either, because it sits inside the image. The Images to PDF guide now says this plainly. I did not change the tool.
+**Images to PDF keeps photo metadata inside the PDF.** A JPEG that needs no rotation is embedded unchanged, including its camera details and any GPS position. I confirmed this with a test photo. Remove PDF Metadata would not remove it either, because it sits inside the image. This slice only made the guide say so plainly and did not change the tool. The owner then asked for everything that needed fixing to be fixed, and M6B.1 removes the metadata ([ADR-030](../adr/030-m6b1-photo-metadata.md)).
 
 ## Known limitations
 
@@ -41,9 +41,9 @@ None.
 
 ## Decisions needed from the Product Owner
 
-1. **Accept M6B**, so I can start M6C.
+1. **Accept M6B**, so I can start M6C. **Accepted.**
 2. **Read the guides** in `apps/web/content/tool-guides.ts` and tell me what to change. I can export them to a Word file for easier reading.
-3. **Photo metadata in Images to PDF:** (A) keep it and rely on the new warning, or (B, my recommendation) strip it by removing the metadata block from embedded JPEGs without re-encoding the picture. B is a small follow-up and fits the privacy promise. Reply "B" to approve.
+3. **Photo metadata in Images to PDF:** done in M6B.1 (option B: the metadata block is removed from embedded JPEGs without re-encoding the picture).
 4. **Still open:** server retention for abandoned Word to PDF jobs (A 15 min today, **B 10 min recommended**, C 5 min; reply "B" to apply); production domain and brand or author name (needed for M6D and launch).
 
 ## Recommended next: M6C — Learn hub

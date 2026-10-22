@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
 import { tools } from "@document-platform/tool-registry";
 import { ToolDiscovery } from "../../components/tool-discovery";
+import {
+  availabilityBreakdown,
+  getAvailabilitySummary,
+  plannedRemainder,
+} from "../../lib/availability";
 import { seoMetadata } from "../../lib/seo";
+
+const summary = getAvailabilitySummary();
 
 export const metadata: Metadata = seoMetadata({
   title: "All tools",
-  description:
-    "Find document tools by task and category. Eleven tools are available on your device; other tools are planned.",
+  description: `Find document tools by task and category. ${availabilityBreakdown(summary)}`,
   path: "/tools",
 });
 
@@ -20,8 +26,7 @@ export default function ToolsPage() {
           Find a task, check its availability, and see where processing happens.
         </p>
         <p className="notice">
-          Eleven tools are available. The remaining tools are planned and cannot
-          process documents yet.
+          {availabilityBreakdown(summary)} {plannedRemainder(summary)}
         </p>
       </header>
       <ToolDiscovery records={tools} variant="catalog" />

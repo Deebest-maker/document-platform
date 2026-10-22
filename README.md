@@ -1,6 +1,6 @@
 # Document & File Platform
 
-Privacy-first document utilities, built milestone by milestone. Eleven tools now work locally in the browser: Merge, Compress, Split, Organize, Extract Pages, Delete Pages, Rotate, Images to PDF, PDF to JPG, PDF to Text and Remove PDF Metadata. The remaining documented tools stay planned.
+Privacy-first document utilities, built milestone by milestone. Twelve tools are available. Eleven work locally in the browser: Merge, Compress, Split, Organize, Extract Pages, Delete Pages, Rotate, Images to PDF, PDF to JPG, PDF to Text and Remove PDF Metadata. Word to PDF uploads the file to a conversion server and deletes it afterwards. The remaining documented tools stay planned.
 
 ## Source of truth
 

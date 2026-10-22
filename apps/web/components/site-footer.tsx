@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { availabilityStatus } from "../lib/availability";
 
 export function SiteFooter() {
   return (
@@ -6,9 +7,7 @@ export function SiteFooter() {
       <div className="page-width footer-inner">
         <div>
           <p className="footer-name">Document &amp; File Platform</p>
-          <p className="small-copy">
-            Eleven tools work on your device. Other tools are planned.
-          </p>
+          <p className="small-copy">{availabilityStatus()}</p>
         </div>
         <nav aria-label="Trust and legal">
           <Link href="/about">About</Link>
