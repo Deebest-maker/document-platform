@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { getSiteConfig } from "./lib/site";
+import { SECURITY_HEADERS, WORKER_POLICY } from "./lib/security/policy.mjs";
 
 const PROCESSOR_ORIGIN =
   process.env.PROCESSOR_ORIGIN ?? "http://localhost:8000";
@@ -32,14 +33,33 @@ const nextConfig: NextConfig = {
   // every response says so in the header as well as in the page metadata. The
   // header also covers files that carry no HTML head. One build is one
   // environment, so the decision is made once, here.
+  //
+  // Security headers (M7C, ADR-034). The page Content-Security-Policy is not
+  // here: it names the hash of each page's inline scripts, which exist only
+  // after the build, so proxy.ts adds it. What is here is fixed:
+  //   * the plain headers on every response, except /api/processor, whose
+  //     replies carry the processor's own headers (ADR-033);
+  //   * a policy on the script files, because a Web Worker takes its limits
+  //     from the response of its own script (production only: the development
+  //     server's workers need eval).
   async headers() {
-    if (getSiteConfig().indexing) return [];
-    return [
+    const rules: Awaited<ReturnType<NonNullable<NextConfig["headers"]>>> = [
       {
-        source: "/:path*",
-        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+        source: "/((?!api/processor(?:/|$)).*)",
+        headers: [...SECURITY_HEADERS],
       },
     ];
+    if (process.env.NODE_ENV === "production")
+      rules.push({
+        source: "/_next/static/:path*",
+        headers: [{ key: "Content-Security-Policy", value: WORKER_POLICY }],
+      });
+    if (!getSiteConfig().indexing)
+      rules.push({
+        source: "/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      });
+    return rules;
   },
   async rewrites() {
     return [
