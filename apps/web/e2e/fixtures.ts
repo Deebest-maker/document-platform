@@ -52,20 +52,21 @@ export const test = base.extend<{
 export { expect } from "@playwright/test";
 
 // A full-page screenshot is evidence for a reviewer, not an assertion. WebKit
-// refuses to capture anything taller than 32,767 px (it grows the viewport to
-// the page height, so clipping afterwards does not help), and a narrow viewport
-// with enlarged text makes a long page that tall. Past 30,000 px the capture
-// falls back to the given region, or to the top of the page.
-const MAX_EVIDENCE_HEIGHT = 30_000;
+// refuses to capture anything taller than 32,767 device pixels (it grows the
+// viewport to the page height, so clipping afterwards does not help), and a
+// narrow viewport with enlarged text makes a long page that tall once the
+// device pixel ratio is counted. Past 30,000 device pixels the capture falls
+// back to the given region, or to the top of the page.
+const MAX_EVIDENCE_PIXELS = 30_000;
 export async function evidenceScreenshot(
   page: Page,
   path: string,
   region?: Locator,
 ): Promise<void> {
-  const height = await page.evaluate(
-    () => document.documentElement.scrollHeight,
+  const devicePixels = await page.evaluate(
+    () => document.documentElement.scrollHeight * window.devicePixelRatio,
   );
-  if (height <= MAX_EVIDENCE_HEIGHT) {
+  if (devicePixels <= MAX_EVIDENCE_PIXELS) {
     await page.screenshot({ path, fullPage: true });
   } else if (region) {
     await region.screenshot({ path });
