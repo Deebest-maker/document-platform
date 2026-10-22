@@ -37,8 +37,13 @@ jobs:
       - if: env.PDF_BROWSER_MATRIX == 'full'
         run: pnpm --filter @document-platform/web exec playwright install --with-deps firefox webkit
       - run: pnpm check
+      - name: Report failing browser tests on the check run
+        if: ${{ !cancelled() }}
+        run: node scripts/ci-playwright-annotations.mjs apps/web/test-results/results.json
       - run: pnpm test:foundation
+        if: ${{ !cancelled() }}
       - run: pnpm audit --audit-level=high
+        if: ${{ !cancelled() }}
       - name: Preserve browser failure evidence
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
