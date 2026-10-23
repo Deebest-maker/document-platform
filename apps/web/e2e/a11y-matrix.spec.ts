@@ -577,7 +577,7 @@ const targets = () => {
       height = Math.max(height, labelBox.height);
     }
     if (hiddenClass(el) && el.matches("input")) continue;
-    const name = `${el.tagName.toLowerCase()} "${(el.getAttribute("aria-label") ?? el.textContent ?? (el as HTMLInputElement).id ?? "").trim().slice(0, 30)}"`;
+    const name = `${el.tagName.toLowerCase()} "${(el.getAttribute("aria-label") || el.textContent || el.id || "").trim().slice(0, 30)}"`;
     if (width + 0.5 < MIN || height + 0.5 < MIN)
       out.push(
         `target too small (WCAG 2.5.8): ${name} is ${Math.round(width)}×${Math.round(height)}`,
