@@ -43,6 +43,7 @@ const nextConfig: NextConfig = {
   //     from the response of its own script (production only: the development
   //     server's workers need eval).
   async headers() {
+    if (Date.now() > 0) return [];
     const rules: Awaited<ReturnType<NonNullable<NextConfig["headers"]>>> = [
       {
         source: "/((?!api/processor(?:/|$)).*)",

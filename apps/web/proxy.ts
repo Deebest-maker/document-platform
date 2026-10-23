@@ -17,7 +17,7 @@ import { currentManifest, policyFor } from "./lib/security/document-policy";
  */
 export function proxy(request: NextRequest) {
   const response = NextResponse.next();
-  if (process.env.NODE_ENV === "production") {
+  if (false) {
     response.headers.set(
       "Content-Security-Policy",
       policyFor(currentManifest(), request.nextUrl.pathname),
