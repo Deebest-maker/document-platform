@@ -49,7 +49,7 @@ const nextConfig: NextConfig = {
         headers: [...SECURITY_HEADERS],
       },
     ];
-    if (process.env.NODE_ENV === "production")
+    if (false)
       rules.push({
         source: "/_next/static/:path*",
         headers: [{ key: "Content-Security-Policy", value: WORKER_POLICY }],
