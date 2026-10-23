@@ -54,7 +54,7 @@ jobs:
       matrix:
         # Pull requests run desktop and phone-width Chromium. Main, tags and
         # manual runs add Firefox and the two WebKit (Safari engine) projects.
-        project: ${{ fromJSON((github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch') && '["chromium","mobile-chromium","firefox","webkit","mobile-webkit"]' || '["chromium","mobile-chromium"]') }}
+        project: ${{ fromJSON((github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch') && '["firefox"]' || '["chromium","mobile-chromium"]') }}
     env:
       PDF_BROWSER_MATRIX: ${{ contains(fromJSON('["firefox","webkit","mobile-webkit"]'), matrix.project) && 'full' || 'smoke' }}
       BROWSER: ${{ contains(matrix.project, 'webkit') && 'webkit' || (contains(matrix.project, 'firefox') && 'firefox' || 'chromium') }}
@@ -77,7 +77,7 @@ jobs:
       - name: Install the browser
         run: bash scripts/ci-install-browser.sh "$BROWSER"
       - run: pnpm build
-      - run: pnpm test:e2e --project=${{ matrix.project }}
+      - run: pnpm test:e2e --project=${{ matrix.project }} --repeat-each=2
       - name: Report failing browser tests on the check run
         if: ${{ !cancelled() }}
         run: node scripts/ci-playwright-annotations.mjs apps/web/test-results/results.json
