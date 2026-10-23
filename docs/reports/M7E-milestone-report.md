@@ -38,7 +38,7 @@ Everything else held: no unnamed controls, no unreachable or trapped controls, n
 - **Unit tests:** 420 pass. Lint, types, format and the production build pass.
 - **The tests can fail.** I broke nine fixes one at a time (reorder name, Remove Metadata focus, thumbnail text rule, Compress grid, Split error description, table keyboard access, control height, Learn link rule, Split field height). Every one was caught, each by the check named for it. The table one was not caught until I added a "scrolls but a keyboard cannot reach it" check, which now exists. Each was restored and the matrix confirmed.
 - **Faults in my own test** (listed in the ADR) were found and fixed in the test, not in the pages.
-- **Five-browser CI:** running; the result is added when it finishes.
+- **Five-browser CI:** all five browsers pass on the last code commit (`b71d5c4`): desktop and phone Chromium, Firefox, WebKit and phone WebKit, 214 tests each, which includes PDF to JPG's result state and the password-protected cases that cannot run here, plus the processor tests, the processor container build and the web quality job (with the dependency audit). The first CI runs found what my machine could not: four overflows at 320 px with large text (CI's default font is wider than mine), Firefox keeping focus on the last control, and mobile WebKit's report of Split's 320 px tall field. All are fixed above. The commits after `b71d5c4` change only the two records.
 - **Not verified:** real screen readers (VoiceOver, TalkBack, NVDA, JAWS), real phones, browser zoom and the system text-size settings, forced-colours mode (all M7G); PDF to JPG's result and the encrypted-PDF cases locally (CI decides).
 
 ## Known limitations
