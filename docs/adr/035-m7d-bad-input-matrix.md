@@ -1,6 +1,6 @@
 # ADR-035: Bad-input matrix: one first look, honest refusals, a stricter DOCX preflight
 
-**Status:** Implemented under the approved M7 gate; owner acceptance pending
+**Status:** Implemented under the approved M7 gate; accepted by the Product Owner and merged (`2a7197c`)
 **Date:** 2026-10-23
 **Scope:** What each tool says and does when it is given a file it should refuse (empty, mislabelled, not a document, damaged, password-protected, over the limit); the one rule the ten PDF tools use for their first look at a chosen file; the Word to PDF page's wording and the processor's error codes for documents it cannot take or cannot convert; the DOCX preflight's scan of XML parts; the processor's answer to a malformed request; and the browser test that gives every tool every kind of bad file. No change to what a tool produces for a good file, to any limit, or to where a file is processed. One behaviour does change: three tools now apply the name and type rule the other seven already applied (decision 1).
 **Relates to:** document 05 section 6 (upload and preflight controls: extension and MIME are hints, the server checks content) and section 18 (file-validation tests), document 08 section 4 (the bad-input fixture list), ADR-022 (DOCX validator), ADR-024 (limits), ADR-033 (processor abuse controls), ADR-034 (security headers), governance section 14.3.

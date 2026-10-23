@@ -11,13 +11,15 @@ import { expect, test } from "./fixtures";
 //      and the rule for a visible label being part of the accessible name);
 //   2. a person using only a keyboard: Tab through the whole page, every control
 //      is reached, focus is never lost, never trapped, never hidden behind
-//      something, and always drawn with enough contrast;
+//      something, always drawn with enough contrast, and every control is at
+//      least 24 by 24 CSS px (WCAG 2.5.8);
 //   3. a person using a screen reader: every control has a name in the
 //      browser's own accessibility tree, and a state change is announced and
 //      leaves focus somewhere sensible;
 //   4. a person who enlarges text or needs a narrow screen: nothing runs off the
-//      side at 320 px, at 200% text, or with the WCAG text-spacing settings, and
-//      nothing is cut off.
+//      side at 320 px, at 200% text, or with the WCAG text-spacing settings,
+//      nothing is cut off, and anything that scrolls inside the page can be
+//      scrolled with a keyboard.
 //
 // Findings are collected per state and reported together, so a run lists every
 // problem instead of stopping at the first.
@@ -463,6 +465,38 @@ const clipped = () => {
 };
 
 /**
+ * Whatever scrolls inside the page can be scrolled with a keyboard: it is
+ * focusable itself or holds something focusable (WCAG 2.1.1). Enlarged text is
+ * what makes a table or a list start to scroll, so this runs in every setting.
+ */
+const scrollers = () => {
+  const out: string[] = [];
+  for (const el of Array.from(
+    document.body.querySelectorAll<HTMLElement>("*"),
+  )) {
+    const style = getComputedStyle(el);
+    const across =
+      /(auto|scroll)/.test(style.overflowX) &&
+      el.scrollWidth > el.clientWidth + 1;
+    const down =
+      /(auto|scroll)/.test(style.overflowY) &&
+      el.scrollHeight > el.clientHeight + 1;
+    if (!across && !down) continue;
+    const reachable =
+      el.tabIndex >= 0 ||
+      el.querySelector(
+        "a[href], button:not(:disabled), input:not(:disabled), select, textarea, summary, [tabindex]:not([tabindex='-1'])",
+      );
+    if (!reachable)
+      out.push(
+        `${el.tagName.toLowerCase()}${typeof el.className === "string" && el.className ? `.${el.className.trim().split(/\s+/)[0]}` : ""}`,
+      );
+    if (out.length === 4) break;
+  }
+  return out;
+};
+
+/**
  * Something to press or type into is at least 24 by 24 CSS pixels (WCAG 2.2
  * 2.5.8, level AA). A control's label counts with it when pressing the label
  * works the control; a link inside a sentence is exempt, as the criterion says.
@@ -518,6 +552,11 @@ async function reflow(page: Page): Promise<string[]> {
       );
     const cut = await page.evaluate(clipped);
     if (cut.length) found.push(`text cut off (${label}): ${cut.join(", ")}`);
+    const stuck = await page.evaluate(scrollers);
+    if (stuck.length)
+      found.push(
+        `scrolls but a keyboard cannot reach it (${label}): ${stuck.join(", ")}`,
+      );
   };
 
   await page.setViewportSize({ width: 320, height: 800 });
