@@ -103,18 +103,21 @@ export const PERMISSIONS_POLICY = [
  * site should not tell the next site where a visitor came from. M9 (ads) is
  * where this is revisited.
  *
- * Cross-Origin-Opener-Policy: same-origin. The site opens no windows and
- * talks to none, so it gets its own browsing context group.
- *
  * X-Frame-Options repeats frame-ancestors for engines that predate it.
  *
- * Not here on purpose: Strict-Transport-Security belongs to the HTTPS edge
- * (M8); Cross-Origin-Embedder-Policy would block assets served from a CDN.
+ * Not here on purpose:
+ *  - Strict-Transport-Security belongs to the HTTPS edge (M8).
+ *  - Cross-Origin-Embedder-Policy would block assets served from a CDN.
+ *  - Cross-Origin-Opener-Policy. It was in the first version of this list
+ *    and was taken out after measurement (ADR-034, decision 11): with it,
+ *    Firefox under Playwright stalled a page load for the full 30 seconds in
+ *    about one test in a hundred; without it, in none of 2,500 runs. The site
+ *    opens no windows and talks to none, so it protected little. Put it back
+ *    only with the same measurement, on the engines it affects.
  */
 export const SECURITY_HEADERS = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "no-referrer" },
   { key: "X-Frame-Options", value: "DENY" },
-  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
   { key: "Permissions-Policy", value: PERMISSIONS_POLICY },
 ];

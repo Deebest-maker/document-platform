@@ -16,7 +16,7 @@ Nothing changes for a visitor. Every tool journey that can run in this environme
 
 - **A page policy, per page.** Scripts from this site only, plus the page's own inline scripts by hash. No `unsafe-inline`, no `unsafe-eval`, no other origin for anything. Images may also come from in-memory `blob:` and `data:` sources, which previews and results need. Frames, plug-ins, form posts and a `<base>` tag are not allowed.
 - **A worker policy.** Every script file carries a policy that a background worker obeys: it can run this site's scripts and WebAssembly (the PDF reader needs it) and fetch this site's own data files, and cannot reach any other address. A document opened in a worker cannot be sent away.
-- **Plain headers on every response:** `nosniff`, no referrer, no framing (`X-Frame-Options: DENY` and `frame-ancestors`), `Cross-Origin-Opener-Policy: same-origin`, and a `Permissions-Policy` that switches off camera, microphone, location, payment, USB and sensors. The Word to PDF server's own replies keep their own headers (M7B) and are not doubled.
+- **Plain headers on every response:** `nosniff`, no referrer, no framing (`X-Frame-Options: DENY` and `frame-ancestors`), and a `Permissions-Policy` that switches off camera, microphone, location, payment, USB and sensors. The Word to PDF server's own replies keep their own headers (M7B) and are not doubled.
 - **A build step** that finds each page's inline scripts, hashes them and writes the list the policy uses. It also reads every built page and fails the build, naming the page, if it contains something the policy would refuse: an inline style, an event-handler attribute, a `javascript:` link, a frame, or anything loaded from another site.
 - **Fail closed.** If that list is missing, no inline script is allowed, the pages do not start, and the server logs the reason once.
 - **The site's own 404 and error pages.** Next.js's built-in ones style themselves inline, which the policy refuses. The 404 page is now a normal page of the site with links back to the tools.
@@ -47,6 +47,7 @@ A nonce has to be new for every response, which would mean building every page o
 ## Deviations from plan
 
 - **Own 404 and error pages** were not in the plan. They were needed: the built-in ones cannot run under the policy.
+- **`Cross-Origin-Opener-Policy` was in the plan and is out.** Firefox stalled page loads for 30 seconds in about one test in a hundred with it on, and never without it (ADR-034, decision 11). It protected little here, since the site opens no windows.
 - **`Referrer-Policy: no-referrer`** is a choice the plan left open; it is a one-line change if advertising later needs otherwise.
 
 ## Decisions needed from the Product Owner

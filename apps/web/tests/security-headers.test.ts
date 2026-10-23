@@ -100,7 +100,6 @@ describe("the plain headers", () => {
       "X-Content-Type-Options": "nosniff",
       "Referrer-Policy": "no-referrer",
       "X-Frame-Options": "DENY",
-      "Cross-Origin-Opener-Policy": "same-origin",
     });
     expect(Object.keys(byKey)).toContain("Permissions-Policy");
   });
@@ -108,6 +107,10 @@ describe("the plain headers", () => {
   it("do not set HSTS, which belongs to the HTTPS edge, or a COEP that would block CDN assets", () => {
     expect(Object.keys(byKey)).not.toContain("Strict-Transport-Security");
     expect(Object.keys(byKey)).not.toContain("Cross-Origin-Embedder-Policy");
+  });
+
+  it("do not set Cross-Origin-Opener-Policy, which made Firefox stall page loads (ADR-034, decision 11)", () => {
+    expect(Object.keys(byKey)).not.toContain("Cross-Origin-Opener-Policy");
   });
 
   it("switch off every powerful feature the site does not use", () => {

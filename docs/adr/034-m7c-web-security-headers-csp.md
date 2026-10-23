@@ -26,7 +26,7 @@ Three facts shape the design:
 | T5  | A browser guesses a file is a different type                                                                   | `X-Content-Type-Options: nosniff` on every response                                                                                                |
 | T6  | The address of the page a visitor came from is passed to the next site                                         | `Referrer-Policy: no-referrer`                                                                                                                     |
 | T7  | Powerful features (camera, microphone, location, payment, USB, sensors) used by the page or anything it embeds | `Permissions-Policy` switches off the ones the site never uses                                                                                     |
-| T8  | Another window reaches this one through a shared browsing context                                              | `Cross-Origin-Opener-Policy: same-origin`                                                                                                          |
+| T8  | Another window reaches this one through a shared browsing context                                              | Not addressed. `Cross-Origin-Opener-Policy` was tried and removed (decision 11).                                                                   |
 
 ## Decisions
 
@@ -55,13 +55,12 @@ Three facts shape the design:
 
 **8. The plain headers.**
 
-| Header                       | Value                                                                                                                         | Note                                                                                       |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `X-Content-Type-Options`     | `nosniff`                                                                                                                     | Every response.                                                                            |
-| `Referrer-Policy`            | `no-referrer`                                                                                                                 | Nothing on the site needs the referrer. Revisited at M9 if advertising requires otherwise. |
-| `X-Frame-Options`            | `DENY`                                                                                                                        | Repeats `frame-ancestors` for engines that predate it.                                     |
-| `Cross-Origin-Opener-Policy` | `same-origin`                                                                                                                 | The site opens no windows and talks to none.                                               |
-| `Permissions-Policy`         | accelerometer, camera, display-capture, geolocation, gyroscope, magnetometer, microphone, midi, payment, usb all switched off | Only names every current engine recognises, so no browser reports an unknown feature.      |
+| Header                   | Value                                                                                                                         | Note                                                                                       |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `X-Content-Type-Options` | `nosniff`                                                                                                                     | Every response.                                                                            |
+| `Referrer-Policy`        | `no-referrer`                                                                                                                 | Nothing on the site needs the referrer. Revisited at M9 if advertising requires otherwise. |
+| `X-Frame-Options`        | `DENY`                                                                                                                        | Repeats `frame-ancestors` for engines that predate it.                                     |
+| `Permissions-Policy`     | accelerometer, camera, display-capture, geolocation, gyroscope, magnetometer, microphone, midi, payment, usb all switched off | Only names every current engine recognises, so no browser reports an unknown feature.      |
 
 The processor's replies under `/api/processor/` keep the processor's own headers (ADR-033); the site headers are not added there, so no header is sent twice, and the proxy does not run for `/api`, `/_next` or `/vendor`.
 
@@ -73,6 +72,8 @@ The processor's replies under `/api/processor/` keep the processor's own headers
 - `Cross-Origin-Embedder-Policy`: it would block assets served from another origin, such as a CDN, and nothing needs the isolation it gives.
 - A reporting endpoint (`report-to`): it would be new infrastructure, and a report carries the address and part of the offending code. Revisit with monitoring in M8.
 - Trusted Types: Next.js and React create script elements and write markup in ways that would need changes there first.
+
+**11. `Cross-Origin-Opener-Policy` was tried and removed.** The first version of this record set `Cross-Origin-Opener-Policy: same-origin`, so the site would sit in a browsing context group of its own. The five-browser run then showed Firefox stalling a page load for the full 30 seconds in a few tests per run, a different few each time. I measured it instead of guessing, in Firefox runs on CI: with the header on there were 26 stalls in about 3,400 test runs (20 with the Content Security Policy also on, 6 with only the policy removed); with the header off there were none in about 2,500 (about 1,250 with the policy on, about 1,250 with every security header removed). Chromium and WebKit were not affected. It is not clear whether real Firefox visitors would be affected, since the measurement is Firefox driven by Playwright, so there is no reason to find out on live visitors. The protection it gave was small: the site opens no windows and links out with `rel="noopener"`. It is out of the list, a unit test and a browser test check that it stays out, and re-adding it needs the same measurement on real Firefox (M7G or M8).
 
 ## What changed
 
@@ -114,6 +115,7 @@ The processor's replies under `/api/processor/` keep the processor's own headers
 - Add `Strict-Transport-Security` and, with it, `upgrade-insecure-requests` at the HTTPS edge.
 - Smoke test after each deploy: request every route and check that the policy names every inline script, as `security-headers.spec.ts` does against the local build.
 - Decide on violation reporting together with monitoring.
+- Optional: re-measure `Cross-Origin-Opener-Policy` on a real Firefox (decision 11) before ever adding it back.
 - M9: review advertising and analytics against the policy before they are added.
 
 ## Consequences

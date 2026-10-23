@@ -53,7 +53,6 @@ const PLAIN_HEADERS = {
   "x-content-type-options": "nosniff",
   "referrer-policy": "no-referrer",
   "x-frame-options": "DENY",
-  "cross-origin-opener-policy": "same-origin",
 };
 
 test("there are pages to check", () => {
@@ -95,6 +94,8 @@ test("every page sends the plain security headers", async ({ request }) => {
     const headers = (await request.get(route)).headers();
     for (const [name, value] of Object.entries(PLAIN_HEADERS))
       expect(headers[name], `${route} ${name}`).toBe(value);
+    // Left out on purpose after it stalled Firefox page loads (ADR-034, decision 11).
+    expect(headers["cross-origin-opener-policy"], route).toBeUndefined();
     expect(headers["permissions-policy"], route).toContain("camera=()");
     expect(headers["permissions-policy"], route).toContain("microphone=()");
     expect(headers["permissions-policy"], route).toContain("geolocation=()");
@@ -148,7 +149,6 @@ test("data files carry the plain headers", async ({ request }) => {
   const response = await request.get("/vendor/pdfjs/6.3.289/manifest.json");
   expect(response.status()).toBe(200);
   expect(response.headers()["x-content-type-options"]).toBe("nosniff");
-  expect(response.headers()["cross-origin-opener-policy"]).toBe("same-origin");
 });
 
 // Not under the request audit: the test itself visits a second origin.
