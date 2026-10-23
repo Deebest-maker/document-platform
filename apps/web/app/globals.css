@@ -17,9 +17,17 @@ body {
   color: var(--color-text);
   font-family: var(--font-ui);
   line-height: 1.6;
+  overflow-wrap: break-word;
 }
 a {
   text-underline-offset: 0.2em;
+}
+/* A legend sizes itself to its longest word and ignores the page's
+   overflow-wrap: break-word, so on a narrow screen with large text it would
+   stick out of its fieldset. */
+legend {
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 button,
 input,
@@ -936,6 +944,7 @@ nav a {
 }
 .rotation-state div {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: var(--space-3);
 }
@@ -1087,6 +1096,30 @@ nav a {
   .split-group__controls button {
     width: 100%;
   }
+  /* The input's 20rem flex basis is a width in a row; in a column it would be
+     a height (a 320 px tall field on a phone). */
+  .split-group__controls input {
+    flex: none;
+  }
+}
+
+/* Remove PDF Metadata result. The before/after table scrolls inside its own
+   keyboard-focusable region, so a narrow screen or large text never makes the
+   page scroll sideways. */
+.remove-metadata-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.remove-metadata-before-after {
+  border-collapse: collapse;
+  min-width: 100%;
+}
+.remove-metadata-before-after th,
+.remove-metadata-before-after td {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
 }
 
 /* M3B.3 PDF to Text workspace. Keep extracted text in a text node under a
@@ -1188,6 +1221,8 @@ nav a {
 .compress-options label > span {
   display: grid;
   gap: var(--space-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .compress-options label small {
   color: var(--color-muted);
@@ -1216,7 +1251,7 @@ nav a {
 }
 .compress-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
   gap: var(--space-3);
   margin: var(--space-6) 0 0;
 }
@@ -1353,9 +1388,12 @@ nav a {
 }
 .learn-contents a {
   display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
   min-height: var(--control-height);
   align-items: center;
   font-size: 1rem;
+  overflow-wrap: anywhere;
 }
 .learn-body section + section {
   margin-top: var(--space-8);

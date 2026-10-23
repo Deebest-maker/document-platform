@@ -125,7 +125,7 @@ export function MergeWorkspace({
                   <button
                     className="quiet-button"
                     type="button"
-                    aria-label={`Move file ${index + 1} earlier`}
+                    aria-label={`Move earlier, file ${index + 1}`}
                     aria-disabled={index === 0}
                     onClick={() => session.move(row.id, -1)}
                   >
@@ -134,7 +134,7 @@ export function MergeWorkspace({
                   <button
                     className="quiet-button"
                     type="button"
-                    aria-label={`Move file ${index + 1} later`}
+                    aria-label={`Move later, file ${index + 1}`}
                     aria-disabled={index === current.rows.length - 1}
                     onClick={() => session.move(row.id, 1)}
                   >

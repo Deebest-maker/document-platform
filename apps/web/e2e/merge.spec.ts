@@ -55,18 +55,18 @@ test("FR-MRG-001/004: choose, keyboard reorder three PDFs, download exact order 
     .locator('input[type="file"]')
     .setInputFiles([fixture("b.pdf"), fixture("c.pdf")]);
   await page
-    .getByRole("button", { name: "Move file 3 earlier", exact: true })
+    .getByRole("button", { name: "Move earlier, file 3", exact: true })
     .focus();
   await page.keyboard.press("Enter");
   await expect(
-    page.getByRole("button", { name: "Move file 2 earlier", exact: true }),
+    page.getByRole("button", { name: "Move earlier, file 2", exact: true }),
   ).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(
-    page.getByRole("button", { name: "Move file 1 earlier", exact: true }),
+    page.getByRole("button", { name: "Move earlier, file 1", exact: true }),
   ).toBeFocused();
   await page
-    .getByRole("button", { name: "Move file 3 earlier", exact: true })
+    .getByRole("button", { name: "Move earlier, file 3", exact: true })
     .press("Enter");
   await expect(page.locator(".file-description strong")).toHaveText([
     "c.pdf",
@@ -78,7 +78,7 @@ test("FR-MRG-001/004: choose, keyboard reorder three PDFs, download exact order 
   ).toEqual([]);
   // axe may move focus while inspecting the skip link; restore the reviewed state.
   await page
-    .getByRole("button", { name: "Move file 2 earlier", exact: true })
+    .getByRole("button", { name: "Move earlier, file 2", exact: true })
     .focus();
   await evidenceScreenshot(page, info.outputPath("merge-selected.png"));
   await page.getByRole("button", { name: "Merge PDFs", exact: true }).click();
@@ -130,7 +130,7 @@ test("duplicates remain separate; remove/add and drop input work", async ({
     .getByRole("button", { name: "Remove file 1", exact: true })
     .click();
   await expect(
-    page.getByRole("button", { name: "Move file 1 earlier", exact: true }),
+    page.getByRole("button", { name: "Move earlier, file 1", exact: true }),
   ).toBeFocused();
   const buffer = Array.from(await readFile(fixture("d.pdf")));
   await page.locator(".file-picker").evaluate((element, bytes) => {

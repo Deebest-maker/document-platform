@@ -40,7 +40,7 @@ export function ReorderControls({
         type="button"
         disabled={!canMoveEarlier}
         onClick={() => move(-1)}
-        aria-label={`Move ${label} earlier`}
+        aria-label={`Move earlier, ${label}`}
       >
         Move earlier
       </button>
@@ -49,7 +49,7 @@ export function ReorderControls({
         type="button"
         disabled={!canMoveLater}
         onClick={() => move(1)}
-        aria-label={`Move ${label} later`}
+        aria-label={`Move later, ${label}`}
       >
         Move later
       </button>

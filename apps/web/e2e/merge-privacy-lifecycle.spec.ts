@@ -86,7 +86,7 @@ test("FR-PRV-001/005: full LOCAL flow, errors and offline re-merge never send do
   });
   await page.locator('input[type="file"]').setInputFiles(fixture("b.pdf"));
   await page
-    .getByRole("button", { name: "Move file 2 earlier", exact: true })
+    .getByRole("button", { name: "Move earlier, file 2", exact: true })
     .click();
   await page.getByRole("button", { name: "Merge PDFs", exact: true }).click();
   await expect(
@@ -205,7 +205,7 @@ test("result URL replacement, reset and client navigation revoke every owned URL
     ),
   ).toEqual([first]);
   await page
-    .getByRole("button", { name: "Move file 2 earlier", exact: true })
+    .getByRole("button", { name: "Move earlier, file 2", exact: true })
     .click();
   await page.getByRole("button", { name: "Merge PDFs", exact: true }).click();
   await expect(page.locator("[download]")).toBeVisible({

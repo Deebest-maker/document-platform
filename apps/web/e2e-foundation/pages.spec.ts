@@ -151,14 +151,14 @@ test("stable selection, keyboard reorder, rotation, extract and validated downlo
     .click();
   for (let n = 0; n < 3; n++) {
     const move = page.getByRole("button", {
-      name: "Move page 4 earlier",
+      name: "Move earlier, page 4",
       exact: true,
     });
     await move.focus();
     await page.keyboard.press("Enter");
   }
   await expect(
-    page.getByRole("button", { name: "Move page 4 later", exact: true }),
+    page.getByRole("button", { name: "Move later, page 4", exact: true }),
   ).toBeFocused();
   await expect(
     page.getByRole("checkbox", { name: "Select page 4", exact: true }),

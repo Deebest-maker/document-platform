@@ -59,6 +59,8 @@
 }
 .page-thumbnail__surface span {
   grid-area: 1 / 1;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   padding: var(--space-3);
   text-align: center;
   font-size: 0.875rem;

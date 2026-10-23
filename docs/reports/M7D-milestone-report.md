@@ -1,7 +1,7 @@
 # M7D Milestone Report: Bad-input matrix
 
 **Date:** 2026-10-23
-**Status:** Implemented; owner acceptance pending
+**Status:** Accepted by the Product Owner on 2026-10-23; merged (`2a7197c`)
 **Preceding slice:** M7C — web security headers and CSP (accepted and merged, `03b4186`; main's CI on that commit passed in all five browsers).
 **Part of:** M7 QA and hardening (governance §14.3), slice D of seven.
 **Decision record:** [ADR-035](../adr/035-m7d-bad-input-matrix.md).
