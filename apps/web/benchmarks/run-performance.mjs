@@ -123,7 +123,11 @@ function weigher(page) {
           const gzip = gzipSync(body, { level: 9 }).length;
           weight.requests++;
           weight.total += gzip;
-          if (kind === "script") {
+          // A Web Worker's own script is reported as "other", not "script".
+          if (
+            kind === "script" ||
+            /\.m?js$/.test(new URL(response.url()).pathname)
+          ) {
             weight.script += gzip;
             if (ENGINE.test(body.toString("latin1"))) weight.engine++;
           } else if (kind === "stylesheet") weight.style += gzip;

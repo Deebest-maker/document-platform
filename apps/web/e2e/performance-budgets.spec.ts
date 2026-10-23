@@ -99,13 +99,15 @@ async function weigh(page: Page, act: () => Promise<void>): Promise<Weight> {
         try {
           const body = await response.body();
           const kind = response.request().resourceType();
+          const path = new URL(response.url()).pathname;
           const gzip = gzipSync(body, { level: 9 }).length;
           weight.requests++;
           weight.total += gzip;
-          if (kind === "script") {
+          // A Web Worker's own script is reported as "other", not "script",
+          // and PDF.js's worker is most of the engine: go by the file.
+          if (kind === "script" || /\.m?js$/.test(path)) {
             weight.script += gzip;
-            if (ENGINE.test(body.toString("latin1")))
-              weight.engine.push(new URL(response.url()).pathname);
+            if (ENGINE.test(body.toString("latin1"))) weight.engine.push(path);
           } else if (kind === "stylesheet") weight.style += gzip;
           else if (kind === "document") weight.document += gzip;
         } catch {
