@@ -428,8 +428,19 @@ const overflow = () => {
       if (box.width === 0 || box.right <= innerWidth + 1) continue;
       const style = getComputedStyle(el);
       if (style.position === "fixed" || style.visibility === "hidden") continue;
+      // Name it well enough to find from a CI annotation: its tag and class,
+      // the nearest classed ancestor, and the start of its text.
+      const named = (node: Element) =>
+        `${node.tagName.toLowerCase()}${typeof node.className === "string" && node.className ? `.${node.className.trim().split(/\s+/)[0]}` : ""}`;
+      let owner: Element | null = el.parentElement;
+      while (owner && !(typeof owner.className === "string" && owner.className))
+        owner = owner.parentElement;
+      const words = (el.textContent ?? "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .slice(0, 24);
       offenders.push(
-        `${el.tagName.toLowerCase()}${typeof el.className === "string" && el.className ? `.${el.className.trim().split(/\s+/)[0]}` : ""}`,
+        `${named(el)}${owner ? ` in ${named(owner)}` : ""}${words ? ` "${words}"` : ""} (${Math.round(box.left)}–${Math.round(box.right)})`,
       );
       if (offenders.length === 4) break;
     }
@@ -536,6 +547,8 @@ const targets = () => {
   return out;
 };
 
+const WIDE_FONT = `* { font-family: "DejaVu Sans", Verdana, sans-serif !important; }`;
+
 const SPACING = `
   * { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; }
   p { margin-bottom: 2em !important; }
@@ -559,6 +572,15 @@ async function reflow(page: Page): Promise<string[]> {
       );
   };
 
+  // Letters are wider in some fonts than others, and a visitor's default font
+  // is not ours to choose, so the page is measured in a wide one: what fits in
+  // it fits in the narrower fonts too. (Where DejaVu Sans is not installed the
+  // browser falls back, and the check is only as strict as that font.)
+  await page.evaluate((css) => {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(css);
+    document.adoptedStyleSheets = [sheet];
+  }, WIDE_FONT);
   await page.setViewportSize({ width: 320, height: 800 });
   await check("320 px");
   await page.evaluate(() => {
@@ -571,7 +593,7 @@ async function reflow(page: Page): Promise<string[]> {
   await page.evaluate((css) => {
     const sheet = new CSSStyleSheet();
     sheet.replaceSync(css);
-    document.adoptedStyleSheets = [sheet];
+    document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
   }, SPACING);
   await check("320 px, text spacing");
   if (original) await page.setViewportSize(original);
