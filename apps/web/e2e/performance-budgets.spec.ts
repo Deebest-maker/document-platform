@@ -316,9 +316,13 @@ const readings = (page: Page) =>
   );
 
 test.describe("what a visitor feels", () => {
+  // Layout shift, largest paint and event timing are Chromium's measurements,
+  // and the budgets are for a phone: what moves on a 412 px wide screen is
+  // not what moves on a desktop one, where the long guide under a tool sits
+  // below the fold and its shifts are not counted. One project measures it.
   test.skip(
-    ({ browserName }) => browserName !== "chromium",
-    "layout shift, largest paint and event timing are Chromium's measurements",
+    ({ browserName, isMobile }) => browserName !== "chromium" || !isMobile,
+    "measured on phone-sized Chromium (Pixel 7) only",
   );
 
   test("every page paints soon and holds still, on a slow phone", async ({
