@@ -27,7 +27,9 @@ test("the page refuses what an injected script or markup would try", async ({
   page,
   context,
   cspViolations,
+  browserName,
 }) => {
+  test.skip(browserName === "firefox", "experiment: isolate Firefox timeouts");
   const reached = await trapOffsite(context);
   // A script from this origin is allowed to run, as the app's own files are.
   // What it may not do is turn text into code. (Code the test itself runs

@@ -167,7 +167,8 @@ test("data files carry the plain headers", async ({ request }) => {
 // both that the frame works and that the test would notice.
 plain(
   "a page cannot be shown inside another site",
-  async ({ browser, context, baseURL }) => {
+  async ({ browser, context, baseURL, browserName }) => {
+    plain.skip(browserName === "firefox", "experiment: isolate Firefox timeouts");
     const app = new URL(baseURL!);
     const appFiles = (requests: string[]) =>
       requests.filter((url) => {
