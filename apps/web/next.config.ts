@@ -49,11 +49,25 @@ const nextConfig: NextConfig = {
         headers: [...SECURITY_HEADERS],
       },
     ];
-    if (process.env.NODE_ENV === "production")
+    if (process.env.NODE_ENV === "production") {
       rules.push({
         source: "/_next/static/:path*",
         headers: [{ key: "Content-Security-Policy", value: WORKER_POLICY }],
       });
+      // PDF.js's own files (character maps, standard fonts, WebAssembly
+      // decoders) sit under a folder named for the exact version, so a file
+      // there never changes. Without this they were sent with max-age=0 and
+      // asked for again, and revalidated, on every visit (M7F, ADR-037).
+      rules.push({
+        source: "/vendor/pdfjs/:version/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      });
+    }
     if (!getSiteConfig().indexing)
       rules.push({
         source: "/:path*",
