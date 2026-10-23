@@ -13,6 +13,8 @@ overrides:
   sharp: "0.35.5"
   # Patched release for GHSA-587h-7wmj-h5pm (launch-editor path check). vite is reached only through vitest (test tooling).
   vite: "8.3.4"
+  # Patched release for GHSA-mrhx-c7xc-m3w5 (memory exhaustion validating oversized collections). zod is reached only through eslint-config-next (lint tooling); no shipped code uses it.
+  zod: "4.6.7"
 
 # These are the only dependency install scripts required by this foundation.
 allowBuilds:
