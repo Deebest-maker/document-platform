@@ -34,7 +34,7 @@ test("FR-ORG-001/002: keyboard reorder exports the exact displayed order", async
   });
 
   const pageOneLater = page.getByRole("button", {
-    name: "Move page 1 later",
+    name: "Move later, page 1",
     exact: true,
   });
   await pageOneLater.focus();
@@ -42,7 +42,7 @@ test("FR-ORG-001/002: keyboard reorder exports the exact displayed order", async
   await expect(pageOneLater).toBeFocused();
   await page.keyboard.press("Enter");
   const pageFourEarlier = page.getByRole("button", {
-    name: "Move page 4 earlier",
+    name: "Move earlier, page 4",
     exact: true,
   });
   await pageFourEarlier.focus();
@@ -146,7 +146,7 @@ test("FR-PRV-001: complete local workflow releases workers, canvases and URLs", 
     timeout: 15_000,
   });
   await page
-    .getByRole("button", { name: "Move page 1 later", exact: true })
+    .getByRole("button", { name: "Move later, page 1", exact: true })
     .click();
   await page.getByRole("button", { name: "Export organized PDF" }).click();
   const link = page.getByRole("link", { name: "Download organized PDF" });

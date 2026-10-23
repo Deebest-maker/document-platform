@@ -17,6 +17,7 @@ body {
   color: var(--color-text);
   font-family: var(--font-ui);
   line-height: 1.6;
+  overflow-wrap: break-word;
 }
 a {
   text-underline-offset: 0.2em;
@@ -1089,6 +1090,25 @@ nav a {
   }
 }
 
+/* Remove PDF Metadata result. The before/after table scrolls inside its own
+   keyboard-focusable region, so a narrow screen or large text never makes the
+   page scroll sideways. */
+.remove-metadata-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.remove-metadata-before-after {
+  border-collapse: collapse;
+  min-width: 100%;
+}
+.remove-metadata-before-after th,
+.remove-metadata-before-after td {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+
 /* M3B.3 PDF to Text workspace. Keep extracted text in a text node under a
    <pre> element; never render via dangerouslySetInnerHTML or any HTML/Markdown
    interpretation path. The preview is capped by maxPreviewCharacters so the
@@ -1174,8 +1194,10 @@ nav a {
   border: 1px solid var(--color-border);
 }
 .compress-options legend {
+  max-width: 100%;
   padding-inline: var(--space-2);
   font-weight: 700;
+  overflow-wrap: anywhere;
 }
 .compress-options label {
   display: flex;
@@ -1216,7 +1238,7 @@ nav a {
 }
 .compress-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
   gap: var(--space-3);
   margin: var(--space-6) 0 0;
 }

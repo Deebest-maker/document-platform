@@ -5,6 +5,7 @@ import {
   useEffect,
   useId,
   useMemo,
+  useRef,
   useState,
   useSyncExternalStore,
   type ReactNode,
@@ -77,12 +78,26 @@ export function RemovePdfMetadataWorkspace({
     () => session.getSnapshot(),
   );
   const announcementId = useId();
+  const workflowRef = useRef<HTMLDivElement>(null);
+  const previousStateRef = useRef(snapshot.state);
 
   useEffect(() => {
     return () => {
       session.dispose();
     };
   }, [session]);
+
+  // Moving between states replaces the controls the person was on, so focus
+  // would otherwise fall back to the page. Move it to the new state's heading,
+  // as the other tools do.
+  useEffect(() => {
+    if (previousStateRef.current !== snapshot.state) {
+      workflowRef.current
+        ?.querySelector<HTMLElement>("[data-state-heading]")
+        ?.focus();
+      previousStateRef.current = snapshot.state;
+    }
+  }, [snapshot.state]);
 
   const handleFiles = useCallback(
     (files: File[]) => {
@@ -218,7 +233,7 @@ export function RemovePdfMetadataWorkspace({
   );
 
   return (
-    <div className="remove-metadata-workflow">
+    <div className="remove-metadata-workflow" ref={workflowRef}>
       <p
         id={announcementId}
         className="visually-hidden"
@@ -264,39 +279,46 @@ function buildRemovedSummary(snapshot: RemoveMetadataSnapshot): string {
 function buildBeforeAfter(snapshot: RemoveMetadataSnapshot): ReactNode {
   if (!snapshot.before || !snapshot.after) return null;
   return (
-    <table className="remove-metadata-before-after">
-      <caption className="sr-only">
-        Metadata presence before and after cleaning
-      </caption>
-      <thead>
-        <tr>
-          <th scope="col">Field</th>
-          <th scope="col">Before</th>
-          <th scope="col">After</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">Standard Info entries</th>
-          <td>{snapshot.before.standardInfoCount}</td>
-          <td>{snapshot.after.standardInfoCount}</td>
-        </tr>
-        <tr>
-          <th scope="row">Custom Info entries</th>
-          <td>{snapshot.before.customInfoCount}</td>
-          <td>{snapshot.after.customInfoCount}</td>
-        </tr>
-        <tr>
-          <th scope="row">XMP metadata stream</th>
-          <td>{snapshot.before.xmpStreamPresent ? "present" : "absent"}</td>
-          <td>{snapshot.after.xmpStreamPresent ? "present" : "absent"}</td>
-        </tr>
-        <tr>
-          <th scope="row">Trailer identifier</th>
-          <td>{snapshot.before.trailerIdPresent ? "present" : "absent"}</td>
-          <td>{snapshot.after.trailerIdPresent ? "present" : "absent"}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div
+      className="remove-metadata-table-scroll"
+      role="region"
+      aria-label="Metadata before and after cleaning"
+      tabIndex={0}
+    >
+      <table className="remove-metadata-before-after">
+        <caption className="visually-hidden">
+          Metadata presence before and after cleaning
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Field</th>
+            <th scope="col">Before</th>
+            <th scope="col">After</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Standard Info entries</th>
+            <td>{snapshot.before.standardInfoCount}</td>
+            <td>{snapshot.after.standardInfoCount}</td>
+          </tr>
+          <tr>
+            <th scope="row">Custom Info entries</th>
+            <td>{snapshot.before.customInfoCount}</td>
+            <td>{snapshot.after.customInfoCount}</td>
+          </tr>
+          <tr>
+            <th scope="row">XMP metadata stream</th>
+            <td>{snapshot.before.xmpStreamPresent ? "present" : "absent"}</td>
+            <td>{snapshot.after.xmpStreamPresent ? "present" : "absent"}</td>
+          </tr>
+          <tr>
+            <th scope="row">Trailer identifier</th>
+            <td>{snapshot.before.trailerIdPresent ? "present" : "absent"}</td>
+            <td>{snapshot.after.trailerIdPresent ? "present" : "absent"}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   );
 }

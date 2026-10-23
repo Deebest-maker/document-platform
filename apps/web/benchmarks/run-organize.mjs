@@ -136,10 +136,10 @@ try {
       const reorderStarted = performance.now();
       for (let iteration = 0; iteration < 12; iteration++) {
         await page
-          .getByRole("button", { name: "Move page 1 later", exact: true })
+          .getByRole("button", { name: "Move later, page 1", exact: true })
           .click();
         await page
-          .getByRole("button", { name: "Move page 1 earlier", exact: true })
+          .getByRole("button", { name: "Move earlier, page 1", exact: true })
           .click();
       }
       const reorderMs = performance.now() - reorderStarted;
@@ -184,7 +184,7 @@ try {
       }
       if (fixture.count === 10 && viewport.label === "desktop") {
         await page
-          .getByRole("button", { name: "Move page 1 later", exact: true })
+          .getByRole("button", { name: "Move later, page 1", exact: true })
           .click();
         await page
           .getByRole("button", { name: "Export organized PDF", exact: true })

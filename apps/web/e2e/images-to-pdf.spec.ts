@@ -224,8 +224,8 @@ test("FR-I2P-001/002/004: local previews, C A B reorder, valid ordered PDF, and 
   ];
   await page.getByLabel("Choose images").setInputFiles(files);
   await expect(page.locator(".image-card img")).toHaveCount(3);
-  await page.getByRole("button", { name: "Move image 3 earlier" }).click();
-  await page.getByRole("button", { name: "Move image 2 earlier" }).click();
+  await page.getByRole("button", { name: "Move earlier, image 3" }).click();
+  await page.getByRole("button", { name: "Move earlier, image 2" }).click();
   await expect(page.locator(".image-card strong")).toHaveText([
     "PRIVATE-C.jpg",
     "PRIVATE-A.jpg",
