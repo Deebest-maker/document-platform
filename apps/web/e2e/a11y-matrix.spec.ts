@@ -159,12 +159,22 @@ const describeFocus = (): Stop => {
   walk.seen.add(el);
   walk.last = el;
 
+  // Look at the middle of the part of the element that is on screen: a tall
+  // element can be larger than the window, and its middle is not on screen.
   const box = el.getBoundingClientRect();
-  const x = Math.min(Math.max(box.left + box.width / 2, 0), innerWidth - 1);
-  const y = Math.min(Math.max(box.top + box.height / 2, 0), innerHeight - 1);
-  const top = document.elementFromPoint(x, y);
-  const covered =
-    top && !(el.contains(top) || top.contains(el)) ? nameOf(top) : null;
+  const left = Math.max(box.left, 0);
+  const right = Math.min(box.right, innerWidth);
+  const above = Math.max(box.top, 0);
+  const below = Math.min(box.bottom, innerHeight);
+  let covered: string | null = null;
+  if (right > left && below > above) {
+    const top = document.elementFromPoint(
+      (left + right) / 2,
+      (above + below) / 2,
+    );
+    covered =
+      top && !(el.contains(top) || top.contains(el)) ? nameOf(top) : null;
+  }
 
   return {
     again,
@@ -248,8 +258,37 @@ async function keyboard(page: Page): Promise<string[]> {
       continue;
     }
     if (stop.same) {
-      found.push(`keyboard: focus is stuck on ${stop.key}`);
-      break;
+      // Some browsers have nowhere to send focus after the last control, so it
+      // stays there. That is the end of the order, not a trap, if nothing
+      // after it could take focus.
+      const last = await page.evaluate(() => {
+        const stops = Array.from(
+          document.querySelectorAll<HTMLElement>(
+            "a[href], button, input, select, textarea, summary, [tabindex], [contenteditable='true']",
+          ),
+        ).filter(
+          (el) =>
+            !el.matches(":disabled") &&
+            el.tabIndex >= 0 &&
+            el.getClientRects().length > 0 &&
+            getComputedStyle(el).visibility !== "hidden" &&
+            !el.closest("[inert], [hidden]"),
+        );
+        return stops[stops.length - 1] === document.activeElement;
+      });
+      if (!last) {
+        found.push(`keyboard: focus is stuck on ${stop.key}`);
+        break;
+      }
+      if (++ends === 2) break;
+      // Start again from the top, as a visitor pressing Tab from the address
+      // bar would.
+      await page.evaluate(() => {
+        (document.activeElement as HTMLElement | null)?.blur();
+        window.scrollTo(0, 0);
+        document.getSelection()?.collapse(document.body, 0);
+      });
+      continue;
     }
     if (stop.again) break; // came round to the start again
     if (stop.covered)
@@ -538,9 +577,21 @@ const targets = () => {
       height = Math.max(height, labelBox.height);
     }
     if (hiddenClass(el) && el.matches("input")) continue;
+    const name = `${el.tagName.toLowerCase()} "${(el.getAttribute("aria-label") ?? el.textContent ?? (el as HTMLInputElement).id ?? "").trim().slice(0, 30)}"`;
     if (width + 0.5 < MIN || height + 0.5 < MIN)
       out.push(
-        `${el.tagName.toLowerCase()} "${(el.getAttribute("aria-label") ?? el.textContent ?? "").trim().slice(0, 30)}" is ${Math.round(width)}×${Math.round(height)}`,
+        `target too small (WCAG 2.5.8): ${name} is ${Math.round(width)}×${Math.round(height)}`,
+      );
+    // A one-line field is one line tall. (A flex basis meant as a width once
+    // made a text field 320 px tall on phones.)
+    if (
+      el.matches(
+        "input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='range'])",
+      ) &&
+      box.height > 120
+    )
+      out.push(
+        `a one-line field is ${Math.round(box.height)} px tall: ${name}`,
       );
     if (out.length === 4) break;
   }
@@ -624,11 +675,7 @@ async function audit(page: Page, scene: Scene): Promise<string[]> {
   found.push(...(await names(page)));
   found.push(...(await fieldErrors(page)));
   found.push(...(await fieldEdges(page)));
-  found.push(
-    ...(await page.evaluate(targets)).map(
-      (item) => `target too small (WCAG 2.5.8): ${item}`,
-    ),
-  );
+  found.push(...(await page.evaluate(targets)));
   found.push(...(await keyboard(page)));
   found.push(...(await reflow(page)));
   return found;

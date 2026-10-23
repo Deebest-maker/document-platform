@@ -1096,6 +1096,11 @@ nav a {
   .split-group__controls button {
     width: 100%;
   }
+  /* The input's 20rem flex basis is a width in a row; in a column it would be
+     a height (a 320 px tall field on a phone). */
+  .split-group__controls input {
+    flex: none;
+  }
 }
 
 /* Remove PDF Metadata result. The before/after table scrolls inside its own
