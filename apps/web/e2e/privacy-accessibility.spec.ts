@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { test, expect } from "./fixtures";
+import { test, expect, pageScreenshot } from "./fixtures";
 
 const routes = [
   "/",
@@ -72,7 +72,7 @@ for (const route of [
       ),
     ).toBe(true);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await page.screenshot({
+    await pageScreenshot(page, {
       path: testInfo.outputPath(
         `reflow-${route === "/" ? "home" : route.slice(1)}.png`,
       ),

@@ -1,19 +1,93 @@
 import { isCancelledPrefetch } from "./benign-page-errors";
 import {
+  noAllowanceSpent,
+  withoutScreenshotArtefacts,
+} from "./screenshot-artefacts";
+import {
   test as base,
   expect,
   type Locator,
   type Page,
 } from "@playwright/test";
 
+// What the browser reports when the page's Content Security Policy (M7C,
+// ADR-034) stops something. Two sources, because neither sees everything: the
+// page's own `securitypolicyviolation` events, and the console lines browsers
+// print for a refusal, which also cover Web Workers. The check at the end of
+// every test is that nothing was refused. A test that provokes a refusal on
+// purpose reads and clears them with `take()`.
+export interface CspViolations {
+  take(): string[];
+}
+
+const CONSOLE_REFUSAL = /Content[ -]Security[ -]Policy|^Refused to /i;
+
+// Screenshots taken in this test, per page. WebKit's screenshot code adds a
+// style element of its own, which the policy refuses; see screenshot-artefacts.ts.
+// Take screenshots with pageScreenshot() or evidenceScreenshot() so they count.
+const screenshotsTaken = new WeakMap<Page, number>();
+const countScreenshot = (page: Page) =>
+  screenshotsTaken.set(page, (screenshotsTaken.get(page) ?? 0) + 1);
+
+export async function pageScreenshot(
+  page: Page,
+  options: Parameters<Page["screenshot"]>[0],
+): Promise<void> {
+  countScreenshot(page);
+  await page.screenshot(options);
+}
+
+// The watch on its own, for tests that attack the policy on purpose and so
+// cannot also run under the request audit below.
+export const withCspWatch = base.extend<{ cspViolations: CspViolations }>({
+  cspViolations: [
+    async ({ page, context, browserName }, use) => {
+      const seen: string[] = [];
+      const spent = noAllowanceSpent();
+      await context.exposeBinding("__reportCspViolation", (_source, line) => {
+        seen.push(String(line).slice(0, 300));
+      });
+      await context.addInitScript(() => {
+        document.addEventListener("securitypolicyviolation", (event) => {
+          const report = (
+            window as unknown as { __reportCspViolation(line: string): void }
+          ).__reportCspViolation;
+          report(
+            `${event.effectiveDirective || event.violatedDirective} refused ` +
+              `${event.blockedURI || "inline"} ` +
+              `(${event.sourceFile || "page"}:${event.lineNumber})`,
+          );
+        });
+      });
+      page.on("console", (message) => {
+        if (CONSOLE_REFUSAL.test(message.text()))
+          seen.push(`console: ${message.text()}`.slice(0, 300));
+      });
+      await use({
+        take: () =>
+          withoutScreenshotArtefacts(
+            seen.splice(0),
+            screenshotsTaken.get(page) ?? 0,
+            spent,
+            browserName,
+          ),
+      });
+    },
+    { scope: "test" },
+  ],
+});
+
 // Observe the entire context, including dedicated workers. Keep diagnostics coarse.
-export const test = base.extend<{
+export const test = withCspWatch.extend<{
   requestAudit: void;
   allowProcessorRequests: boolean;
 }>({
   allowProcessorRequests: [false, { option: true }],
   requestAudit: [
-    async ({ page, context, baseURL, allowProcessorRequests }, use) => {
+    async (
+      { page, context, baseURL, allowProcessorRequests, cspViolations },
+      use,
+    ) => {
       // Keep what went wrong, not only how many times: a bare count is
       // unreadable in a CI annotation.
       const unexpected: string[] = [];
@@ -47,6 +121,10 @@ export const test = base.extend<{
         "No third-party, upload, processor or mutation requests",
       ).toEqual([]);
       expect(errors, "No browser runtime errors").toEqual([]);
+      expect(
+        cspViolations.take(),
+        "The Content Security Policy refused nothing",
+      ).toEqual([]);
     },
     { auto: true },
   ],
@@ -68,6 +146,7 @@ export async function evidenceScreenshot(
   const devicePixels = await page.evaluate(
     () => document.documentElement.scrollHeight * window.devicePixelRatio,
   );
+  countScreenshot(page);
   if (devicePixels <= MAX_EVIDENCE_PIXELS) {
     await page.screenshot({ path, fullPage: true });
   } else if (region) {
