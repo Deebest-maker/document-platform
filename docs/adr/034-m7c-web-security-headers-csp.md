@@ -1,6 +1,6 @@
 # ADR-034: Web security headers and Content Security Policy
 
-**Status:** Implemented under the approved M7 gate; owner acceptance pending
+**Status:** Implemented under the approved M7 gate; accepted by the Product Owner on 2026-10-23
 **Date:** 2026-10-22
 **Scope:** The headers the web app sends with its pages, scripts and data files; a Content Security Policy for pages and a separate one for Web Workers; the build step that makes the page policy possible on prerendered pages; the site's own 404 and error pages; and the tests that check all of it. No change to what any tool does, where any file is processed, the processor, or the page content.
 **Relates to:** document 05 section 13 (browser security) and section 19 (launch gates), document 09 (security headers and CSP coordinated with Next.js and ads/analytics), ADR-028 (`X-Robots-Tag`), ADR-033 (the processor's own headers), governance section 14.3.

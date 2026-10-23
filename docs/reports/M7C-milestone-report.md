@@ -1,7 +1,7 @@
 # M7C Milestone Report: Web security headers and Content Security Policy
 
 **Date:** 2026-10-22
-**Status:** Implemented; owner acceptance pending
+**Status:** Accepted by the Product Owner on 2026-10-23
 **Preceding slice:** M7B — processor abuse controls (accepted and merged, `39d954d`); CI reliability follow-up merged as `8591805`.
 **Part of:** M7 QA and hardening (governance §14.3), slice C of seven.
 **Decision record:** [ADR-034](../adr/034-m7c-web-security-headers-csp.md).
@@ -52,10 +52,11 @@ A nonce has to be new for every response, which would mean building every page o
 - **Test fixes found by the five-browser run.** WebKit's screenshot tool adds a style element the policy refuses, so the tests set aside exactly one such refusal per screenshot (WebKit only, unit tested). Firefox reports a blocked form by throwing; the test now accepts that. The framing test had passed whether or not the headers were present, because Chromium blocked its made-up test page for an unrelated reason; it now uses a real second site and a control, and fails when the framing headers are removed.
 - **`Referrer-Policy: no-referrer`** is a choice the plan left open; it is a one-line change if advertising later needs otherwise.
 
-## Decisions needed from the Product Owner
+## Decisions
 
-1. **Accept M7C**, or tell me what to change.
-2. **Referrer policy.** `no-referrer` is the strongest and fits the privacy position. Say so only if you want the browser default instead.
+1. **M7C accepted** by the Product Owner on 2026-10-23, including dropping `Cross-Origin-Opener-Policy`.
+2. **Referrer policy.** The Product Owner left the choice to engineering judgement; `no-referrer` stays, as the strongest option and the one that fits the privacy position. It is revisited at M9 if advertising needs otherwise.
+3. **Experiment branches.** 21 throwaway `check/` branches used to isolate the Firefox stalls remain on GitHub, because deleting branches is not possible from the engineering session. They hold nothing to keep and can be deleted from the repository's branches page.
 
 ## Recommended next
 
