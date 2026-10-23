@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, type ReactNode } from "react";
 import type { PageReference } from "@document-platform/pdf-browser/page-model";
 import type { PageErrorCode } from "@document-platform/pdf-browser/pages";
+import { pdfInputCopy } from "../../lib/pdf-input-copy";
 import type { ToolDefinition } from "@document-platform/tool-registry";
 import {
   FilePicker,
@@ -21,6 +22,7 @@ import type {
 const errors: Record<PageErrorCode, string> = {
   INVALID_PLAN: "That page order is not valid. Review the pages and try again.",
   INPUT_LIMIT: "Choose one PDF within the current size limit.",
+  ...pdfInputCopy,
   INVALID_PDF: "This PDF is damaged or unsupported. Choose another PDF.",
   ENCRYPTED_PDF:
     "Password-protected PDFs are not supported. Choose an unencrypted copy.",

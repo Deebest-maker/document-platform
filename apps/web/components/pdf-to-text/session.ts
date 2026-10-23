@@ -11,6 +11,8 @@ import type {
   PdfToTextResult,
 } from "@document-platform/pdf-browser/pdf-to-text";
 import type { PreviewDocument } from "@document-platform/pdf-browser/preview";
+import { validatePdfCandidate } from "@document-platform/pdf-browser/validation";
+import { pdfInputCopy } from "../../lib/pdf-input-copy";
 
 export type PdfTextWorkflowError =
   PageError["code"] | "ENGINE_LOAD_FAILED" | "CLIPBOARD_FAILED";
@@ -19,6 +21,7 @@ export const pdfTextErrorCopy: Record<PdfTextWorkflowError, string> = {
   INVALID_PLAN: "This PDF could not be analysed. Choose another file.",
   INPUT_LIMIT:
     "This PDF exceeds the current single-file size limit. Choose a smaller PDF.",
+  ...pdfInputCopy,
   INVALID_PDF: "This file could not be opened as a PDF. Choose another file.",
   ENCRYPTED_PDF:
     "This PDF is password-protected. Unlock it before extracting text.",
@@ -202,6 +205,21 @@ export class PdfTextSession {
     const controller = new AbortController();
     this.abort = controller;
     const fileName = safeFileName(file.name);
+    // The same first look every PDF tool gives a chosen file.
+    const refusal = validatePdfCandidate(file, {
+      maxFileBytes: this.pageLimits_.maxInputBytes,
+    });
+    if (refusal) {
+      this.abort = undefined;
+      this.publish({
+        ...empty(),
+        state: "error",
+        fileName,
+        error: refusal,
+        announcement: pdfTextErrorCopy[refusal],
+      });
+      return;
+    }
     this.publish({
       ...empty(),
       state: "loading",

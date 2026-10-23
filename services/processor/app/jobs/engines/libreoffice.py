@@ -118,8 +118,13 @@ class LibreOfficeEngine:
             sigterm_grace_seconds=_SIGTERM_GRACE_SECONDS,
         )
 
-        if result.returncode != 0:
+        # A negative code means the child was ended by a signal (out of
+        # memory, a crash): the service failed. Any other failure means the
+        # converter ran and did not accept the document.
+        if result.returncode < 0:
             raise ProcessorError(ErrorCode.INTERNAL)
+        if result.returncode != 0:
+            raise ProcessorError(ErrorCode.CONVERSION_FAILED)
 
         # ── Rename output ───────────────────────────────────────────
         # LibreOffice names the output after the input stem.
@@ -131,7 +136,11 @@ class LibreOfficeEngine:
             if len(pdfs) == 1:
                 lo_output = pdfs[0]
             elif len(pdfs) == 0:
-                raise ProcessorError(ErrorCode.INTERNAL)
+                # LibreOffice exits 0 with "source file could not be loaded"
+                # and writes nothing when it cannot read the document (a
+                # package that passes the preflight but has unreadable XML).
+                # Measured against the real engine in M7D.
+                raise ProcessorError(ErrorCode.CONVERSION_FAILED)
             else:
                 # Multiple PDFs — unexpected; take the newest
                 lo_output = max(pdfs, key=lambda p: p.stat().st_mtime)

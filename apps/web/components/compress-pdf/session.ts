@@ -12,6 +12,8 @@ import {
   type ImageSkipReason,
   type PageErrorCode,
 } from "@document-platform/pdf-browser/compress";
+import { validatePdfCandidate } from "@document-platform/pdf-browser/validation";
+import { pdfInputCopy } from "../../lib/pdf-input-copy";
 
 export type CompressWorkflowError = PageErrorCode;
 
@@ -19,6 +21,7 @@ export const compressErrorCopy: Record<CompressWorkflowError, string> = {
   INVALID_PLAN: "This request could not be started. Choose the PDF again.",
   INPUT_LIMIT:
     "This PDF exceeds the current size limit for compression. Choose a smaller PDF.",
+  ...pdfInputCopy,
   INVALID_PDF: "This file could not be opened as a PDF. Choose another file.",
   ENCRYPTED_PDF:
     "This PDF is password-protected. Unlock it before compressing.",
@@ -172,16 +175,19 @@ export class CompressSession {
     this.abort();
     this.revokeCurrentUrl();
     this.generation += 1;
-    const { maxInputBytes } = this.deps.limits;
-    if (file.size < 1 || file.size > maxInputBytes) {
+    // The same first look every PDF tool gives a chosen file.
+    const refusal = validatePdfCandidate(file, {
+      maxFileBytes: this.deps.limits.maxInputBytes,
+    });
+    if (refusal) {
       this.file = undefined;
       this.set({
         state: "error",
         profile: this.snapshot.profile,
         fileName: file.name,
         inputBytes: file.size,
-        error: "INPUT_LIMIT",
-        announcement: compressErrorCopy.INPUT_LIMIT,
+        error: refusal,
+        announcement: compressErrorCopy[refusal],
       });
       return;
     }

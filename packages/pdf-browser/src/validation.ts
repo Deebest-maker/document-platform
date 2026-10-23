@@ -1,10 +1,21 @@
 import { PdfError } from "./errors";
-import type { MergeLimits, PdfErrorCode, PdfInput } from "./types";
+import type { MergeLimits, PdfInput } from "./types";
 
+/** Why a chosen file is refused before anything is read. */
+export type PdfCandidateIssue =
+  "EMPTY_INPUT" | "UNSUPPORTED_TYPE" | "INPUT_LIMIT";
+
+/**
+ * The first look at a chosen PDF, from what the browser reports about it and
+ * before any of it is read. Every PDF tool uses this one rule, so the same file
+ * gets the same answer everywhere and the answer names the real cause: empty,
+ * not named and typed as a PDF, or over the size limit. What is inside the file
+ * is checked later, by the tool that opens it.
+ */
 export function validatePdfCandidate(
   file: Pick<File, "name" | "type" | "size">,
-  limits: MergeLimits,
-): PdfErrorCode | undefined {
+  limits: Pick<MergeLimits, "maxFileBytes">,
+): PdfCandidateIssue | undefined {
   if (file.size === 0) return "EMPTY_INPUT";
   if (
     !/\.pdf$/i.test(file.name) ||

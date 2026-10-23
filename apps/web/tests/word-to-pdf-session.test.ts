@@ -87,10 +87,11 @@ describe("WordToPdfSession", () => {
     expect(session.getSnapshot().error).toBe("UNSUPPORTED_TYPE");
   });
 
-  it("rejects empty files", () => {
+  it("rejects empty files as empty, not as the wrong type", () => {
     session.select([makeFile("empty.docx", 0)]);
     expect(session.getSnapshot().state).toBe("error");
-    expect(session.getSnapshot().error).toBe("UNSUPPORTED_TYPE");
+    expect(session.getSnapshot().error).toBe("EMPTY_INPUT");
+    expect(session.getSnapshot().announcement).toMatch(/empty/i);
   });
 
   it("rejects files exceeding maxFileBytes", () => {
@@ -224,6 +225,29 @@ describe("WordToPdfSession", () => {
     await session.run();
     expect(session.getSnapshot().error).toBe("SERVER_UNAVAILABLE");
   });
+
+  it.each([
+    ["INVALID_INPUT", 400, "INVALID_DOCUMENT", /could not be accepted/],
+    ["CONVERSION_FAILED", 422, "CONVERSION_FAILED", /could not finish/],
+    ["LIMIT_EXCEEDED", 413, "FILE_TOO_LARGE", /size limit/],
+    ["INTERNAL", 500, "SERVER_UNAVAILABLE", /not available/],
+  ])(
+    "maps a %s answer to a convert request to %s, and cleans up",
+    async (code, status, expected, wording) => {
+      deps.convert.mockRejectedValue(
+        new ProcessorClientError(code, "x", status),
+      );
+      session.select([makeFile("test.docx", 100)]);
+      await session.run();
+
+      const snap = session.getSnapshot();
+      expect(snap.state).toBe("error");
+      expect(snap.error).toBe(expected);
+      expect(snap.announcement).toMatch(wording);
+      expect(deps.deleteJob).toHaveBeenCalledTimes(1);
+      expect(deps.downloadOutput).not.toHaveBeenCalled();
+    },
+  );
 
   it("handles upload failure as UPLOAD_FAILED", async () => {
     deps.uploadInput.mockRejectedValue(new Error("connection lost"));

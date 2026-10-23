@@ -1,10 +1,12 @@
 import type { PageErrorCode } from "@document-platform/pdf-browser/pages";
 import type { ToolShellState } from "@document-platform/ui";
+import { pdfInputCopy } from "../../lib/pdf-input-copy";
 import type { PageSnapshot } from "../pdf-preview/preview-session";
 
 export const pageToolErrors: Record<PageErrorCode, string> = {
   INVALID_PLAN: "That page selection is not valid. Review it and try again.",
   INPUT_LIMIT: "Choose one PDF within the current size limit.",
+  ...pdfInputCopy,
   INVALID_PDF: "This PDF is damaged or unsupported. Choose another PDF.",
   ENCRYPTED_PDF:
     "Password-protected PDFs are not supported. Choose an unencrypted copy.",

@@ -115,6 +115,79 @@ class TestInputValidation:
         assert info.value.code is ErrorCode.INTERNAL
 
 
+# ── Which failures are the document's and which are the service's (M7D) ─
+
+
+def _fake_converter(tmp_path: Path, body: str) -> str:
+    """A stand-in for soffice: a tiny script with the given shell body."""
+    script = tmp_path / "fake-soffice"
+    script.write_text(f"#!/bin/sh\n{body}\n")
+    script.chmod(0o755)
+    return str(script)
+
+
+async def _convert_with(soffice: str, tmp_path: Path) -> ProcessorError:
+    workspace = tmp_path / "ws"
+    workspace.mkdir()
+    (workspace / "input.docx").write_bytes(_make_docx())
+    engine = LibreOfficeEngine(soffice_path=soffice, timeout_seconds=20.0)
+    with pytest.raises(ProcessorError) as info:
+        await engine.convert(
+            workspace=workspace,
+            input_path=workspace / "input.docx",
+            output_path=workspace / "word-to-pdf.pdf",
+            cancel_token=asyncio.Event(),
+        )
+    return info.value
+
+
+class TestWhoseFaultIsIt:
+    """A document the converter cannot read must not look like a server fault.
+
+    The web page tells the person "the server is not available, try again" for
+    an internal error, which sends them round in circles with a file that will
+    never convert.
+    """
+
+    @pytest.mark.asyncio
+    async def test_exit_zero_with_no_pdf_is_the_documents_fault(
+        self, tmp_path: Path
+    ) -> None:
+        # What soffice really does with an unreadable document: it says
+        # "source file could not be loaded", exits 0 and writes nothing.
+        soffice = _fake_converter(
+            tmp_path, "echo 'Error: source file could not be loaded' >&2; exit 0"
+        )
+        error = await _convert_with(soffice, tmp_path)
+        assert error.code is ErrorCode.CONVERSION_FAILED
+
+    @pytest.mark.asyncio
+    async def test_a_failing_exit_code_is_the_documents_fault(
+        self, tmp_path: Path
+    ) -> None:
+        error = await _convert_with(_fake_converter(tmp_path, "exit 3"), tmp_path)
+        assert error.code is ErrorCode.CONVERSION_FAILED
+
+    @pytest.mark.asyncio
+    async def test_being_killed_by_a_signal_is_the_services_fault(
+        self, tmp_path: Path
+    ) -> None:
+        # Out of memory or a crash says nothing about the document.
+        error = await _convert_with(_fake_converter(tmp_path, "kill -9 $$"), tmp_path)
+        assert error.code is ErrorCode.INTERNAL
+
+    @pytest.mark.asyncio
+    async def test_nothing_from_the_failure_reaches_the_error(
+        self, tmp_path: Path
+    ) -> None:
+        soffice = _fake_converter(
+            tmp_path, "echo 'secret /jobs/abc/input.docx' >&2; exit 1"
+        )
+        error = await _convert_with(soffice, tmp_path)
+        assert "secret" not in error.message
+        assert "secret" not in str(error)
+
+
 # ── Integration tests (only with soffice) ───────────────────────────────
 
 
@@ -193,3 +266,46 @@ class TestConversion:
             assert out.exists()
         finally:
             del os.environ["SUPER_SECRET_KEY"]
+
+
+def _docx_with_document(document_xml: str) -> bytes:
+    source = zipfile.ZipFile(io.BytesIO(_make_docx()))
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        for info in source.infolist():
+            data = source.read(info.filename)
+            if info.filename == "word/document.xml":
+                data = document_xml.encode()
+            zf.writestr(info.filename, data)
+    return buf.getvalue()
+
+
+@skip_no_soffice
+class TestUnreadableDocumentsWithTheRealConverter:
+    """Packages that pass the preflight but that LibreOffice cannot load."""
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "document_xml",
+        [
+            "this is not xml at all <<<",
+            '<?xml version="1.0"?><w:document xmlns:w="urn:w"><w:body><w:p>',
+        ],
+        ids=["not-xml", "truncated-xml"],
+    )
+    async def test_conversion_failed_not_internal(
+        self, tmp_path: Path, document_xml: str
+    ) -> None:
+        workspace = tmp_path / "ws"
+        workspace.mkdir()
+        (workspace / "input.docx").write_bytes(_docx_with_document(document_xml))
+        engine = LibreOfficeEngine(timeout_seconds=60.0)
+        with pytest.raises(ProcessorError) as info:
+            await engine.convert(
+                workspace=workspace,
+                input_path=workspace / "input.docx",
+                output_path=workspace / "word-to-pdf.pdf",
+                cancel_token=asyncio.Event(),
+            )
+        assert info.value.code is ErrorCode.CONVERSION_FAILED
+        assert not (workspace / "word-to-pdf.pdf").exists()

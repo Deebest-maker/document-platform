@@ -1,4 +1,6 @@
 import { PageError, pageLimits } from "@document-platform/pdf-browser/pages";
+import { validatePdfCandidate } from "@document-platform/pdf-browser/validation";
+import { pdfInputCopy } from "../../lib/pdf-input-copy";
 import type {
   MetadataPhase,
   MetadataRemovalLimits,
@@ -16,6 +18,7 @@ export const removeMetadataErrorCopy: Record<
   INVALID_PLAN: "This PDF could not be analysed. Choose another file.",
   INPUT_LIMIT:
     "This PDF exceeds the current single-file size limit. Choose a smaller PDF.",
+  ...pdfInputCopy,
   INVALID_PDF: "This file could not be opened as a PDF. Choose another file.",
   ENCRYPTED_PDF:
     "This PDF is password-protected. Unlock it before removing metadata.",
@@ -168,6 +171,21 @@ export class RemoveMetadataSession {
     const controller = new AbortController();
     this.controller = controller;
     this.revokeCurrentUrl();
+    // The same first look every PDF tool gives a chosen file.
+    const refusal = validatePdfCandidate(file, {
+      maxFileBytes: (this.deps.limits ?? DEFAULT_LIMITS).maxInputBytes,
+    });
+    if (refusal) {
+      this.controller = undefined;
+      this.set({
+        state: "error",
+        fileName: file.name,
+        inputBytes: file.size,
+        error: refusal,
+        announcement: removeMetadataErrorCopy[refusal],
+      });
+      return;
+    }
     this.set({
       state: "loading",
       fileName: file.name,

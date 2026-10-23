@@ -17,12 +17,15 @@ import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api import health as health_api
 from app.api import jobs as jobs_api
 from app.config import Settings, load_settings
+from app.errors import MESSAGES, STATUS, ErrorCode
 from app.jobs.client import new_salt
 from app.jobs.engines.fake import FakeEngine
 from app.jobs.engines.libreoffice import LibreOfficeEngine
@@ -113,6 +116,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         openapi_url=None,
         lifespan=lifespan,
     )
+
+    @app.exception_handler(RequestValidationError)
+    async def _malformed_request(
+        _request: Request, _error: RequestValidationError
+    ) -> JSONResponse:
+        # The framework's own answer lists the field it disliked and echoes
+        # what the caller sent. A failure here speaks the same fixed
+        # vocabulary as every other (see app/errors.py) and repeats nothing.
+        code = ErrorCode.INVALID_INPUT
+        return JSONResponse(
+            status_code=STATUS[code],
+            content={"detail": {"code": code.value, "message": MESSAGES[code]}},
+        )
 
     if settings.environment == "development" and settings.dev_cors_origins:
         app.add_middleware(

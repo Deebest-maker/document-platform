@@ -134,10 +134,10 @@ describe("RemoveMetadataSession", () => {
     for (const name of [
       "MY-SECRET-PAYROLL.pdf",
       "日本語 財務報告.pdf",
-      "../etc/passwd",
-      "",
+      "../etc/passwd.pdf",
+      "x.pdf",
     ]) {
-      const file = new File([new Uint8Array([1])], name || "x", {
+      const file = new File([new Uint8Array([1])], name, {
         type: "application/pdf",
       });
       await session.run(file);
@@ -145,6 +145,27 @@ describe("RemoveMetadataSession", () => {
         "metadata-removed.pdf",
       );
     }
+  });
+
+  it("refuses an empty or mislabelled file for its own reason, before reading it", async () => {
+    const { session } = makeSession();
+    await session.run(new File([], "empty.pdf", { type: "application/pdf" }));
+    expect(session.getSnapshot()).toMatchObject({
+      state: "error",
+      error: "EMPTY_INPUT",
+      announcement: removeMetadataErrorCopy.EMPTY_INPUT,
+    });
+    await session.run(
+      new File([new Uint8Array([1])], "../etc/passwd", {
+        type: "application/pdf",
+      }),
+    );
+    expect(session.getSnapshot()).toMatchObject({
+      state: "error",
+      error: "UNSUPPORTED_TYPE",
+      announcement: removeMetadataErrorCopy.UNSUPPORTED_TYPE,
+    });
+    expect(session.getSnapshot().result).toBeUndefined();
   });
 
   it("keeps the source filename out of the result URL and the announcement", async () => {

@@ -10,7 +10,8 @@ Governance §10.1 requirements addressed:
     * Safe path names (no traversal, absolute, NUL, backslash, duplicates)
     * Bounded entry count, bounded expanded bytes, compression-ratio control
     * Counting-inflate pass (never rely on zipfile alone for bomb protection)
-    * DTD rejection in parsed XML parts
+    * DTD and entity-declaration rejection in every XML part, and UTF-8 only,
+      so the scan cannot be dodged by changing the text encoding
 
 This module is pure-stdlib — no external dependency.
 """
@@ -18,6 +19,7 @@ This module is pure-stdlib — no external dependency.
 from __future__ import annotations
 
 import io
+import re
 import zipfile
 from pathlib import PurePosixPath
 from typing import Final
@@ -40,6 +42,27 @@ MAX_COMPRESSION_RATIO: Final[float] = 100.0
 
 COUNTING_INFLATE_CHUNK: Final[int] = 64 * 1024  # 64 KiB
 """Chunk size for the counting-inflate pass."""
+
+# ── XML parts: no DTDs, UTF-8 only ──────────────────────────────────────
+
+_XML_SUFFIXES: Final[tuple[str, ...]] = (".xml", ".rels")
+"""Package parts that are XML. Everything else (images, fonts, embedded
+objects) is not parsed by LibreOffice as XML and is not scanned."""
+
+_DTD_MARKERS: Final[tuple[bytes, ...]] = (b"<!doctype", b"<!entity")
+"""A Word document never needs a DTD. Entity declarations are how an XML bomb
+or an external-entity read is written, so either marker rejects the file.
+Compared in lower case, because rejecting too much costs nothing here."""
+
+_MARKER_OVERLAP: Final[int] = max(len(marker) for marker in _DTD_MARKERS) - 1
+"""Bytes carried from one chunk to the next so a marker split by a chunk
+boundary is still found."""
+
+_XML_HEAD_BYTES: Final[int] = 256
+
+_XML_DECLARED_ENCODING: Final[re.Pattern[bytes]] = re.compile(
+    rb"""<\?xml[^>]*?\bencoding\s*=\s*["']([^"']*)["']""", re.IGNORECASE
+)
 
 # ── OLE compound-document magic (legacy .doc) ───────────────────────────
 
@@ -104,7 +127,6 @@ def validate_docx(data: bytes) -> None:
         _check_required_parts(zf)
         _check_macros(zf)
         _check_encryption(zf)
-        _check_xml_dtd(zf)
 
 
 # ── Internal checks ────────────────────────────────────────────────────
@@ -168,14 +190,24 @@ def _check_counting_inflate(zf: zipfile.ZipFile) -> None:
         if declared > MAX_SINGLE_ENTRY_BYTES:
             raise ProcessorError(ErrorCode.INVALID_INPUT)
 
-        # Actual counting-inflate
+        # Actual counting-inflate. XML parts are also scanned as they stream
+        # past, so no part is inflated twice.
+        is_xml = info.filename.lower().endswith(_XML_SUFFIXES)
         try:
             with zf.open(info) as f:
                 entry_bytes = 0
+                carry = b""
                 while True:
                     chunk = f.read(COUNTING_INFLATE_CHUNK)
                     if not chunk:
                         break
+                    if is_xml:
+                        if entry_bytes == 0:
+                            _check_xml_head(chunk[:_XML_HEAD_BYTES])
+                        window = carry + chunk.lower()
+                        if any(marker in window for marker in _DTD_MARKERS):
+                            raise ProcessorError(ErrorCode.INVALID_INPUT)
+                        carry = window[-_MARKER_OVERLAP:]
                     entry_bytes += len(chunk)
                     total_expanded += len(chunk)
                     if entry_bytes > MAX_SINGLE_ENTRY_BYTES:
@@ -225,31 +257,26 @@ def _check_encryption(zf: zipfile.ZipFile) -> None:
             pass  # Content_Types parse failure caught by required-parts check
 
 
-def _check_xml_dtd(zf: zipfile.ZipFile) -> None:
-    """Reject DTDs in OOXML XML parts.
+def _check_xml_head(head: bytes) -> None:
+    """Require an XML part to be UTF-8.
 
-    Only check the small structural XML files — we are not parsing the
-    entire document body for DTDs, just the package-level parts that we
-    open ourselves.
+    The DTD scan reads bytes, so it only means something for text it can read.
+    UTF-16 or UTF-32 text (with or without a byte-order mark) and an XML
+    declaration naming another encoding could hide a DOCTYPE from it. Word,
+    Google Docs, Pages and LibreOffice all write UTF-8, so a part that is not
+    is refused rather than guessed at.
     """
-    xml_parts = [
-        "[Content_Types].xml",
-        "_rels/.rels",
-        "word/_rels/document.xml.rels",
-    ]
-    names = set(zf.namelist())
-    for part in xml_parts:
-        if part not in names:
-            continue
-        try:
-            raw = zf.read(part)
-            text = raw.decode("utf-8", errors="replace")
-            # Check for DOCTYPE declarations
-            if "<!DOCTYPE" in text or "<!ENTITY" in text:
-                raise ProcessorError(ErrorCode.INVALID_INPUT)
-        except ProcessorError:
-            raise
-        except Exception:
-            # Parse failure in a non-required part is OK; required parts
-            # are enforced separately.
-            pass
+    if head.startswith(b"\xef\xbb\xbf"):
+        head = head[3:]
+    if not head:
+        return
+    # A NUL in the first bytes, or a first character that is not "<", is how
+    # UTF-16/32 text and byte-order marks show up.
+    if b"\x00" in head[:4]:
+        raise ProcessorError(ErrorCode.INVALID_INPUT)
+    head = head.lstrip(b" \t\r\n")
+    if head and not head.startswith(b"<"):
+        raise ProcessorError(ErrorCode.INVALID_INPUT)
+    declared = _XML_DECLARED_ENCODING.match(head)
+    if declared and declared.group(1).strip().lower() != b"utf-8":
+        raise ProcessorError(ErrorCode.INVALID_INPUT)

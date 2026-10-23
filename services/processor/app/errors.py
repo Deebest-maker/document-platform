@@ -17,6 +17,10 @@ class ErrorCode(StrEnum):
     INVALID_JOB = "invalid_job"
     INVALID_TOKEN = "invalid_token"
     INVALID_INPUT = "invalid_input"
+    # The converter ran normally and could not turn this document into a PDF
+    # (it could not load it). That is the document's fault, not the service's,
+    # so it is not INTERNAL and the caller is not told to retry the same file.
+    CONVERSION_FAILED = "conversion_failed"
     LIMIT_EXCEEDED = "limit_exceeded"
     CANCELLED = "cancelled"
     CONFLICT = "conflict"
@@ -32,6 +36,7 @@ MESSAGES: Final[dict[ErrorCode, str]] = {
     ErrorCode.INVALID_JOB: "This job does not exist or has expired.",
     ErrorCode.INVALID_TOKEN: "This request is not authorized for this job.",
     ErrorCode.INVALID_INPUT: "The uploaded file could not be accepted.",
+    ErrorCode.CONVERSION_FAILED: "The document could not be converted.",
     ErrorCode.LIMIT_EXCEEDED: "The request exceeds a configured processing limit.",
     ErrorCode.CANCELLED: "The job was cancelled before it could complete.",
     ErrorCode.CONFLICT: "The job is not in a state that permits this operation.",
@@ -66,6 +71,7 @@ STATUS: Final[dict[ErrorCode, int]] = {
     ErrorCode.INVALID_JOB: 404,
     ErrorCode.INVALID_TOKEN: 401,
     ErrorCode.INVALID_INPUT: 400,
+    ErrorCode.CONVERSION_FAILED: 422,
     ErrorCode.LIMIT_EXCEEDED: 413,
     ErrorCode.CANCELLED: 409,
     ErrorCode.CONFLICT: 409,

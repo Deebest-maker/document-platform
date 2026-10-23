@@ -1,7 +1,7 @@
 # M7C Milestone Report: Web security headers and Content Security Policy
 
 **Date:** 2026-10-22
-**Status:** Accepted by the Product Owner on 2026-10-23
+**Status:** Accepted by the Product Owner on 2026-10-23; merged (`03b4186`)
 **Preceding slice:** M7B — processor abuse controls (accepted and merged, `39d954d`); CI reliability follow-up merged as `8591805`.
 **Part of:** M7 QA and hardening (governance §14.3), slice C of seven.
 **Decision record:** [ADR-034](../adr/034-m7c-web-security-headers-csp.md).
