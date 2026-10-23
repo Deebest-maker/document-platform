@@ -25,6 +25,8 @@ import {
 
 export type ConversionErrorCode =
   | "UNSUPPORTED_TYPE"
+  | "EMPTY_INPUT"
+  | "INVALID_DOCUMENT"
   | "FILE_TOO_LARGE"
   | "UPLOAD_FAILED"
   | "CONVERSION_FAILED"
@@ -36,6 +38,12 @@ export type ConversionErrorCode =
 export const errorCopy: Record<ConversionErrorCode, string> = {
   UNSUPPORTED_TYPE:
     "This file is not a supported DOCX document. Choose a .docx file.",
+  EMPTY_INPUT: "This file is empty. Choose a Word document (.docx).",
+  // The server refuses with one code for every reason it will not take a
+  // document (not a real .docx, an old .doc renamed, password-protected, has
+  // macros, or is built to expand enormously), and by design does not say which.
+  INVALID_DOCUMENT:
+    "This document could not be accepted. It may be damaged, password-protected, macro-enabled, or an older .doc file renamed to .docx. Save it as a plain .docx and try again.",
   FILE_TOO_LARGE:
     "This file exceeds the size limit. Choose a smaller document.",
   UPLOAD_FAILED:
@@ -161,7 +169,7 @@ export class WordToPdfSession {
   private validateFile(file: File): ConversionErrorCode | undefined {
     const name = file.name.toLowerCase();
     if (!name.endsWith(".docx")) return "UNSUPPORTED_TYPE";
-    if (file.size === 0) return "UNSUPPORTED_TYPE";
+    if (file.size === 0) return "EMPTY_INPUT";
     if (file.size > this.maxFileBytes) return "FILE_TOO_LARGE";
     return undefined;
   }
@@ -388,7 +396,10 @@ function mapProcessorError(
     if (err.code === "RATE_LIMITED" || err.status === 429)
       return "RATE_LIMITED";
     if (err.code === "LIMIT_EXCEEDED") return "FILE_TOO_LARGE";
-    if (err.code === "INVALID_INPUT") return "UNSUPPORTED_TYPE";
+    if (err.code === "INVALID_INPUT") return "INVALID_DOCUMENT";
+    // The converter ran and could not read the document: the document's
+    // fault, so retrying the same file is not the advice (M7D).
+    if (err.code === "CONVERSION_FAILED") return "CONVERSION_FAILED";
     if (err.status === 0 || err.status >= 500) return "SERVER_UNAVAILABLE";
   }
   return fallback;

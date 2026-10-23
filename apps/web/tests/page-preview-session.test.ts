@@ -230,3 +230,33 @@ it("aborts split generation and ignores a stale completion after reset", async (
   expect(createUrl).not.toHaveBeenCalled();
   expect(session.getSnapshot().state).toBe("empty");
 });
+
+// M7D (ADR-035): the page tools and PDF to JPG refuse a file for its own
+// reason, not all as "over the size limit", and before opening anything.
+it.each([
+  ["empty.pdf", [], "application/pdf", "EMPTY_INPUT"],
+  ["notes.txt", ["%PDF-synthetic"], "text/plain", "UNSUPPORTED_TYPE"],
+  ["report", ["%PDF-synthetic"], "application/pdf", "UNSUPPORTED_TYPE"],
+  ["a.pdf", ["%PDF-synthetic"], "image/png", "UNSUPPORTED_TYPE"],
+] as const)(
+  "refuses %s as %s without opening it",
+  async (name, parts, type, code) => {
+    const open = vi.fn();
+    const session = new PreviewSession({
+      open,
+      transform: vi.fn(),
+      id: () => "one",
+      createUrl: vi.fn(),
+      revokeUrl: vi.fn(),
+    });
+    await session.setSource(new File([...parts], name, { type }));
+    expect(session.getSnapshot()).toMatchObject({
+      state: "error",
+      error: code,
+    });
+    expect(session.getSnapshot().announcement).toMatch(
+      code === "EMPTY_INPUT" ? /empty/i : /not a supported PDF/i,
+    );
+    expect(open).not.toHaveBeenCalled();
+  },
+);

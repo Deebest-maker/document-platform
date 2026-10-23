@@ -112,13 +112,20 @@ describe("CompressSession", () => {
     expect(compress).not.toHaveBeenCalled();
   });
 
-  it("rejects empty and oversized files before any processing", () => {
+  it("refuses empty, mislabelled and oversized files before any processing, each for its own reason", () => {
     const compress = vi.fn<Compress>();
     const { session } = makeSession(compress);
     session.choose(pdfFile("a.pdf", 0));
     expect(session.getSnapshot()).toMatchObject({
       state: "error",
-      error: "INPUT_LIMIT",
+      error: "EMPTY_INPUT",
+      announcement: compressErrorCopy.EMPTY_INPUT,
+    });
+    session.choose(pdfFile("notes.txt"));
+    expect(session.getSnapshot()).toMatchObject({
+      state: "error",
+      error: "UNSUPPORTED_TYPE",
+      announcement: compressErrorCopy.UNSUPPORTED_TYPE,
     });
     session.choose(pdfFile("b.pdf", LIMITS.maxInputBytes + 1));
     expect(session.getSnapshot().error).toBe("INPUT_LIMIT");

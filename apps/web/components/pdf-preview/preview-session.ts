@@ -34,6 +34,8 @@ import type {
   SplitPhase,
   SplitResult,
 } from "@document-platform/pdf-browser/split";
+import { validatePdfCandidate } from "@document-platform/pdf-browser/validation";
+import { pdfInputCopy } from "../../lib/pdf-input-copy";
 
 export interface PageSnapshot {
   readonly state:
@@ -207,18 +209,20 @@ export class PreviewSession {
     });
     await released;
     if (generation !== this.generation) return;
-    if (
-      !/\.pdf$/i.test(file.name) ||
-      (file.type &&
-        !["application/pdf", "application/octet-stream"].includes(file.type)) ||
-      file.size < 1 ||
-      file.size > this.limits.maxInputBytes
-    ) {
+    // The same first look every PDF tool gives a chosen file. Each cause gets
+    // its own words: an empty file is not "over the limit".
+    const refusal = validatePdfCandidate(file, {
+      maxFileBytes: this.limits.maxInputBytes,
+    });
+    if (refusal) {
       this.publish({
         ...empty(),
         state: "error",
-        error: "INPUT_LIMIT",
-        announcement: "Choose a PDF within the current limits.",
+        error: refusal,
+        announcement:
+          refusal === "EMPTY_INPUT" || refusal === "UNSUPPORTED_TYPE"
+            ? pdfInputCopy[refusal]
+            : "Choose a PDF within the current limits.",
       });
       return;
     }

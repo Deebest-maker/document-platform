@@ -1,6 +1,10 @@
 export type PageErrorCode =
   | "INVALID_PLAN"
   | "INPUT_LIMIT"
+  // The chosen file is empty, or is not named and typed as a PDF. Checked once,
+  // for every PDF tool, by `validatePdfCandidate` before anything is read.
+  | "EMPTY_INPUT"
+  | "UNSUPPORTED_TYPE"
   | "INVALID_PDF"
   | "ENCRYPTED_PDF"
   | "PAGE_LIMIT"
