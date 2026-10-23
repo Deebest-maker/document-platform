@@ -31,8 +31,8 @@ Also: the Word page now says an empty `.docx` is empty (it said "not supported")
   - Word to PDF: five refused on the device (empty, `.doc`, a PDF, no extension, `.docx.exe`) and an oversized file, with nothing sent to the server; seven scripted server answers (invalid input, conversion failed, too large when converting and when uploading, a dropped connection, a server fault, too many conversions), each checked for its words and for the job being deleted afterwards; and a good document converting after a refused one.
 - **Full desktop and phone Chromium run, local:** 368 pass, 30 fail. The 30 are the same 8 tests per project that fail on unmodified `main` here (this environment runs Node 22 and a Chromium that reports encrypted PDFs as unreadable) plus the new password-protected case on seven tools per project, which fails for the same reason. CI is authoritative for them. No other test changed result.
 - **The tests can fail.** I weakened the processor changes eleven ways, one at a time (converter exit code, no output and signal each mapped the wrong way; each XML suffix; the chunk overlap; marker case; each marker; the UTF-8 rule; the request handler). Every one was caught by a test named for what it protects. In the browser I changed the empty-file wording to a limit message (caught on nine tools, the tenth is Merge, which has its own wording), put back the old Word mapping of the server's refusal (caught), and removed the shared rule from Compress and Remove Metadata (caught in both). Each was restored and the matrix re-run to confirm the baseline.
-- **Five-browser CI on the final commit:** pending at the time of writing; the result is added below.
-- **Not verified:** real Safari, real Firefox and phones (M7G); the password-protected cases locally (CI); behaviour of the Word page with a real processor behind a real proxy (M8). The server's side is tested with the real converter in the processor tests, and the page's side with a scripted server.
+- **Five-browser CI on the code commit (`1f1f913`):** desktop and phone Chromium, Firefox, WebKit and phone WebKit all pass, with the processor tests, the processor container build and the web quality job. This includes the password-protected cases on all ten tools that could not run here, so the wording they expect is confirmed. The report commit after it changes only this file.
+- **Not verified:** real Safari, real Firefox and phones (M7G); the password-protected cases locally (they pass on CI); behaviour of the Word page with a real processor behind a real proxy (M8). The server's side is tested with the real converter in the processor tests, and the page's side with a scripted server.
 
 ## Behaviour change to be aware of
 
@@ -41,7 +41,7 @@ Compress, PDF to Text and Remove Metadata used to open any file by its content, 
 ## Known limitations
 
 1. **Phones and the file name.** Some Android pickers may deliver a PDF with a generic name or no extension. Not measurable here; added to the M7G device checklist.
-2. **The password-protected cases cannot pass locally** (above). CI decides them. If CI shows a mismatch in a tool's wording, it is one line in that tool's copy.
+2. **The password-protected cases cannot pass in this environment** (above). They pass on CI in all five browsers.
 3. **A legal but rare UTF-16 DOCX** is refused with the general "could not be accepted" message.
 4. **A PDF the converter produced that the processor's own output check refuses** is still reported as a server fault.
 5. **A dropped connection during an upload** reads as "server not available", because the page cannot tell it from a down server.
