@@ -33,7 +33,8 @@ A nonce has to be new for every response, which would mean building every page o
 - **The tests can fail.** Checking this found a weak test of mine: the first framing test passed whether or not the headers were there (Chromium blocked its made-up test page for an unrelated reason). It now uses a real second site and a control, and fails when the framing headers are removed. I weakened the policy 15 ways, one at a time, and each was caught by at least one unit test and one browser test. Making a tool render the file name as HTML was caught. Writing the build check's tests found a hole in my first version, which I fixed.
 - **A worker cannot send a document away.** A worker started from the real script file with hostile code in it sends data off-site without the policy header and cannot with it.
 - **The Word to PDF server's replies** keep their own headers once each, checked live behind the production server.
-- **Not verified:** Firefox, Safari and phones (CI runs Firefox and WebKit on the pull request; devices are M7G); behaviour behind a real HTTPS reverse proxy or CDN (M8); the 8 tests per project that cannot run in this environment.
+- **Five-browser CI run on the final commit:** desktop and phone Chromium, Firefox, WebKit and phone WebKit all pass, including the 8 tests that cannot run here. Two extra Firefox-only runs of the whole suite, each run twice, had no failure. This run found three problems, all in tests or in one header (see Deviations).
+- **Not verified:** real Safari, real Firefox and phones (M7G); behaviour behind a real HTTPS reverse proxy or CDN (M8); the 8 tests per project that cannot run in this environment.
 
 ## Known limitations
 
@@ -48,6 +49,7 @@ A nonce has to be new for every response, which would mean building every page o
 
 - **Own 404 and error pages** were not in the plan. They were needed: the built-in ones cannot run under the policy.
 - **`Cross-Origin-Opener-Policy` was in the plan and is out.** Firefox stalled page loads for 30 seconds in about one test in a hundred with it on, and never without it (ADR-034, decision 11). It protected little here, since the site opens no windows.
+- **Test fixes found by the five-browser run.** WebKit's screenshot tool adds a style element the policy refuses, so the tests set aside exactly one such refusal per screenshot (WebKit only, unit tested). Firefox reports a blocked form by throwing; the test now accepts that. The framing test had passed whether or not the headers were present, because Chromium blocked its made-up test page for an unrelated reason; it now uses a real second site and a control, and fails when the framing headers are removed.
 - **`Referrer-Policy: no-referrer`** is a choice the plan left open; it is a one-line change if advertising later needs otherwise.
 
 ## Decisions needed from the Product Owner
