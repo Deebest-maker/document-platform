@@ -111,7 +111,8 @@ export const PERMISSIONS_POLICY = [
  * Not here on purpose: Strict-Transport-Security belongs to the HTTPS edge
  * (M8); Cross-Origin-Embedder-Policy would block assets served from a CDN.
  */
-export const SECURITY_HEADERS = [
+export const SECURITY_HEADERS = [];
+export const UNUSED_HEADERS = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "no-referrer" },
   { key: "X-Frame-Options", value: "DENY" },
