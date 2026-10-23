@@ -8,7 +8,7 @@
 
 ## Summary
 
-Every page, and every state of every tool, is now tested the way four kinds of visitor meet it: by automated rules, with only a keyboard, as a screen reader's accessibility tree presents it, and with enlarged text on a narrow screen. Four real problems turned up and are fixed. The test is part of the suite, so a change that breaks any of them fails the build.
+Every page, and every state of every tool, is now tested the way four kinds of visitor meet it: by automated rules, with only a keyboard, as a screen reader's accessibility tree presents it, and with enlarged text on a narrow screen. Five real problems turned up and are fixed. The test is part of the suite, so a change that breaks any of them fails the build.
 
 Nothing changes for what a tool produces. The page looks the same except that Remove PDF Metadata's result table now has borders and scrolls inside itself on a small screen.
 
@@ -16,8 +16,10 @@ Nothing changes for what a tool produces. The page looks the same except that Re
 
 1. **Reorder buttons whose spoken name did not contain their visible words** (WCAG 2.5.3, level A). The buttons read "Move earlier" but were named "Move page 2 earlier". Voice-control users who say what they see missed them. Now "Move earlier, page 2". Organize, Images to PDF and Merge.
 2. **Text cut off at 320 px with large text.** The status words in a page thumbnail ("Rendering preview…", "Preview unavailable") were clipped in a surface 124 px wide. They now wrap.
-3. **Long words and fixed columns ran off the side** at 320 px with text doubled: the tool guides, Compress's "Compression strength" legend, and Compress's result list (a 9 rem column minimum that doubles with the text). Fixed in the stylesheet; the rest of the site already used the safe form.
+3. **Long words and fixed columns ran off the side** at 320 px with text doubled: the tool guides, the contents links of the Learn guides, every field-group legend (Compress, Images to PDF), Compress's option text, the Rotate result rows, and Compress's result list (a 9 rem column minimum that doubles with the text). Fixed in the stylesheet; the rest of the site already used the safe form. My machine's default font is narrower than CI's, so CI found four of these that I could not see; the test now measures in a wide font so both agree.
 4. **Remove PDF Metadata lost keyboard focus** when it changed state (every other tool moves focus to the new heading), had a table with no layout that ran off a narrow screen with no way to scroll it by keyboard, and hid its caption with a Tailwind class used nowhere else. It now moves focus, scrolls the table inside a labelled, focusable region, and uses the site's own hidden-text class.
+
+5. **Split's page-range field was 320 px tall on phones** (a width setting read as a height once the layout becomes a column). Found because mobile WebKit's focus check reported it covering other text; it is one line tall again and the test now flags a one-line field taller than 120 px.
 
 Everything else held: no unnamed controls, no unreachable or trapped controls, no hidden or low-contrast focus, no field error without its message, no touch target under 24 px, no missing title, language or landmark, and no axe violation, on every state reached.
 
@@ -26,7 +28,7 @@ Everything else held: no unnamed controls, no unreachable or trapped controls, n
 - **Rules:** axe with WCAG 2.0 to 2.2 A and AA and best-practice rules, plus Label in Name.
 - **Keyboard:** Tab through the whole page and round again; every control is reached, focus never sticks, is never covered, never invisible, and its outline contrasts at least 3:1; error fields are tied to their message; targets are at least 24 × 24 px (WCAG 2.5.8).
 - **Screen reader:** every control has a name in the browser's accessibility tree; focus is kept or moved sensibly after an action; a state that says something new is announced.
-- **Enlarged text:** at 320 px, at 320 px with text doubled, and with the WCAG text-spacing settings: no sideways page scroll, no text cut off, and anything that scrolls inside the page can be scrolled by keyboard.
+- **Enlarged text:** in a wide font, at 320 px, at 320 px with text doubled, and with the WCAG text-spacing settings: no sideways page scroll, no text cut off, and anything that scrolls inside the page can be scrolled by keyboard.
 
 ## Verification
 
@@ -34,7 +36,7 @@ Everything else held: no unnamed controls, no unreachable or trapped controls, n
 - **Local, desktop and phone Chromium:** 28 of 30 pass. The two failures are PDF to JPG's result state, unreachable in this environment (the same PDF to JPG tests fail on unmodified `main` here); CI is authoritative.
 - **The whole existing suite, same two projects:** 396 pass, 32 fail (16 per project): the 8 that fail on unmodified `main` here, the 7 password-protected M7D cases (same cause, passing on CI), and the PDF to JPG state above. The tests that press the renamed buttons (Merge, Organize, Images to PDF, merge privacy) pass.
 - **Unit tests:** 420 pass. Lint, types, format and the production build pass.
-- **The tests can fail.** I broke seven fixes one at a time (reorder name, Remove Metadata focus, thumbnail text rule, Compress grid, Split error description, table keyboard access, control height). Every one was caught, each by the check named for it. The table one was not caught until I added a "scrolls but a keyboard cannot reach it" check, which now exists. Each was restored and the matrix confirmed.
+- **The tests can fail.** I broke nine fixes one at a time (reorder name, Remove Metadata focus, thumbnail text rule, Compress grid, Split error description, table keyboard access, control height, Learn link rule, Split field height). Every one was caught, each by the check named for it. The table one was not caught until I added a "scrolls but a keyboard cannot reach it" check, which now exists. Each was restored and the matrix confirmed.
 - **Faults in my own test** (listed in the ADR) were found and fixed in the test, not in the pages.
 - **Five-browser CI:** running; the result is added when it finishes.
 - **Not verified:** real screen readers (VoiceOver, TalkBack, NVDA, JAWS), real phones, browser zoom and the system text-size settings, forced-colours mode (all M7G); PDF to JPG's result and the encrypted-PDF cases locally (CI decides).
@@ -51,6 +53,7 @@ Everything else held: no unnamed controls, no unreachable or trapped controls, n
 
 - The plan listed the work as tests. It also changed code, because the tests showed four real problems; each change is small.
 - My first mutation pass was invalid: a run that timed out left a test server on the port and the other six did not run. I noticed because the logs said so, repeated the pass from the start, and it caught all seven.
+- **Unrelated dependency fix.** A new high-severity advisory on `zod` (memory exhaustion; reached only through the lint tooling, nothing shipped) made the CI audit step fail on this branch and would on `main`. I pinned the patched release, 4.6.7, in `pnpm-workspace.yaml` the way earlier advisories were handled, as its own commit. Lint, types, 420 unit tests and the build pass with it. Two moderate Vitest advisories remain (below the audit's threshold); the Vitest bump stays a follow-up.
 - A broken state no longer stops the matrix (decision 6 in the ADR): I added that after PDF to JPG's unreachable state hid the scene after it.
 
 ## Decisions
