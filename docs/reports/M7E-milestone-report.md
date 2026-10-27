@@ -1,7 +1,7 @@
 # M7E Milestone Report: Accessibility
 
 **Date:** 2026-10-23
-**Status:** Implemented; owner acceptance pending
+**Status:** Accepted by the Product Owner on 2026-10-23; merged (`1a8d5b0`)
 **Preceding slice:** M7D — bad-input matrix (accepted and merged, `2a7197c`; main's CI on that commit passed in all five browsers).
 **Part of:** M7 QA and hardening (governance §14.3), slice E of seven.
 **Decision record:** [ADR-036](../adr/036-m7e-accessibility.md).

@@ -1,6 +1,6 @@
 # ADR-036: Accessibility matrix: every state of every tool, checked four ways, and the fixes it found
 
-**Status:** Implemented under the approved M7 gate; owner acceptance pending
+**Status:** Implemented under the approved M7 gate; accepted by the Product Owner and merged (`1a8d5b0`)
 **Date:** 2026-10-23
 **Scope:** A standing browser test that takes every page and every state of every tool and checks it the way four kinds of visitor meet it (automated rules, keyboard only, screen reader, enlarged text on a narrow screen); and the fixes that test showed were needed: the accessible names of the reorder buttons, text that ran off the side or was cut off at 320 px with large text, and the focus and layout of Remove PDF Metadata. No change to what any tool produces, to any limit, or to where a file is processed. Visible wording is unchanged; the spoken names of the reorder buttons change (decision 2).
 **Relates to:** NFR-A11Y-001 to NFR-A11Y-006 (keyboard operation, labels and visible focus, colour not the only signal, error messages, responsive layout, WCAG 2.2 AA), UX specification section 14 and UX-006, UX-007, UX-010, document 08 (testing strategy, accessibility checks), ADR-035 (bad-input matrix, whose wording this test also covers), governance section 14.3.
