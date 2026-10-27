@@ -1,7 +1,7 @@
 # M7F Milestone Report: Performance budgets
 
 **Date:** 2026-10-24
-**Status:** Implemented; owner acceptance pending
+**Status:** Accepted by the Product Owner on 2026-10-27; merged (`e92acbb`)
 **Preceding slice:** M7E — accessibility (accepted and merged, `1a8d5b0`; main's CI on that commit passed in all five browsers on its second attempt: the first hit one WebKit "internal error" while loading a page, a browser fault, and the same job passed when re-run).
 **Part of:** M7 QA and hardening (governance §14.3), slice F of seven.
 **Decision record:** [ADR-037](../adr/037-m7f-performance-budgets.md). Measurements: [`docs/benchmarks/M7F-performance.md`](../benchmarks/M7F-performance.md).
