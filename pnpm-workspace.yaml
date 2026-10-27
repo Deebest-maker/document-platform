@@ -15,6 +15,8 @@ overrides:
   vite: "8.3.4"
   # Patched release for GHSA-mrhx-c7xc-m3w5 (memory exhaustion validating oversized collections). zod is reached only through eslint-config-next (lint tooling); no shipped code uses it.
   zod: "4.6.7"
+  # Patched release for five undici advisories (GHSA-xjj6-f33q-929c, GHSA-qq8j-7v2v-3rwp, GHSA-4w7w-5xrc-9h26, GHSA-2m5v-pch6-74hx, GHSA-qrxm-fqhp-jwvm; all in undici's HTTP, TLS and WebSocket clients). undici is reached only through vitest > jsdom (test tooling); no shipped code uses it.
+  undici: "8.12.2"
 
 # These are the only dependency install scripts required by this foundation.
 allowBuilds:
