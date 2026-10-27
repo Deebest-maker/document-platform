@@ -61,7 +61,7 @@ None changes any file a tool produces. I did not fix 1 or 2 inside this slice.
 - **The test pack was run, not assumed.** Every file went through its tool in Chromium here: Merge gave 4 pages; Organize accepted 50 and 200 pages; Compress took the heavy file from 5.4 MiB to 964 KiB; Remove Metadata, PDF to Text (no text layer, and the partly scanned note), the refusals, and Images to PDF (page 1 upright and portrait, the transparent PNG white in the middle, checked by rendering the output) all behaved as the checklist says. The password-protected file is reported as "damaged or unsupported" by the Chromium here (the known environment difference in M7D); the checklist accepts either wording.
 - **What I tested for the checklist's claims:** airplane mode (second run offline) works for Merge, Compress, PDF to Text and Organize with no failed requests; a plain-HTTP page breaks file choice; reconnecting recovers the PDF tools.
 - **Not run from here:** the HTTPS tunnel and USB port-forwarding commands (both standard tools; steps are in the checklist), and everything on a real device.
-- **Unit tests** 420 web and 303 library pass with the pinned `undici`; types and format pass. CI result is on the pull request.
+- **Unit tests** 420 web and 303 library pass with the pinned `undici`; types and format pass. **Five-browser CI at `2e47d0c`:** all nine jobs pass (desktop and phone Chromium, Firefox, WebKit, phone WebKit, the processor and its container, and the web quality job with the dependency audit, which is what turned `main` red).
 
 ## Files
 
