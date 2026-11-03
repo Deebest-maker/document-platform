@@ -29,7 +29,12 @@ How serious a failure is (document 08 section 11): **S0** a document leaves the 
 **The site must be reached over HTTPS (or as `localhost`).** The tools use a browser feature that only exists on secure pages. I checked it: opening the site on a phone as `http://192.168.x.x:3100` (your PC's address on Wi-Fi) loads the page, but choosing a file does nothing and no message appears. That is not a product bug in production, where the site is HTTPS, but it makes that way of testing useless. Use one of:
 
 1. **A staging site** (M8). Best, and the only way to test Word to PDF.
-2. **An HTTPS tunnel from your PC** (works for any phone). Build and start the site, then tunnel it. On your PC, in the repository: `pnpm --filter @document-platform/web build`, then `cd apps/web` and `pnpm start --port 3100`, and in a second window `cloudflared tunnel --url http://localhost:3100`. It prints an `https://…trycloudflare.com` address; open that on the phone. (`cloudflared` is Cloudflare's free tool; I have not run it from here.)
+2. **An HTTPS tunnel from your PC** (works for any phone; used for the M7G run). Build and start the site, then tunnel it. On your PC, in the repository: `pnpm build`, then `cd apps/web` and `pnpm start --port 3100`, and in a second window `cloudflared tunnel --protocol http2 --url http://127.0.0.1:3100`. It prints an `https://…trycloudflare.com` address (a new one every run); open that on the phone. `cloudflared` is Cloudflare's free tool. Keep the PC awake while testing. If the phone is the PC's hotspot, airplane mode cuts the tunnel, so leave D1 for after the other checks and do not reload the page during it.
+   - **Node 24 is required.** `.npmrc` sets `engine-strict`, so `pnpm install` fails on any other major version. `.nvmrc` says 24.16.0.
+   - **`next build` fails with "routes.d.ts is not a module".** A leftover `.next` folder from `next dev`. Delete `apps\web\.next` and build again.
+   - **`cloudflared` is "not recognized" right after installing it.** An already open terminal keeps the old PATH. Open a new window, or run `$env:Path = [Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [Environment]::GetEnvironmentVariable("Path","User")`.
+   - **The tunnel drops after a few minutes** ("no recent network activity") on some networks, a phone hotspot among them. `--protocol http2` fixes it; that is why it is in the command above.
+   - **Use `127.0.0.1`, not `localhost`.** `pnpm start` listens on `127.0.0.1` only, and on Windows `localhost` may resolve to `::1`.
 3. **Android only, by USB cable.** Turn on USB debugging on the phone. In Chrome on the PC open `chrome://inspect/#devices`, tick "Discover USB devices", choose "Port forwarding", add `3100` → `localhost:3100`, then open `http://localhost:3100` on the phone. (A standard Chrome feature; not run from here.)
 
 **Test files.** `document-platform-device-test-pack.zip` (about 5.5 MB, all synthetic, a `README.txt` inside explains each file). Put the zip on the phone and unzip it with the Files app. Rebuild it any time with `python3 tests/fixtures/generate_device_pack.py <empty folder>`. Also use your **own phone's camera photos** (checks A11, E4): they are the real test.
@@ -52,15 +57,15 @@ How serious a failure is (document 08 section 11): **S0** a document leaves the 
 
 ### B. Choosing files on a phone
 
-- ★ **B1. Real files from real places.** Choose PDFs you already have (not private ones) that arrived by WhatsApp, by email and from Google Drive or iCloud, in Merge. **Expect:** all accepted. If one is refused with "name ends in .pdf", note the file name shown in the picker (this is the open question from ADR-035).
-- **B2. No extension.** Choose `12`. **Expect:** it is refused with "Choose a file whose name ends in .pdf". That is by design; the check is for B1 above.
+- ★ **B1. Real files from real places.** Choose PDFs you already have (not private ones) that arrived by WhatsApp, by email and from Google Drive or iCloud, in Merge. **Expect:** all accepted. If one is refused as "not a supported PDF", note the file name shown in the picker (this is the open question from ADR-035).
+- **B2. No extension.** Choose `12`. **Expect:** it is refused as "not a supported PDF" (Merge says "This file is not a supported PDF. Remove it and choose a PDF."; other tools add "Choose a file whose name ends in .pdf"). That is by design; the check is for B1 above.
 - **B3. iPhone photos.** If photos are stored as HEIC (the default on iPhone), choose one in Images to PDF. **Expect:** it works, or it is refused with a clear message. Note which.
 - **B4. More than one at once.** In Merge, select two files in one go from the picker. **Expect:** both are added.
 
 ### C. Refusals
 
 - ★ **C1. Password.** Choose `10` in any PDF tool. **Expect:** refused. The words should say password-protected; some browsers say "damaged or unsupported" instead. Note which.
-- **C2. Damaged.** Choose `11`. **Expect:** refused as "damaged or unsupported".
+- **C2. Damaged.** Choose `11`. **Expect:** refused, in words that say it could not be opened as a PDF ("This file could not be opened as a PDF" in PDF to Text, Remove Metadata and Compress; "This PDF is damaged or unsupported" in Organize and the page tools). Either wording passes.
 - **C3. No text.** Choose `08` in PDF to Text. **Expect:** "No text layer was found" and no download offered.
 
 ### D. Proof that documents stay on the device
