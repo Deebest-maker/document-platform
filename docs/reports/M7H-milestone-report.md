@@ -1,7 +1,7 @@
 # M7H Milestone Report: A dropped connection is no longer blamed on the file
 
 **Date:** 2026-11-04
-**Status:** Implemented; owner acceptance pending
+**Status:** Accepted by the Product Owner on 2026-11-04; merged (`4d5c824`)
 **Preceding slice:** M7G — device checklist (accepted 2026-11-04 and merged, `2f0c8bd`; its record merged as `e1dc92d`).
 **Part of:** M7 QA and hardening (governance §14.3), follow-up to M7G finding 1, taken up on the Product Owner's go-ahead.
 **Decision record:** [ADR-038](../adr/038-m7h-load-failure-wording.md).
@@ -47,5 +47,5 @@ No document byte goes anywhere new: all code is fetched from the site's own orig
 
 ## Decisions for you
 
-1. **Accept M7H.** I will not merge until you do.
-2. **Recommended next:** the requirement-to-test table (M7G finding 4), a documentation-and-script slice with no product change, then M8 once you have the production domain, brand name, author line and a hosting budget.
+1. **Accept M7H:** accepted 2026-11-04, merged `4d5c824`.
+2. **Recommended next:** the requirement-to-test table (M7G finding 4, taken up as [M7I](M7I-milestone-report.md)), a documentation-and-script slice with no product change, then M8 once you have the production domain, brand name, author line and a hosting budget.
