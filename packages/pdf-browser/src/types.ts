@@ -36,4 +36,5 @@ export type PdfErrorCode =
   | "OUTPUT_INVALID"
   | "MERGE_FAILED"
   | "CANCELLED"
-  | "WORKER_UNAVAILABLE";
+  | "WORKER_UNAVAILABLE"
+  | "ENGINE_LOAD_FAILED";

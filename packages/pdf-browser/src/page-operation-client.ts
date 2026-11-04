@@ -31,6 +31,7 @@ export async function transformPages(
   }
   return new Promise((resolve, reject) => {
     let settled = false;
+    let heard = false;
     const finish = (result?: PageResult, error?: PageError) => {
       if (settled) return;
       settled = true;
@@ -43,6 +44,7 @@ export async function transformPages(
     const abort = () => finish(undefined, new PageError("CANCELLED"));
     options.signal?.addEventListener("abort", abort, { once: true });
     worker.onmessage = ({ data }: MessageEvent<PageResponse>) => {
+      heard = true;
       if (settled) return;
       if (data.kind === "phase") options.onPhase?.(data.phase);
       else if (data.kind === "result") finish(data.result);
@@ -50,7 +52,11 @@ export async function transformPages(
     };
     worker.onerror = (event) => {
       event.preventDefault();
-      finish(undefined, new PageError("OPERATION_FAILED"));
+      // Silent so far: the worker's script never loaded (M7H, ADR-038).
+      finish(
+        undefined,
+        new PageError(heard ? "OPERATION_FAILED" : "ENGINE_LOAD_FAILED"),
+      );
     };
     worker.onmessageerror = () =>
       finish(undefined, new PageError("OPERATION_FAILED"));
@@ -77,5 +83,5 @@ export type {
   PagePhase,
   PageResult,
 } from "./page-types";
-export { PageError } from "./page-errors";
+export { PageError, loadEngineModule } from "./page-errors";
 export type { PageErrorCode } from "./page-errors";

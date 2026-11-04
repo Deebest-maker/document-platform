@@ -71,6 +71,10 @@ describe("worker boundary and cancellation", () => {
     vi.stubGlobal("Worker", FakeWorker);
     const crash = mergePdfs(inputs, limits);
     const preventDefault = vi.fn();
+    // It started (it spoke) and then crashed: the work failed.
+    FakeWorker.latest.onmessage!({
+      data: { kind: "phase", phase: "reading" },
+    } as MessageEvent<MergeResponse>);
     FakeWorker.latest.onerror!({
       preventDefault,
       message: "private parser error",
@@ -81,4 +85,14 @@ describe("worker boundary and cancellation", () => {
     FakeWorker.latest.onmessageerror!();
     await expect(malformed).rejects.toMatchObject({ code: "MERGE_FAILED" });
   });
+});
+
+it("a worker that fails before it has said anything never started: it is a load failure, not a bad PDF", async () => {
+  vi.stubGlobal("Worker", FakeWorker);
+  const pending = mergePdfs(inputs, limits);
+  FakeWorker.latest.onerror!({
+    preventDefault: vi.fn(),
+  } as unknown as ErrorEvent);
+  await expect(pending).rejects.toMatchObject({ code: "ENGINE_LOAD_FAILED" });
+  expect(FakeWorker.latest.terminate).toHaveBeenCalledTimes(1);
 });

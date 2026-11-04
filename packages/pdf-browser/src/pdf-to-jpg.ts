@@ -1,4 +1,4 @@
-import { PageError } from "./page-errors";
+import { PageError, loadEngineModule } from "./page-errors";
 import { validatePagePlan, type PagePlan } from "./page-model";
 import type { PreviewDocument } from "./preview/types";
 import type {
@@ -205,7 +205,9 @@ export async function renderPdfPagesToJpeg(
       current: pages.length,
       total: pages.length,
     });
-    const { unzipSync, zipSync } = await import("fflate");
+    const { unzipSync, zipSync } = await loadEngineModule(
+      () => import("fflate"),
+    );
     cancelled();
     const archive = zipSync(
       Object.fromEntries(

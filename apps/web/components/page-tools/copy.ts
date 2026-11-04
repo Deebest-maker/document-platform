@@ -20,6 +20,8 @@ export const pageToolErrors: Record<PageErrorCode, string> = {
   CANCELLED: "Export cancelled. Your page choices are still available.",
   WORKER_UNAVAILABLE:
     "This browser could not start local PDF processing. Try an up-to-date browser.",
+  ENGINE_LOAD_FAILED:
+    "The local PDF engine could not load. Check your connection and try again.",
 };
 
 export const pagePhaseCopy = {

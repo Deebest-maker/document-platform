@@ -1,6 +1,7 @@
 import { createPagePlan } from "@document-platform/pdf-browser/page-model";
 import {
   PageError,
+  loadEngineModule,
   pageLimits,
   type PageInput,
   type PageLimits,
@@ -14,8 +15,7 @@ import type { PreviewDocument } from "@document-platform/pdf-browser/preview";
 import { validatePdfCandidate } from "@document-platform/pdf-browser/validation";
 import { pdfInputCopy } from "../../lib/pdf-input-copy";
 
-export type PdfTextWorkflowError =
-  PageError["code"] | "ENGINE_LOAD_FAILED" | "CLIPBOARD_FAILED";
+export type PdfTextWorkflowError = PageError["code"] | "CLIPBOARD_FAILED";
 
 export const pdfTextErrorCopy: Record<PdfTextWorkflowError, string> = {
   INVALID_PLAN: "This PDF could not be analysed. Choose another file.",
@@ -97,18 +97,17 @@ interface Dependencies {
 
 const defaults: Dependencies = {
   openPreview: async (input, limits, options) =>
-    (await import("@document-platform/pdf-browser/preview")).openPreview(
-      input,
-      limits,
-      options,
-    ),
+    (
+      await loadEngineModule(
+        () => import("@document-platform/pdf-browser/preview"),
+      )
+    ).openPreview(input, limits, options),
   extractText: async (preview, plan, limits, options) =>
-    (await import("@document-platform/pdf-browser/pdf-to-text")).extractPdfText(
-      preview,
-      plan,
-      limits,
-      options,
-    ),
+    (
+      await loadEngineModule(
+        () => import("@document-platform/pdf-browser/pdf-to-text"),
+      )
+    ).extractPdfText(preview, plan, limits, options),
   createUrl: (blob) => URL.createObjectURL(blob),
   revokeUrl: (url) => URL.revokeObjectURL(url),
   writeClipboard: async (text) => {

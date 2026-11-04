@@ -20,6 +20,7 @@ export async function mergePdfs(
   }
   return new Promise((resolve, reject) => {
     let settled = false;
+    let heard = false;
     const finish = (result?: MergeResult, error?: PdfError) => {
       if (settled) return;
       settled = true;
@@ -34,6 +35,7 @@ export async function mergePdfs(
     const abort = () => finish(undefined, new PdfError("CANCELLED"));
     options.signal?.addEventListener("abort", abort, { once: true });
     worker.onmessage = ({ data }: MessageEvent<MergeResponse>) => {
+      heard = true;
       if (settled) return;
       if (data.kind === "phase") options.onPhase?.(data.phase);
       else if (data.kind === "result") finish(data.result);
@@ -41,7 +43,11 @@ export async function mergePdfs(
     };
     worker.onerror = (event) => {
       event.preventDefault();
-      finish(undefined, new PdfError("MERGE_FAILED"));
+      // Silent so far: the worker's script never loaded (M7H, ADR-038).
+      finish(
+        undefined,
+        new PdfError(heard ? "MERGE_FAILED" : "ENGINE_LOAD_FAILED"),
+      );
     };
     worker.onmessageerror = () =>
       finish(undefined, new PdfError("MERGE_FAILED"));

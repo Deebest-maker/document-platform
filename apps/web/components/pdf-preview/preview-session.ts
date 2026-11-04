@@ -9,6 +9,7 @@ import {
 } from "@document-platform/pdf-browser/page-model";
 import {
   PageError,
+  loadEngineModule,
   pageLimits,
   type PageInput,
   type PageResult,
@@ -61,6 +62,9 @@ export interface PageSnapshot {
   readonly announcement: string;
 }
 type Opened = { preview: PreviewDocument; scheduler: ThumbnailScheduler };
+// Spoken when the tool's code could not load: it names the connection, not the file.
+const engineLoadAnnouncement =
+  "The tool could not load. Check your connection and try again.";
 interface Services {
   open: (input: PageInput, signal: AbortSignal) => Promise<Opened>;
   transform: (
@@ -127,8 +131,9 @@ export class PreviewSession {
       open:
         services.open ??
         (async (input, signal) => {
-          const previewModule =
-            await import("@document-platform/pdf-browser/preview");
+          const previewModule = await loadEngineModule(
+            () => import("@document-platform/pdf-browser/preview"),
+          );
           const preview = await previewModule.openPreview(input, limits, {
             signal,
           });
@@ -140,27 +145,26 @@ export class PreviewSession {
       transform:
         services.transform ??
         (async (input, plan, options) =>
-          (await import("@document-platform/pdf-browser/pages")).transformPages(
-            input,
-            plan,
-            limits,
-            options,
-          )),
+          (
+            await loadEngineModule(
+              () => import("@document-platform/pdf-browser/pages"),
+            )
+          ).transformPages(input, plan, limits, options)),
       split:
         services.split ??
         (async (input, plans, options, splitLimits) =>
-          (await import("@document-platform/pdf-browser/split")).splitPdf(
-            input,
-            plans,
-            limits,
-            options,
-            splitLimits,
-          )),
+          (
+            await loadEngineModule(
+              () => import("@document-platform/pdf-browser/split"),
+            )
+          ).splitPdf(input, plans, limits, options, splitLimits)),
       rasterize:
         services.rasterize ??
         (async (preview, plan, jpegLimits, options) =>
           (
-            await import("@document-platform/pdf-browser/pdf-to-jpg")
+            await loadEngineModule(
+              () => import("@document-platform/pdf-browser/pdf-to-jpg"),
+            )
           ).renderPdfPagesToJpeg(preview, plan, jpegLimits, options)),
       ...services,
     };
@@ -257,7 +261,10 @@ export class PreviewSession {
         ...empty(),
         state: "error",
         error: error instanceof PageError ? error.code : "PREVIEW_FAILED",
-        announcement: "The PDF preview could not open.",
+        announcement:
+          error instanceof PageError && error.code === "ENGINE_LOAD_FAILED"
+            ? engineLoadAnnouncement
+            : "The PDF preview could not open.",
       });
     }
   }
