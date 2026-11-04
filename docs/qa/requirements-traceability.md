@@ -1,6 +1,6 @@
 # Requirement-to-test traceability
 
-**Status:** M7I, written 2026-11-04; owner acceptance pending
+**Status:** M7I, written 2026-11-04; accepted by the Product Owner and merged (`1ee0994`)
 **Source of the requirements:** document 03 (SRS), 58 functional and 44 non-functional requirements
 **Why it exists:** document 08 section 12 and SRS section 16 ask that every P0 functional requirement and every launch-critical non-functional requirement map to at least one automated test or documented manual check. This is that map. It was asked for by the M7G review (finding 4).
 
