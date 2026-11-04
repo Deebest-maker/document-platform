@@ -58,7 +58,7 @@ const authorCanary = "SECRET-AUTHOR-CANARY-2Fqz";
 const customCanary = "ACME-INTERNAL-CANARY-X3b";
 const xmpCanary = "XMP-CANARY-V7m";
 
-test("FR-META-001/004/006: removes supported metadata and lets the owner download the cleaned PDF locally", async ({
+test("FR-META-001/003: removes supported metadata and lets the owner download the cleaned PDF locally", async ({
   page,
   context,
   baseURL,
@@ -174,7 +174,7 @@ test("FR-META-001/004/006: removes supported metadata and lets the owner downloa
   ).toEqual([]);
 });
 
-test("FR-META-003: shows truthful before/after presence for every supported field", async ({
+test("FR-META-001: shows truthful before/after presence for every supported field", async ({
   page,
   baseURL,
 }) => {
@@ -197,7 +197,7 @@ test("FR-META-003: shows truthful before/after presence for every supported fiel
   await expect(table.getByText("Trailer identifier")).toBeVisible();
 });
 
-test("NFR-UX-010: the not-secure-redaction disclosure is announced before upload", async ({
+test("FR-META-002: the not-secure-redaction disclosure is announced before upload", async ({
   page,
   baseURL,
 }) => {
@@ -227,7 +227,7 @@ test("NFR-A11Y-001: the page has no serious or critical a11y issues at idle", as
   expect(serious, JSON.stringify(serious, null, 2)).toEqual([]);
 });
 
-test("FR-META-005: encrypted PDFs are refused with the expected error copy", async ({
+test("FR-GEN-002/008: encrypted PDFs are refused with the expected error copy", async ({
   page,
   baseURL,
 }) => {

@@ -87,7 +87,7 @@ function audit(context: BrowserContext) {
   return { requests, consoleMessages };
 }
 
-test("FR-P2I-001/002/004: selected pages render sequentially in source order as a validated local ZIP", async ({
+test("FR-P2I-001/002: selected pages render sequentially in source order as a validated local ZIP", async ({
   page,
   context,
   baseURL,

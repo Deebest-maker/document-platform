@@ -1,6 +1,6 @@
 # ADR-038: A tool whose code cannot load says so: one error for "the connection dropped", not a verdict on the document
 
-**Status:** Implemented under the approved M7 gate; owner acceptance pending
+**Status:** Implemented under the approved M7 gate; accepted by the Product Owner on 2026-11-04 and merged (`4d5c824`)
 **Date:** 2026-11-04
 **Scope:** What a person is told when the code a tool needs cannot be fetched (a connection that drops after the page has loaded and before, or while, the tool starts). One new error, `ENGINE_LOAD_FAILED`, one helper for dynamic imports, one rule for workers that never start, and the matching words in every tool. No change to what any tool produces, to any limit, or to where a file is processed.
 **Relates to:** M7G finding 1 (a dropped connection is blamed on the file), NFR-PERF-003 (large libraries load on demand, which is why the code is fetched late), ADR-035 (honest wording for the cause of a refusal), ADR-036 (the error areas are announced to assistive technology), ADR-037 (the PDF libraries are fetched when the first file is chosen).

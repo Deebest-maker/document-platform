@@ -71,7 +71,7 @@ What this ADR **does not claim**:
 - The route page shows a note **before** the owner selects a file: "This tool removes supported metadata (Document Information fields, the XMP metadata stream, and — where this build is able — the trailer identifier). It is **not** secure redaction: text and images on each page are preserved as-is. Content embedded in the pages themselves is not touched."
 - The privacy page carries the same wording in the per-tool table.
 
-Owner acceptance for M3B.4 includes reading this disclosure in situ. An E2E test (`NFR-UX-010`) asserts the disclosure is in the DOM on first paint.
+Owner acceptance for M3B.4 includes reading this disclosure in situ. An E2E test (`FR-META-002`) asserts the disclosure is in the DOM on first paint.
 
 ### 6. Fixed output filename
 
