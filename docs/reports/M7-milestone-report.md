@@ -1,7 +1,7 @@
 # M7 Milestone Report: QA and hardening
 
 **Date:** 2026-10-27
-**Status:** Implemented; owner acceptance pending. Device run done on Windows (Chrome) and an Android phone; no Safari or iPhone run yet (see Device results and Decision 5).
+**Status:** M7G accepted by the Product Owner on 2026-11-04 and merged (`2f0c8bd`). Device run done on Windows (Chrome) and an Android phone; no Safari or iPhone run yet (see Device results and Decision 5).
 **Part of:** governance §14.3. Slices: [M7A](M7A-milestone-report.md), [M7B](M7B-milestone-report.md), [M7C](M7C-milestone-report.md), [M7D](M7D-milestone-report.md), [M7E](M7E-milestone-report.md), [M7F](M7F-milestone-report.md), M7G (this slice).
 **Checklist:** [`docs/qa/M7G-device-checklist.md`](../qa/M7G-device-checklist.md). **Test pack generator:** `tests/fixtures/generate_device_pack.py`.
 
@@ -19,7 +19,7 @@ M7 turned "the tools work" into "the tools are shown to work, and to fail safely
 | M7D   | `2a7197c` | Every tool against every bad file; honest wording for the cause; the processor no longer blames the server for an unreadable document; every DOCX XML part scanned for DTDs (ADR-035).                |
 | M7E   | `1a8d5b0` | Accessibility of every page and state by rules, keyboard, accessibility tree and enlarged text; reorder button names, 320 px overflow, Remove Metadata focus and table, Split field height (ADR-036). |
 | M7F   | `e92acbb` | Measured budgets for weight, first use, layout shift, paint, tap time and caching; the page no longer jumps when a file is chosen; PDF.js files cached for a year (ADR-037).                          |
-| M7G   | this PR   | Device checklist, test pack, this record, and the findings below.                                                                                                                                     |
+| M7G   | `2f0c8bd` | Device checklist, test pack, this record, and the findings below.                                                                                                                                     |
 
 ## Release criteria (document 08, section 10)
 
@@ -80,7 +80,7 @@ None changes any file a tool produces. I did not fix 1 or 2 inside this slice.
 
 ## Decisions
 
-1. **Accept M7G** (the checklist, pack and this record) — for you to say. I will not merge until you do.
+1. **Accept M7G** (the checklist, pack and this record): accepted 2026-11-04, merged `2f0c8bd`.
 2. **Finding 1 and 2:** fix now as a small M7H (wording in about six message tables, one helper for five call sites, one browser test each), or schedule before launch, or accept. My recommendation: fix 1 before launch (a good file thrown away on a weak signal is the most likely real-world complaint); 2 is optional.
 3. **Finding 4:** build the table now, before M8, or accept the current coverage. My recommendation: build it (I can draft it from the tests; you check it), because document 08 makes it a release gate.
 4. **Limits and budgets:** your Android report names no limit or budget as wrong, so ADR-017, 018, 025 and 037 stand. If a later device run shows otherwise, they change in a follow-up.
