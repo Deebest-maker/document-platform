@@ -1,6 +1,6 @@
 # ADR-037: Performance budgets: measured limits for weight, first use, layout shift, paint and tap response, enforced by the build
 
-**Status:** Implemented under the approved M7 gate; owner acceptance pending
+**Status:** Implemented under the approved M7 gate; accepted by the Product Owner on 2026-10-27 and merged (`e92acbb`)
 **Date:** 2026-10-24
 **Scope:** Numbers that a page must stay inside, found by measuring the production build and then written into a browser test that fails the build when one is passed; and the two changes the measurements showed were needed: the tool workspace keeps its height while a file is being read (the page was jumping), and the vendored PDF.js files are cached for a year (they were re-checked on every visit). No change to what any tool produces, to any limit on files, or to where a file is processed.
 **Relates to:** NFR-PERF-001 (Core Web Vitals on tool landing pages), NFR-PERF-002 (local operations start without a server round trip), NFR-PERF-003 (large libraries load on demand), NFR-PERF-006 (static content cacheable by a CDN), NFR-PERF-007 (numeric limits decided after benchmarks), SRS section 17 (budgets to be inserted as versioned requirements before launch), document 08 sections 8 and 10 (performance benchmarks; no severe layout shift or task-blocking regression), governance section 14.3 (M7 performance matrix), ADR-034 (the post-build manifest that lists every page), ADR-036 (the accessibility matrix this change must not break).
