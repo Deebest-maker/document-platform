@@ -1,7 +1,7 @@
 # M7 Milestone Report: QA and hardening
 
 **Date:** 2026-10-27
-**Status:** M7G accepted by the Product Owner on 2026-11-04 and merged (`2f0c8bd`). Device run done on Windows (Chrome) and an Android phone; no Safari or iPhone run yet (see Device results and Decision 5).
+**Status:** M7G, M7H and M7I accepted by the Product Owner on 2026-11-04 and merged (`2f0c8bd`, `4d5c824`, `1ee0994`). Device run done on Windows (Chrome) and an Android phone; no Safari or iPhone run yet (see Device results and Decision 5).
 **Part of:** governance §14.3. Slices: [M7A](M7A-milestone-report.md), [M7B](M7B-milestone-report.md), [M7C](M7C-milestone-report.md), [M7D](M7D-milestone-report.md), [M7E](M7E-milestone-report.md), [M7F](M7F-milestone-report.md), M7G (this slice), [M7H](M7H-milestone-report.md) (follow-up to finding 1), [M7I](M7I-milestone-report.md) (follow-up to finding 4).
 **Checklist:** [`docs/qa/M7G-device-checklist.md`](../qa/M7G-device-checklist.md). **Test pack generator:** `tests/fixtures/generate_device_pack.py`.
 
@@ -21,7 +21,7 @@ M7 turned "the tools work" into "the tools are shown to work, and to fail safely
 | M7F   | `e92acbb` | Measured budgets for weight, first use, layout shift, paint, tap time and caching; the page no longer jumps when a file is chosen; PDF.js files cached for a year (ADR-037).                          |
 | M7G   | `2f0c8bd` | Device checklist, test pack, this record, and the findings below.                                                                                                                                     |
 | M7H   | `4d5c824` | A dropped connection is no longer blamed on the file: one new error, a helper for lazy imports, a rule for workers that never start, the connection words in every tool (ADR-038). Closes finding 1.  |
-| M7I   | this PR   | The requirement-to-test table for all 102 SRS requirements, a check that keeps it true, and six wrong requirement IDs corrected. Closes finding 4.                                                    |
+| M7I   | `1ee0994` | The requirement-to-test table for all 102 SRS requirements, a check that keeps it true, and six wrong requirement IDs corrected. Closes finding 4.                                                    |
 
 ## Release criteria (document 08, section 10)
 
@@ -84,7 +84,7 @@ None changes any file a tool produces. I did not fix 1 or 2 inside this slice; 1
 
 1. **Accept M7G** (the checklist, pack and this record): accepted 2026-11-04, merged `2f0c8bd`.
 2. **Finding 1 and 2:** finding 1 was fixed in M7H, accepted 2026-11-04 and merged `4d5c824`. Finding 2 (plain HTTP) stays optional: production is HTTPS.
-3. **Finding 4:** built in M7I (`docs/qa/requirements-traceability.md`), awaiting your acceptance. Earlier question: build the table now, before M8, or accept the current coverage. My recommendation: build it (I can draft it from the tests; you check it), because document 08 makes it a release gate.
+3. **Finding 4:** built in M7I (`docs/qa/requirements-traceability.md`), accepted 2026-11-04 and merged `1ee0994`. Earlier question: build the table now, before M8, or accept the current coverage. My recommendation: build it (I can draft it from the tests; you check it), because document 08 makes it a release gate.
 4. **Limits and budgets:** your Android report names no limit or budget as wrong, so ADR-017, 018, 025 and 037 stand. If a later device run shows otherwise, they change in a follow-up.
 5. **The missing Safari and iPhone run:** accept the gap (CI covers the WebKit engine, not real iOS Safari), or borrow an iPhone and run the starred checks (about 40 minutes; HEIC photos, the file picker and memory are what only it can show). My recommendation: run it before public launch, not before accepting M7G; it can happen on the M8 staging site, where no tunnel is needed.
 

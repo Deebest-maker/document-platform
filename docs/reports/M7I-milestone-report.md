@@ -1,7 +1,7 @@
 # M7I Milestone Report: Requirement-to-test table
 
 **Date:** 2026-11-04
-**Status:** Implemented; owner acceptance pending
+**Status:** Accepted by the Product Owner on 2026-11-04; merged (`1ee0994`)
 **Preceding slice:** [M7H](M7H-milestone-report.md) — a dropped connection is no longer blamed on the file (accepted 2026-11-04 and merged, `4d5c824`).
 **Part of:** M7 QA and hardening (governance §14.3), follow-up to [M7G](M7-milestone-report.md) finding 4.
 **Decision record:** none. This is documentation and a check script; it makes no product or architecture decision.
@@ -54,6 +54,6 @@ No product code changed. The only outside read was the repository's secret-scann
 
 ## Decisions for you
 
-1. **Accept M7I.** I will not merge until you do. Please read the two lists that matter: the 17 Partial rows and the 2 Gap rows (they are the honest part of the table).
+1. **Accept M7I:** accepted 2026-11-04, merged `1ee0994`. Please read the two lists that matter: the 17 Partial rows and the 2 Gap rows (they are the honest part of the table).
 2. **The real-engine tests that CI skips (finding 2).** Either run them inside a test build of the processor image in CI, as a small slice before M8, or accept the gap until the M8 staging smoke test. My recommendation: the small slice. Without it, a regression in Word to PDF would go unseen until staging.
 3. **Next:** M8 needs the production domain, brand name, author line and a hosting budget. Until then there is little left to build, apart from the optional slice in decision 2 and the iPhone and Safari run, which I would do on the M8 staging site.
