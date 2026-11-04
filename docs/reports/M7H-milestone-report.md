@@ -22,7 +22,7 @@ When the signal drops after a page has loaded and before (or while) a tool start
 - **In a real browser, per tool (new, `apps/web/e2e/load-failure.spec.ts`, 23 tests per browser project):** all eleven tools with their code cut off (every script not already fetched), ten with their workers cut off (every worker pointed at a missing script), and the export workers of Organize and Split after the PDF had opened. Each must show the connection words and nothing that blames the file, then finish the same job on the same page once the connection is back. 23 of 23 pass in Chromium here.
 - **Shown to fail when the property breaks:** with the error code swapped back for a generic one, the chunk tests fail; with the teardown wait restored, the stuck-worker unit test times out; the first run of the worker tests showed the Compress "memory" wording and the hang before the fix.
 - **Unit tests (new):** 315 library (up from 303) and 423 web (up from 420) pass; type check, lint and format check pass. The four worker-client tests that fired "worker crashed" now send a message first, which is what they always meant; each gained a silent-worker case.
-- **Not run from here:** Firefox and WebKit. CI runs them on `main`; I will also trigger the full five-browser run on the branch before asking you to accept.
+- **Five browsers:** I could run only Chromium here, so I ran the full workflow on the branch (all nine jobs, including Firefox, WebKit and phone WebKit, which include the 23 new tests): green.
 
 ## Known limitations
 
