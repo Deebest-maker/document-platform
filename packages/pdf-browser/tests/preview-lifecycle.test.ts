@@ -17,6 +17,7 @@ function deferred<T>() {
 class NativeWorker {
   static latest: NativeWorker;
   terminate = vi.fn();
+  addEventListener = vi.fn();
   constructor() {
     NativeWorker.latest = this;
   }

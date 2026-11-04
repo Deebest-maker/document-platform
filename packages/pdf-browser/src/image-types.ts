@@ -66,7 +66,8 @@ export type ImageErrorCode =
   | "PREVIEW_FAILED"
   | "GENERATION_FAILED"
   | "CANCELLED"
-  | "WORKER_UNAVAILABLE";
+  | "WORKER_UNAVAILABLE"
+  | "ENGINE_LOAD_FAILED";
 
 export class ImagePdfError extends Error {
   constructor(

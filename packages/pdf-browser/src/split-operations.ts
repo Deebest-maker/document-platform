@@ -1,4 +1,4 @@
-import { PageError } from "./page-errors";
+import { PageError, loadEngineModule } from "./page-errors";
 import { validatePagePlan } from "./page-model";
 import { createPageOutputBytes, loadPageSource } from "./page-operations";
 import type { PageInput, PageLimits } from "./page-types";
@@ -72,7 +72,7 @@ export async function splitPdf(
       };
 
     options.onPhase?.("archiving");
-    const { zipSync } = await import("fflate");
+    const { zipSync } = await loadEngineModule(() => import("fflate"));
     cancelled();
     const entries = Object.fromEntries(
       outputs.map((output, index) => [filename(index), output]),

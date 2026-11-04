@@ -1,5 +1,5 @@
 import type { PDFDocument } from "pdf-lib";
-import { PageError } from "./page-errors";
+import { PageError, loadEngineModule } from "./page-errors";
 import { readPageInput } from "./page-validation";
 import { pageLimits, type PageInput } from "./page-types";
 import {
@@ -154,7 +154,7 @@ function snapshotFlags(
 }
 
 async function loadPdfLib(): Promise<PdfLibNamespace> {
-  const pdfLibModule = await import("pdf-lib");
+  const pdfLibModule = await loadEngineModule(() => import("pdf-lib"));
   return pdfLibModule as unknown as PdfLibNamespace;
 }
 

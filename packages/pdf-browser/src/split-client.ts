@@ -31,6 +31,7 @@ export function splitPdf(
   }
   return new Promise((resolve, reject) => {
     let settled = false;
+    let heard = false;
     const finish = (result?: SplitResult, error?: PageError) => {
       if (settled) return;
       settled = true;
@@ -43,13 +44,18 @@ export function splitPdf(
     const abort = () => finish(undefined, new PageError("CANCELLED"));
     options.signal?.addEventListener("abort", abort, { once: true });
     worker.onmessage = ({ data }: MessageEvent<SplitResponse>) => {
+      heard = true;
       if (data.kind === "phase") options.onPhase?.(data.phase);
       else if (data.kind === "result") finish(data.result);
       else finish(undefined, new PageError(data.code));
     };
     worker.onerror = (event) => {
       event.preventDefault();
-      finish(undefined, new PageError("OPERATION_FAILED"));
+      // Silent so far: the worker's script never loaded (M7H, ADR-038).
+      finish(
+        undefined,
+        new PageError(heard ? "OPERATION_FAILED" : "ENGINE_LOAD_FAILED"),
+      );
     };
     worker.onmessageerror = () =>
       finish(undefined, new PageError("OPERATION_FAILED"));

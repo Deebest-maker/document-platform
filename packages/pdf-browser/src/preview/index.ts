@@ -1,4 +1,5 @@
-import { PageError } from "../page-errors";
+import { PageError, loadEngineModule } from "../page-errors";
+import { watchWorkerStart } from "../worker-start";
 import { normalizeRotation, type PageGeometry } from "../page-model";
 import { readPageInput } from "../page-validation";
 import { pageLimits, type PageInput, type PageLimits } from "../page-types";
@@ -44,7 +45,9 @@ export async function openPreview(
   check();
   const data = await readPageInput(input, limits);
   check();
-  const { getDocument, PDFWorker } = await import("pdfjs-dist");
+  const { getDocument, PDFWorker } = await loadEngineModule(
+    () => import("pdfjs-dist"),
+  );
   check();
   let nativeWorker: Worker;
   try {
@@ -54,6 +57,20 @@ export async function openPreview(
   } catch {
     throw new PageError("WORKER_UNAVAILABLE");
   }
+  // pdf.js waits on the worker for ever if its script never loads, so a worker
+  // that fails to start must end the open itself (M7H, ADR-038).
+  const started = watchWorkerStart(nativeWorker);
+  const startFailure = new Promise<never>((_, reject) => {
+    nativeWorker.addEventListener(
+      "error",
+      () =>
+        reject(
+          new PageError(started() ? "PREVIEW_FAILED" : "ENGINE_LOAD_FAILED"),
+        ),
+      { once: true },
+    );
+  });
+  startFailure.catch(() => undefined);
   let worker: InstanceType<typeof PDFWorker> | undefined;
   let loading: PDFDocumentLoadingTask | undefined;
   let document: PDFDocumentProxy | undefined;
@@ -75,7 +92,8 @@ export async function openPreview(
       // All renders must settle before the loading task releases its document.
       await Promise.allSettled([...rendering].map((task) => task.promise));
       try {
-        await loading?.destroy();
+        // A worker that never started cannot answer the teardown request.
+        await Promise.race([loading?.destroy(), startFailure]);
       } catch {
         /* Never expose dependency diagnostics during teardown. */
       } finally {
@@ -114,7 +132,7 @@ export async function openPreview(
       iccUrl: base + "iccs/",
     });
     options.signal?.addEventListener("abort", abort, { once: true });
-    document = await loading.promise;
+    document = await Promise.race([loading.promise, startFailure]);
     live();
     if (document.numPages < 1) throw new PageError("INVALID_PDF");
     if (document.numPages > limits.maxPages) throw new PageError("PAGE_LIMIT");

@@ -49,15 +49,29 @@ it.each(["abort", "error", "messageerror"])(
     });
     const worker = FakeWorker.current;
     if (failure === "abort") controller.abort();
-    else if (failure === "error")
+    else if (failure === "error") {
+      // It started (it spoke) and then crashed: the work failed.
+      worker.onmessage!({
+        data: { kind: "phase", phase: "reading" },
+      } as MessageEvent);
       worker.onerror!({
         preventDefault: vi.fn(),
         message: "private parser text",
       } as unknown as ErrorEvent);
-    else worker.onmessageerror!();
+    } else worker.onmessageerror!();
     await expect(pending).rejects.toThrow(
       failure === "abort" ? "CANCELLED" : "OPERATION_FAILED",
     );
     expect(worker.terminate).toHaveBeenCalledTimes(1);
   },
 );
+
+it("a worker that fails before it has said anything never started: it is a load failure, not a bad PDF", async () => {
+  vi.stubGlobal("Worker", FakeWorker);
+  const pending = transformPages(input, plan, pageLimits);
+  FakeWorker.current.onerror!({
+    preventDefault: vi.fn(),
+  } as unknown as ErrorEvent);
+  await expect(pending).rejects.toMatchObject({ code: "ENGINE_LOAD_FAILED" });
+  expect(FakeWorker.current.terminate).toHaveBeenCalledTimes(1);
+});

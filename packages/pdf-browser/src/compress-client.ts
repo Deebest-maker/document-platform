@@ -35,6 +35,7 @@ export async function compressPdfInWorker(
   }
   return new Promise((resolve, reject) => {
     let settled = false;
+    let heard = false;
     const finish = (result?: CompressResult, error?: PageError) => {
       if (settled) return;
       settled = true;
@@ -47,6 +48,7 @@ export async function compressPdfInWorker(
     const abort = () => finish(undefined, new PageError("CANCELLED"));
     options.signal?.addEventListener("abort", abort, { once: true });
     worker.onmessage = ({ data }: MessageEvent<CompressResponse>) => {
+      heard = true;
       if (settled) return;
       if (data.kind === "phase") options.onPhase?.(data.phase);
       else if (data.kind === "progress") options.onProgress?.(data.progress);
@@ -55,7 +57,11 @@ export async function compressPdfInWorker(
     };
     worker.onerror = (event) => {
       event.preventDefault();
-      finish(undefined, new PageError("OPERATION_FAILED"));
+      // Silent so far: the worker's script never loaded (M7H, ADR-038).
+      finish(
+        undefined,
+        new PageError(heard ? "OPERATION_FAILED" : "ENGINE_LOAD_FAILED"),
+      );
     };
     worker.onmessageerror = () =>
       finish(undefined, new PageError("OPERATION_FAILED"));

@@ -38,6 +38,8 @@ export const compressErrorCopy: Record<CompressWorkflowError, string> = {
   CANCELLED: "Compression cancelled.",
   WORKER_UNAVAILABLE:
     "This browser could not start local compression. Try an up-to-date browser.",
+  ENGINE_LOAD_FAILED:
+    "The local PDF engine could not load. Check your connection and try again.",
 };
 
 export const compressProfileCopy: Record<

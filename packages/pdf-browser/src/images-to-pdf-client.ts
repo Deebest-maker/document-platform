@@ -26,6 +26,7 @@ export async function imagesToPdf(
   }
   return new Promise((resolve, reject) => {
     let settled = false;
+    let heard = false;
     const finish = (result?: ImagesToPdfResult, error?: ImagePdfError) => {
       if (settled) return;
       settled = true;
@@ -40,13 +41,18 @@ export async function imagesToPdf(
     const abort = () => finish(undefined, new ImagePdfError("CANCELLED"));
     options.signal?.addEventListener("abort", abort, { once: true });
     worker.onmessage = ({ data }: MessageEvent<ImagesPdfResponse>) => {
+      heard = true;
       if (data.kind === "phase") options.onPhase?.(data.phase);
       else if (data.kind === "result") finish(data.result);
       else finish(undefined, new ImagePdfError(data.code, data.inputId));
     };
     worker.onerror = (event) => {
       event.preventDefault();
-      finish(undefined, new ImagePdfError("GENERATION_FAILED"));
+      // Silent so far: the worker's script never loaded (M7H, ADR-038).
+      finish(
+        undefined,
+        new ImagePdfError(heard ? "GENERATION_FAILED" : "ENGINE_LOAD_FAILED"),
+      );
     };
     worker.onmessageerror = () =>
       finish(undefined, new ImagePdfError("GENERATION_FAILED"));
